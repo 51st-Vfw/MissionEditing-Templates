@@ -17,11 +17,11 @@ default setup for the following elements,
 - Units for all 51st VFW airframes and flights set up per
   [51st VFW SOPs](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/missionsEditingSOPs.md)
 - Texaco, Arco, and Shell tankers set up using
-  [MapSOP](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/51stMapSOP/readme.md)
+  [MapSOP](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/51stMapSOP/readme.md)
 - Overlord and Magic AWACS set up using
-  [MapSOP](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/51stMapSOP/readme.md)
+  [MapSOP](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/51stMapSOP/readme.md)
 - CVN-71, CVN-75, and LHA-1 carrier groups setup using
-  [MapSOP](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/51stMapSOP/readme.md)
+  [MapSOP](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/51stMapSOP/readme.md)
 
 These units will need to be positioned (or deleted) according to the needs of the mission. The
 template sets up the scripting environment by loading the following frameworks around mission
@@ -30,7 +30,7 @@ start,
 - [MOOSE](https://github.com/FlightControl-Master/MOOSE/) 2022-05-24T14:05:04.0000000Z-91686e252c967ffee744dd0ee91ff93d7f8291bd
 - [Skynet](https://github.com/walder/Skynet-IADS) 2.4.0
 - [mist](https://github.com/mrSkortch/MissionScriptingTools) 4.4.90
-- [51st VFW MapSOP](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/51stMapSOP/readme.md) 20220611.1
+- [51st VFW MapSOP](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/51stMapSOP/readme.md) 20220611.1
 
 The basic scripting infrastructure that comes pre-built in the template is as follows,
 
