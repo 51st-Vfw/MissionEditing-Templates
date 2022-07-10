@@ -146,7 +146,14 @@ convience for situations where you unpack and then immediately repack.
 Due to the asset links within the `.miz` file, it is not possible to add, remove, or rename
 audio, briefing, or script assets by making the corresponding change to the asset in the
 mission master directories. For these assets, it is necessary to involve the DCS Mission
-Editor. When adding or removing an asset,
+Editor.
+
+All mission assets must be directly referenced from the mission file. Assets that are not
+referenced may be discarded by the DCS Mission Editor. For example, DCS will not persist an
+audio file that is only referenced in a Lua script file. To persist the audio file in this
+example, it could be played in a DCS Mission Editor trigger that is set to never trigger.
+
+When adding or removing an asset,
 
 1. Add or remove master asset files in the appropriate mission master directories.
 2. Open the mission in the DCS Mission Editor.
