@@ -1,0 +1,11 @@
+# 51st VFW Workflow .gitignore
+
+/.vscode
+/backup
+/build
+/src/miz_core/KNEEBOARD
+/src/miz_core/Config
+/src/miz_core/Scripts
+/src/miz_core/track
+/src/miz_core/track_data
+*.miz
