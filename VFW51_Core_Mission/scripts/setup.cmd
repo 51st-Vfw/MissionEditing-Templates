@@ -130,8 +130,8 @@ if %ARG_DRY_RUN% == 0 del /q Tmplt_*_core.miz >nul 2>&1
 if %ARG_VERBOSE% == 1 echo call scripts\sync.cmd %ARG_DYNAMIC%
 if %ARG_DRY_RUN% == 0 call scripts\sync.cmd %ARG_DYNAMIC%
 
-if %ARG_VERBOSE% == 1 echo call scripts\build.cmd --dirty %ARG_DYNAMIC%
-if %ARG_DRY_RUN% == 0 call scripts\build.cmd --dirty %ARG_DYNAMIC%
+if %ARG_VERBOSE% == 1 echo call scripts\build.cmd --nosync --dirty %ARG_DYNAMIC%
+if %ARG_DRY_RUN% == 0 call scripts\build.cmd --nosync --dirty %ARG_DYNAMIC%
 
 :Done
 

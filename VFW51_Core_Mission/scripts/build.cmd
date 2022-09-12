@@ -22,6 +22,7 @@ set ARG_DRY_RUN=0
 set ARG_DYNAMIC=0
 set ARG_LUADEBUG=0
 set ARG_LUATRACE=0
+set ARG_NOSYNC=0
 set ARG_TAG=0
 set ARG_VERBOSE=0
 
@@ -34,16 +35,23 @@ if "%~1" == "" (
     set ARG_BASE=1
 ) else if "%~1" == "--dirty" (
     set ARG_DIRTY=1
+    set SYNC_ARGS=%SYNC_ARGS% --dirty
 ) else if "%~1" == "--dryrun" (
     set ARG_DRY_RUN=1
     set ARG_VERBOSE=1
+    set SYNC_ARGS=%SYNC_ARGS% --dryrun
 ) else if "%~1" == "--dynamic" (
     set ARG_DYNAMIC=1
     set LUA_DYNAMIC=--dynamic
+    set SYNC_ARGS=%SYNC_ARGS% --dynamic
+) else if "%~1" == "--nosync" (
+    set ARG_NOSYNC=1
 ) else if "%~1" == "--luadebug" (
     set ARG_LUADEBUG=1
+    set SYNC_ARGS=%SYNC_ARGS% --luadebug
 ) else if "%~1" == "--luatrace" (
     set ARG_LUATRACE=1
+    set SYNC_ARGS=%SYNC_ARGS% --luatrace
 ) else if "%~1" == "--tag" (
     if "%~2" == "" goto Usage
     if "%~2" == "0" goto Usage
@@ -52,6 +60,7 @@ if "%~1" == "" (
     shift
 ) else if "%~1" == "--verbose" (
     set ARG_VERBOSE=1
+    set SYNC_ARGS=%SYNC_ARGS% --verbose
 ) else (
     goto Usage
 )
@@ -76,6 +85,13 @@ set MISSION_SRC=%MISSION_BASE%\src
 set MIZ_EXT_PATH=%MISSION_BASE%\src\miz_core
 set MIZ_BLD_PATH=%MISSION_BASE%\build\miz_image
 set MIZ_BLD_DFLT_PATH=%MIZ_BLD_PATH%\l10n\DEFAULT
+
+rem ======== sync mission
+
+if %ARG_NOSYNC% == 1 goto SyncDone
+if %ARG_VERBOSE% == 1 echo call scripts\sync.cmd %SYNC_ARGS%
+if %ARG_DRY_RUN% == 0 call scripts\sync.cmd %SYNC_ARGS%
+:SyncDone
 
 rem ======== build mission
 
@@ -203,8 +219,8 @@ exit /be 0
 
 :Usage
 echo.
-echo Usage: build [--help] [--dirty] [--base] [--dynamic] [--version {version}] [--dryrun]
-echo.             [--verbose] [--luadebug, --luatrace]
+echo Usage: build [--help] [--dirty] [--base] [--dynamic] [--version {version}] [--nosync]
+echo              [--dryrun] [--verbose] [--luadebug, --luatrace]
 echo.
 echo Assemble and build the .miz mission file(s) described by the mission directory. The files
 echo are output at the root level of the mission directory.
@@ -214,6 +230,7 @@ echo.
 echo Command line arguments:
 echo.
 echo   --help               Displays this usage information.
+echo   --nosync             Do not run sync script prior to build
 echo   --dirty              Leave the mission build directory in place after building
 echo   --base               Build base mission only, do not build any other variants
 echo   --dynamic            Build mission for dynamic script loading
@@ -222,6 +239,8 @@ echo   --dryrun             Dry run, print but do not execute commands (implies 
 echo   --verbose            Verbose logging output
 echo   --luatrace           Use "--trace" for Lua logging
 echo   --luadebug           Use "--debug" for Lua logging
+echo.
+echo Note --dirty, --dryrun, --dynamic, --verbose, and --luadebug/trace are passed through to sync.
 echo.
 echo Environment variables:
 echo.

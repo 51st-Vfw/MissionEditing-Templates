@@ -450,7 +450,17 @@ should be included in the mission package. This inculdes frameworks as well as m
 scripting. To change the incorporated script files, update the `vfw51_script_settings.lua`
 settings file in the `src\scripts\` subdirectory.
 
-TODO
+When building the mission, the workflow automatically updates triggers within the mission to
+load the sccripts. Based on configuration, this load may be static (i.e., from the mission
+`.miz` package) or dynamic (i.e., from a local directory).
+
+The settings file contains the `ScriptSettings` Lua table that defines the scripts to be added
+to the mission package. Scripts are divided into "frameworks" and "mission". All framework
+scripts are loaded before any mission script. Scripts are loaded in the order in which they
+appear in the Lua table.
+
+For additional information on how the scripting functionality works in the workflow, see
+[Workflow Trigger Setup](#Workflow-Trigger-Setup).
 
 ### Steerpoints
 
@@ -464,19 +474,20 @@ mission in time of day, weather, or DCS mission options. To change variants, upd
 `vfw51_variant_settings.lua` settings file in the `src\variants\` subdirectory.
 
 When building the mission, the workflow will first build the base variant and then modify
-it to create mission packages for each of the variants defined in settings.
+it to create mission files for each of the variants defined in the settings.
 
 > When given the `--base` argument, `build.cmd` will only build the base mission and will not
 > build any of the variants the settings file describes.
 
 The settings file contains the `VariantSettings` Lua table that defines the "moments" (i.e.,
 time of day), weather, and options for each variant. Separate Lua files in the
-`src\variants\` subdirectory define the specific weather and options configuration to apply
-to the variant. These files are in the internal mission format from the DCS ME.
+`src\variants\` subdirectory define the specific weather and option configurations to apply
+to the base to create the variant. These files are in the internal mission format from the DCS
+ME.
 
-Given a mission with the desired weather or options settings, the `extract.cmd` script can
-be used to extract the information of interest from an existing mission. The output of this
-script can then be saved to a file in `src\variants\` for use in a variant.
+Given a `.miz` mission package with the desired weather or options settings, the `extract.cmd`
+script can be used to extract the information of interest from an existing mission. The output
+of this script can then be saved to a file in `src\variants\` for use in a variant.
 
 # Updating the Workflow
 
@@ -487,19 +498,47 @@ TODO
 
 # Technical Details, Odds, and Ends
 
-TODO
-
-## Workflow Trigger Setup
-
-TODO
+This section covers some technical details on the workflow and its components.
 
 ## Dynamic Kneeboards
 
 TODO
 
+## Workflow Trigger Setup
+
+The workflow uses a standard set of six `MISSION START` triggers that it installs as the first
+six triggers in the mission. These triggers are automatically inserted into a `.miz` each
+time it is built and should not be edited in the DCS ME. They must always be the first six
+triggers in the mission
+
+The triggers include,
+
+1. Sets up static/dynamic script loading via `VFW51_DYN_PATH` Lua variable
+2. Load all frameworks (dynamic)
+3. Load all frameworks (static)
+4. Load all mission scripts (dynamic)
+5. load all mission scripts (static)
+6. Reference all audio files from mission
+
+At run time only triggers 2 and 4 or triggers 3 and 5 execute, based on whether the mission
+was built as dynamic or static.
+
 ## DCS ME Resource References
 
-TODO
+The internal DCS ME files (such as `mission`) in a mission package reference resource files
+(such as audio or scirpts) through a "resource key". As part of the `.miz` creation process
+in DCS ME, files may be removed from the `.miz` if they do not have a corresponding resource
+key.
+
+This is mostly an issue for files, such as audio clips, that are referenced from mission Lua
+scripts and not any DCS ME triggers.
+
+The workflow ensures all resources have references in DCS ME triggers to avoid this loss of
+data. For example, as discussed above in
+[Technical Details, Odds, and Ends](#Technical-Details,-Odds,-and-Ends)
+the workflow creates a trigger that references all audio clips in the mission to ensure the
+DCS ME will see a refernce to the clip.
+
 
 ----------------------------
 

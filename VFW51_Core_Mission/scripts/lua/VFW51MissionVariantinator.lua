@@ -98,7 +98,7 @@ function VFW51MissionVariantinator:process()
     local settingsPath = self:loadLuaFile(self.srcPath, "variants", "vfw51_variant_settings.lua")
     if settingsPath == nil then
         self:logInfo("Variant settings not found, building base version only")
-        VariantSettings = { ["moments"] = { }, ["targets"] = { } }
+        VariantSettings = { ["moments"] = { }, ["variants"] = { } }
     else
         self:logInfo(string.format("Loaded settings [%s]", settingsPath))
     end
@@ -106,7 +106,7 @@ function VFW51MissionVariantinator:process()
     -- build out wxVersions table, this has the weather information for each weather setup defined in
     -- the versions settings
     self:logDebug(string.format("Loading weather"))
-    for targName, targ in pairs(VariantSettings["targets"]) do
+    for targName, targ in pairs(VariantSettings["variants"]) do
         local wxName = targ["wx"]
         self:logTrace(string.format("Loading wx file for %s", wxName))
         if wxName and (wxName ~= "base") and (wxVersions[wxName] == nil) then
@@ -121,7 +121,7 @@ function VFW51MissionVariantinator:process()
     -- build out optVersions table, this has the options information for each option setup defined in
     -- the versions settings
     self:logDebug(string.format("Loading options"))
-    for targName, targ in pairs(VariantSettings["targets"]) do
+    for targName, targ in pairs(VariantSettings["variants"]) do
         local optName = targ["options"]
         self:logTrace(string.format("Loading options file for %s", optName))
         if optName and (optName ~= "base") and (optVersions[optName] == nil) then
@@ -141,10 +141,10 @@ function VFW51MissionVariantinator:process()
     veafMissionEditor.editMission(inPath, outPath, "mission", nil)
 
     -- walk the versions and build mission files for each
-    for targName, targ in pairs(VariantSettings["targets"]) do
+    for targName, targ in pairs(VariantSettings["variants"]) do
         self:logInfo(string.format("Building mission files for %s target", targName))
         local editArgs = { ["self"] = self,
-                           ["targInfo"] = VariantSettings["targets"][targName]
+                           ["targInfo"] = VariantSettings["variants"][targName]
         }
         editFn = VFW51MissionVariantinator.processMission
         inPath = self.dstPath .. "mission"
@@ -163,8 +163,8 @@ function VFW51MissionVariantinator:new(o, arg)
     setmetatable(o, self)
     self.__index = self
 
-    self.id = "Versinator"
-    self.version = "1.0.0"
+    self.id = "Variantinator"
+    self.version = "1.0.1"
 
     local isArgBad = false
     local isArgVers = false
