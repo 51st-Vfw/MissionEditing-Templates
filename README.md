@@ -29,6 +29,14 @@ complex missions with scripting and other assets.
 describes the workflow in greater detail. See any of the core templates for an example of
 the mission directory layout the workflow assumes.
 
+## Kneeboard Templates
+
+The repository contains a set of `.svg` 
+[templates](https://github.com/51st-Vfw/MissionEditing-Templates/tree/master/Templates)
+for kneeboards that are aligned with the
+[51st VFW Mission SOPs](https://github.com/51st-Vfw/MissionEditing-Index). These
+templates include common comms cards along with some per-airframe cards.
+
 ## Caucasus Map
 
 The repository contains the following mission templates for the Caucasus map,
