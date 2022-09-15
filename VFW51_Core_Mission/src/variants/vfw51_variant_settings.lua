@@ -1,6 +1,6 @@
 -- ************************************************************************************************************
 --
--- vfw51_config_variants.lua: mission variant set up for mission
+-- vfw51_variant_settings.lua: mission variant set up for mission
 --
 -- the VariantSettings table holds two key/value pairs,
 --
@@ -33,6 +33,12 @@
 --
 -- the weather file is a Lua file that defines a single table "WxData" that contains the key/value pairs from
 -- the "weather" table in the mission file for the desired weather setup.
+--
+-- the options file is a Lua file that defines a single table "OptionsData" that contains the key/value
+-- pairs from the "options" table in the mission file for the desired options setup.
+--
+-- the extract script may be used to extract options and weather in the proper format using the --wx and --opt
+-- arguments.
 --
 -- ************************************************************************************************************
 

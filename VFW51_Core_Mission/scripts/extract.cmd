@@ -18,9 +18,8 @@ rem ======== parse command line
 
 set ARG_WX=0
 set ARG_OPT=0
-set ARG_SP=""
+set ARG_WP=""
 set ARG_MIZ=""
-set ARG_SCRIPT=""
 set ARG_LUADEBUG=1
 set ARG_LUATRACE=1
 
@@ -37,10 +36,10 @@ if "%~1" == "" (
     if %ARG_WX% == 1 goto Usage
     set ARG_OPT=1
     set LUA_DATA=--opt
-) else if "%~1" == "--sp" (
+) else if "%~1" == "--wp" (
     if "%~2" == "" goto Usage
-    set ARG_SP=%~2
-    set LUA_DATA=--sp %~2
+    set ARG_WP=%~2
+    set LUA_DATA=--wp %~2
     shift
 ) else if "%~1" == "--luadebug" (
     set ARG_LUADEBUG=1
@@ -48,8 +47,6 @@ if "%~1" == "" (
     set ARG_LUATRACE=1
 ) else if %ARG_MIZ% == "" (
     set ARG_MIZ=%~1
-) else if %ARG_SCRIPT% == "" (
-    set ARG_SCRIPT=%~1
 ) else (
     goto Usage
 )
@@ -57,15 +54,11 @@ shift
 goto ParseArgs
 :ParseDone
 
-if %ARG_WX% == 0 if %ARG_OPT% == 0 goto Usage
+if %ARG_WX% == 0 if %ARG_OPT% == 0 if %ARG_WP% == "" goto Usage
 if exist %ARG_MIZ% goto GoodMiz
 echo Unable to open .miz '%ARG_MIZ%` 1>&2
 goto Usage
 :GoodMiz
-if exist %ARG_SCRIPT% goto GoodScript
-echo Unable to access script directory '%ARG_SCRIPT%` 1>&2
-goto Usage
-:GoodScript
 
 rem ======== set up variables
 
@@ -90,8 +83,10 @@ rmdir /s /q %MIZ_EXT_PATH% >nul 2>&1
 exit /be %ERRORLEVEL%
 :UnpackSuccess
 
-pushd %ARG_SCRIPT%
+pushd %cd%\scripts\lua
+
 %VFW51_LUA_EXE% VFW51MissionExtractinator.lua %LUA_DATA% %MIZ_EXT_PATH% %VFW51_LUA_LOG%
+
 popd
 
 rmdir /s /q %MIZ_EXT_PATH% >nul 2>&1
@@ -100,8 +95,7 @@ exit /be 0
 
 :Usage
 echo.
-echo Usage: extract [--help] [--wx] [--opt] [--sp {group}] [--luadebug, --luatrace]
-echo                {miz_path} {script_path}
+echo Usage: extract [--help] [--wx] [--opt] [--wp {group}] [--luadebug, --luatrace] {miz_path}
 echo.
 echo TODO
 echo.
@@ -110,9 +104,8 @@ echo.
 echo   --help               Displays this usage information.
 echo   --wx                 Extract weather information
 echo   --opt                Extract mission options
-echo   --sp {group}         Extract steerpoints for group {group}
+echo   --wp {group}         Extract waypoints for group {group}
 echo   {miz_path}           Path to .miz to extract the information from
-echo   {script_path}        Path to workflow Lua scripting directory (scripts\lua)
 echo   --luatrace           Use "--trace" for Lua logging
 echo   --luadebug           Use "--debug" for Lua logging
 echo.

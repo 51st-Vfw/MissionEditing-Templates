@@ -2,12 +2,12 @@
 -- 
 -- VFW51MissionExtractinator: Extraction tool for 51st VFW workflow
 --
--- Usage: VFW51MissionExtractinator <miz_path> <--wx|--opt|--sp <group>> [--debug|--trace]
+-- Usage: VFW51MissionExtractinator <miz_path> <--wx|--opt|--wp <group>> [--debug|--trace]
 --
 --   <miz_path>         path to unpacked .miz file to extract from
 --   --wx               extract weather information
 --   --opt              extract options infomration
---   --sp <group>       extract steerpoints for group <group>
+--   --wp <group>       extract waypoints for group <group>, <group> must exact-match
 --   --debug            enable debug log output
 --   --trace            enable trace log output
 --
@@ -29,17 +29,75 @@ VFW51MissionExtractinator = VFW51WorkflowUtil:new()
 -- Core Methods
 ---------------------------------------------------------------------------------------------------------------
 
+function VFW51MissionExtractinator:findPointsFromGroupInCoalition(mission_t, groupPattern)
+    local keeperKeys = { "alt", "alt_type", "speed", "speed_locked", "type", "x", "y"}
+    local points = nil
+
+    local function tableContains(table, element)
+        for _, value in pairs(table) do
+            if value == element then
+                return true
+            end
+        end
+        return false
+    end
+
+    local coalitions = { "blue", "red", "neutrals" }
+    local foundGroup = nil
+    local numFound = 0
+    for _, coa in ipairs(coalitions) do
+        for _, country in pairs(mission_t["coalition"][coa]["country"]) do
+            for _, group in ipairs(country["plane"]["group"]) do
+                -- if string.match(group["name"], groupPattern) then
+                if group["name"] == groupPattern then
+                    if numFound == 0 then
+                        foundGroup = group["name"]
+                        numFound = numFound + 1
+                        points = self:deepCopy(group["route"]["points"])
+                        --[[
+                        for _, point in ipairs(points) do
+                            for key, _ in pairs(point) do
+                                if not tableContains(keeperKeys, key) then
+                                    point[key] = nil
+                                end
+                            end
+                        end
+                        ]]
+                    end
+                end
+            end
+        end
+    end
+
+    if numFound == 0 then
+        print(string.format("-- no groups found matching '%s'", groupPattern))
+    elseif numFound == 1 then
+        print(string.format("-- extracted route waypoints for group '%s'", foundGroup))
+    elseif numFound > 1 then
+        print(string.format("-- %d groups match '%s', extracting '%s'", numFound, groupPattern, foundGroup))
+    end
+
+    return points
+end
+
 function VFW51MissionExtractinator:process()
+    local luaData = nil
+    local tableName
     if self.isWx and self:loadLuaFile(self.mizPath, "", "mission") then
 ---@diagnostic disable-next-line: undefined-global
-        local luaData = mission["weather"]
-        print(veafMissionEditor.serialize("WxData", luaData))
+        luaData = mission["weather"]
+        tableName = "WxData"
     elseif self.isOpt and self:loadLuaFile(self.mizPath, "", "options") then
 ---@diagnostic disable-next-line: undefined-global
-        local luaData = options["difficulty"]
-        print(veafMissionEditor.serialize("OptionsData", luaData))
-    elseif self.spGroup and self:loadLuaFile(self.mizPath, "", "mission") then
-        print("TODO")
+        luaData = options["difficulty"]
+        tableName = "OptionsData"
+    elseif self.wpGroup and self:loadLuaFile(self.mizPath, "", "mission") then
+---@diagnostic disable-next-line: undefined-global
+        luaData = self:findPointsFromGroupInCoalition(mission, self.wpGroup)
+        tableName = "RouteData"
+    end
+    if luaData then
+        print(veafMissionEditor.serialize(tableName, luaData))
     end
 end
 
@@ -55,27 +113,26 @@ function VFW51MissionExtractinator:new(o, arg)
     self.isOpts = false
 
     local isArgBad = false
-    local isArgSp = false
-    local argTag = 0
+    local isArgWp = false
     for _, val in ipairs(arg) do
         if val:lower() == "--wx" then
             self.isWx = true
-            if self.isOpt or self.spGroup then
+            if self.isOpt or self.wpGroup then
                 isArgBad = true
             end
         elseif val:lower() == "--opt" then
             self.isOpt = true
-            if self.isWx or self.spGroup then
+            if self.isWx or self.wpGroup then
                 isArgBad = true
             end
-        elseif val:lower() == "--sp" then
-            isArgSp = true
+        elseif val:lower() == "--wp" then
+            isArgWp = true
             if self.isOpt or self.isWx then
                 isArgBad = true
             end
-        elseif isArgSp then
-            self.spGroup = val
-            isArgSp = false
+        elseif isArgWp then
+            self.wpGroup = val
+            isArgWp = false
         elseif self.mizPath == nil then
             self.mizPath = self:canonicalizeDirPath(val)
         elseif (val:lower() ~= "--debug") and (val:lower() ~= "--trace") then
@@ -84,7 +141,7 @@ function VFW51MissionExtractinator:new(o, arg)
     end
     print(self.mizPath)
     if isArgBad or not self.mizPath or (self.isWx and self.isOpt) then
-        print("Usage: VFW51MissionExtractinator <miz_path> <--wx|--opt|--sp <group>> [--debug|--trace]")
+        print("Usage: VFW51MissionExtractinator <miz_path> <--wx|--opt|--wp <group>> [--debug|--trace]")
         return nil
     end
 

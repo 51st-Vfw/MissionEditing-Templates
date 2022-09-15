@@ -1,9 +1,10 @@
 -- ************************************************************************************************************
 --
--- options description file
+-- options description file for base 51st vfw sop mission options
 --
--- contains a single table OptionsData that has the contents of the ["difficulty"] key in the main options
--- file. the contents for this file can be extracted from an existing .miz with the extractinator.
+-- contains a single table OptionsData that has a table with the value of the ["options"] key for the .miz
+-- mission file. the contents for this file can be extracted from an existing .miz with the extract.cmd
+-- script.
 --
 -- ************************************************************************************************************
 

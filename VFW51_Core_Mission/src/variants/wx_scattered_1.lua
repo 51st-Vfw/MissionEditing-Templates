@@ -1,9 +1,9 @@
 -- ************************************************************************************************************
 --
--- weather description file
+-- weather description file for scattered 1 mission editor preset
 --
--- contains a single table WxData that has the contents of the ["weather"] key in the main mission file. the
--- contents for this file can be extracted from an existing .miz with the extractinator.
+-- contains a single table WxData that has a table with the value of the ["weather"] key for the .miz mission
+-- file. the contents for this file can be extracted from an existing .miz with the extract.cmd script.
 --
 -- ************************************************************************************************************
 

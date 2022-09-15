@@ -322,13 +322,13 @@ make sure to reload the `.miz` in the DCS ME. Generally, it is safest to exit ou
 ME before doing the build. Prior to building, it is a good idea to ensure you have performed
 a sync if you've made changes in the DCS ME.
 
-## Workflow Tasks
+## Mission Resources
 
 The workflow allows you to inject different types of information into the mission. Each type
 of information has its own subdirecotry in the `src\` subdirectory of the mission directory.
 Generally, you will put relevant files into the appropriate subdirectory and edit a settings
 file to make changes. The build scripts will use the settings and relevant files to assemble
-the `.miz` at build time.
+the `.miz` at build time via the `build.cmd` script.
 
 The following sections describe each type of information in further detail.
 
@@ -386,8 +386,55 @@ the `.miz` kneeboard content. There are two general approaches the workflow take
 - Dynamic images are built from information in the mission directory to create an image file
   that is copied to the appropriate location in the `.miz` package.
 
-Currently, the workflow supports generating flight cards with radio preset and steerpoint
-information dynamically.
+The keys in the `KboardSettings` table from the settings file are the target file names and
+determine the name of the image file for the kneeboard while the value describes how to
+generate the file. For example,
+
+```
+KboardSettings = {
+    ["01_51st_SOP_Comms.png"] = { }
+}
+```
+
+These settings copy the file `01_51st_SOP_Comms.png` from the `src\kneeboards\` subdirectory
+in to the `.miz` to make the kneeboard available to all airframes. Adding an `"airframe"` key
+to the value makes the kneeboard available on on that airframe. For example,
+
+```
+KboardSettings = {
+    ["01_51st_SOP_Comms.png"] = { ["airframe"] = "F-16C_50" }
+}
+```
+
+These settings will make the `01_51st_SOP_Comms.png` kneeboard visible only on the kneeboard
+of an F-16C airframes.
+
+Adding a `"transform"` key to the value creates the target file dynamically by running the
+script described by the value. For example,
+
+```
+KboardSettings = {
+    ["01_Flight.png"] = { ["transform"] = "lua54 process.lua $_air $_src\\Template.txt $_dst" }
+}
+```
+
+This setting will use the Lua script `process.lua` to generate the image file `01_Flight.png`.
+The command line from the `"transform"` value may contain variables starting with `"$"`. Known
+variables are as follows,
+
+|Variable|Expansion|
+|:---:|:---|
+|`$_air` | Airframe from the `"airframe"` key/value pair.
+|`$_mbd` | Full path to mission base directory.
+|`$_src` | Full path to kneeboard source directory, `src\kneeboard\` in the mission base directory.
+|`$_dst` | Full path to the destination file.
+|`$<var>`| Value of the `$<var>` key in the table, quoted if it has spaces. Note that `<var>` may not start with "_".
+
+Note that you can combine `"airframe"` and `"transform"`.
+
+Currently, the workflow provides the `VFW51KbFlightCardinator.lua` to generate flight cards with
+radio preset and steerpoint information dynamically. This script uses a custom `.svg` template
+that is available in the distribution.
 
 ### _Radio Preesets_
 
@@ -400,6 +447,11 @@ the `vfw51_radio_settings.lua` settings file in the `src\radio\` subdirectory.
 When building the mission, the workflow will inject the preset information into units in the
 DCS ME files according to the settings. For A-10C units, the workflow creates the `UHF_RADIO`,
 `VHF_AM_RADIO`, and `VHF_FM_RADIO` hierarchy within the `.miz`.
+
+> All radio presets you set up in the DCS ME for a unit that is also specified through the
+> `vfw51_radio_settings.lua` settings file are **replaced** by the workflow the next time the
+> mission is built or synchronized. Any preset changes through the DCS ME changes are **not**
+> synchronized with the settings file.
 
 The settings file contains several Lua tables. The `RadioPresets[Warbird]<Blue|Red>` tables
 establish the maping between a preset button and frequency and description by unit properties.
@@ -430,7 +482,8 @@ a radio are applied in order of general to specific. For example,
 },
 ```
 
-results in the following frequency and descriptions for UHF (Radio 1) Preset 10,
+results in the following frequency and descriptions for UHF (Radio 1) Preset 10 accross three
+example units (Dodge21, Uzi11, and Venom21),
 
 |Airframe|Group Name|Callsign|Preset Frequency|Preset Description|
 |:---:|:---:|:---:|:---:|:---:|
@@ -439,11 +492,14 @@ results in the following frequency and descriptions for UHF (Radio 1) Preset 10,
 |F-16C_50|SEAD Flight|Venom21|270.00|Viper Tactical|
 
 The `RadioSettings` table provides templates of the `"Radio"` key in the DCS ME internal
-mission table to inject into a unit in order to configure its presets. Typically, the
-contents of this table are not edited unless you want a given airframe to map preset N
-from `RadioPresets` to preset M in the airframe.
+mission table to inject into a unit in order to configure its presets. These tables reference
+either a value from a `RadioPresets` table (e.g., `RadioPresetsBlue[$RADIO_1_10]`) or a fixed
+frequency that applies to all instances of the airframe (e.g, a numeric value like 270.00).
+Typically, the contents of the `RadioSettings` table are not edited unless you want a given
+airframe to map preset N from `RadioPresets` to preset M in the airframe or fix a particular
+preset for all instances of a given airframe for a given coalition.
 
-### Scripts
+### _Scripts_
 
 The `src\scripts\` subdirectory of a mission directory contains the mission Lua scripts that
 should be included in the mission package. This inculdes frameworks as well as mission-specific
@@ -462,11 +518,64 @@ appear in the Lua table.
 For additional information on how the scripting functionality works in the workflow, see
 [Workflow Trigger Setup](#Workflow-Trigger-Setup).
 
-### Steerpoints
+### _Waypoints_
 
-TODO: To be implemented...
+The `src\waypoints\` subdirecotry of a mission directory contains waypoint sets for groups
+in the mission that are injected when the mission is built. To change waypoints, update the
+`vfw51_waypoint_settings.lua` settings file in the `src\waypoints\` subdirectory.
 
-### Mission Variants
+When building a mission, the workflow will look for groups whose name matches a waypoint set
+from the settings file. When it finds a match, the workflow will inject the waypoints into
+the group. This can be useful for situations where you have a number of groups that share
+a common set of waypoints.
+
+> All waypoints you set up in the DCS ME for a group that is also specified through the
+> `vfw51_waypoint_settings.lua` settings file are **replaced** by the workflow the next time
+> the mission is built or synchronized. Any preset changes through the DCS ME changes are
+> **not** synchronized with the settings file.
+
+The settings file contins the `WaypointSettings` Lua table that defines the waypoints to be
+added to specific gropus in the mission package. Groups are identified by a Lua regular
+expression that matches on the group names.
+
+For example, assume you have two groups in your mission `Strike`, `CAP_1` and `CAP_2`, that
+share the same set of waypoints. You would like to define the waypoints once and then
+inject them into any other group that needs them.
+
+You begin by defining the desired waypoints for `CAP_1` in the mission through the DCS ME.
+After that, you can extract the waypoints from the `.miz` using `extract.cmd`,
+
+```
+C:\Users\Raven\Missions\Strike\> scripts\extract.cmd --wp CAP_1 Strike.miz > src\waypoints\wp.lua
+```
+
+This creates a file in `src\waypoints\wp.lua` with the necessary information to inject into
+the mission file.
+
+Once the Lua is output (to `wp.lua` in this example), you can set up your `WaypointSettings`
+in `vfw51_waypoint_settings.lua` like this,
+
+```
+WaypointSettings = {
+    ["CAP_1"] = "wp.lua",
+    ["CAP_2"] = "wp.lua"
+}
+```
+
+The next build the the `Strike` mission will inject the waypoints into groups `CAP_1` and
+`CAP_2`. Note that the waypoint settings treat the key in this case as a pattern to match, so
+you could also create a settings file like this,
+
+```
+WaypointSettings = {
+    ["CAP_"] = "wp.lua",
+}
+```
+
+This would install the waypoints in any group with a name that contains `CAP_`; for example,
+`CAP_1`, `CAP_1 Flight`, and do on.
+
+### _Mission Variants_
 
 The `src\variants\` subdirectory of a mission directory contains settings for the mission
 variants that are generated when the mission is built. Mission variants differ from the base
@@ -488,6 +597,31 @@ ME.
 Given a `.miz` mission package with the desired weather or options settings, the `extract.cmd`
 script can be used to extract the information of interest from an existing mission. The output
 of this script can then be saved to a file in `src\variants\` for use in a variant.
+
+For example, assume you have a separate mission `Test.miz` that has the weather settings you
+want to use in your `Strike` mission. Begin by extracting the weather information from
+`Test.miz` with `extract.cmd` (assuming `Test.miz` is in the mission directory for `Strike`
+for simplicity).
+
+```
+C:\Users\Raven\Missions\Strike\> scripts\extract.cmd --wx Test.miz > src\variants\bad_wx.lua
+```
+
+Once the Lua is output (to `bad_wx.lua` in this example), you can set up your `VariantSettings`
+in `vfw51_variant_settings.lua` like this,
+
+```
+VariantSettings = {
+    ["variants"] = {
+        ["bad_wx"] = {
+            ["wx"] = "bad_wx.lua"
+        }
+    }
+}
+```
+
+The next build the the `Strike` mission will produce the base variant along with a `bad_wx`
+variant that has the weather imported from the `Test.miz` mission.
 
 # Updating the Workflow
 
@@ -544,56 +678,6 @@ DCS ME will see a refernce to the clip.
 
 
 
-
-7-zip
-
-https://sourceforge.net/projects/luabinaries/files/5.4.2/
-https://sourceforge.net/projects/luabinaries/files/5.4.2/Tools%20Executables/
-
-https://inkscape.org/
-
-https://imagemagick.org/script/index.php
-- "add to system path" selected
-
-- must have 7-zip in path
-- must have lua in path
-- must have image magick in path
-
-
-src/	scripts/	lua scripts
-	radio/		radio presets
-
-
-$BASE/src/miz_core has following directories by default:
-	- KNEEBOARDS/[IMAGES|<airframe/IMAGES>]
-	- UHF_RADIO
-	- VHF_AM_RADIO
-	- VHF_FM_RADIO
-
-VEAF extract
-
-1) unzip to $BASE/src/miz_core
-2) set loading to static in .miz (l10n\Default\dictionary)
-3) delete all scripts in $BASE/src/miz_core/l10n/Default that match scripts in $BASE/src/scripts (??)
-	- What about scripts deleted from src/scripts? just delete all scripts instead?
-4) delete $BASE/src/miz_core/options
-5) delete $BASE/src/miz_core/[Config|Scripts|track|track_data] directories
-6) setup radio presets
-	- does not handle a-10's right now...
-7) normalize all lua in $BASE/src/miz_core
-
-VEAF build
-
-1) make directory $BASE/build
-2) copy 
-
-
-
-What is missing?
-- A-10C radio preset generation to build files in UHF_RADIO, VHF_AM_RADIO, VHF_FM_RADIO?
-- Better handling of kneeboards? Like radios, with Lua definition that is built to pack KNEEBOARDS? auto-gen comms cards?
-- Briefing panel image handling/injection
-- audio file handling/injection
 
 
 
