@@ -9,3 +9,7 @@
 /src/miz_core/track
 /src/miz_core/track_data
 *.miz
+
+# do not ignore the core template files.
+
+!Tmplt_*_core.miz
