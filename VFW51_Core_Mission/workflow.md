@@ -7,6 +7,10 @@ packaging missions and associated materials. As of DCS 2.7, the handling of asse
 external Lua scripts or kneeboards in the DCS Mission Editor (DCS ME) is clumsy, at best;
 and hostile, at worst. This workflow attempts to help make that less painful.
 
+The workflow is based on a set of Windows `cmd.exe` scripts. Internally, these scripts may
+invoke Lua scripts to perform some operations though this is transparent to the user.
+Generally, when using the workflow, you will need to have a `cmd.exe` shell running.
+
 This is the second version of the 51st VFW workflow.
 
 The workflow is based on and influenced by the [VEAF](https://github.com/VEAF) mission creation
@@ -30,33 +34,33 @@ resources without requiring "delete-save-add-save" loops in the DCS ME.
 
 For scripting, the workflow allows a mission to be built in a "dynamic" configuration that
 causes the mission to reload scripts from their source directory on each launch (rather than
-packaging the scripts with the `.miz`). While this mode is only useful when running a mission
+packaging the scripts with the `.miz`). While this mode is mostly useful when running a mission
 locally, it is helpful for debug allowing simultaneous editing of scripts through an external
 IDE and the mission through the DCS ME.
 
 The workflow can inject information directly into the DCS ME core files. This allows the
 workflow to automatically configure radio presets, waypoints, or set up script loading.
 
-The workflow assmebles a `.miz` file for the mission from the associated source files. The
-workflow supports the automatic generation of multiple versions of a mission that differ in
-mission options (such as dot labels or F10 map setup), weather, or time of day.
+The workflow assmebles a `.miz` file for the mission from the associated source files. In
+addition, it supports the automatic generation of multiple versions of a mission that differ
+in mission options (such as dot labels or F10 map setup), weather, or time of day.
 
 # Before Using the Workflow
 
-Scripts in the 51st VFW workflow relies on several tools to support its operation. The tools,
-their locations on the web, and their purpose are,
+The scripts in the 51st VFW workflow requires several tools to support its operation. The
+tools, their locations on the web, and their purpose are,
 
 - [7-zip](https://www.7-zip.org/download.html)
   packs and unpacks a DCS `.miz` file. The workflow has been tested with 7-zip 21.07.
 - [Lua](https://sourceforge.net/projects/luabinaries/files/5.4.2/Tools%20Executables/)
-  executes some of the scripts the workflow uses to do process missions. The workflow has
-  been tested with Lua 5.4.2.
+  executes some of the internal scripts the workflow uses to do process missions. The workflow
+  has been tested with Lua 5.4.2.
 - [ImageMagick](https://imagemagick.org/script/index.php)
   processes image files for use in kneeboard construction. The workflow has been tested
   with ImageMagick 7.1.0-46 Q16-HDRI x64.
 
 While specific versions are called out above, installing more recent versions should be fine.
-The tools must appear in the system or user `PATH` environment variable.
+All of these tools must appear in the system or user `PATH` environment variable.
 
 The 7-zip and Lua programs linked above are not packaged with Windows installers and must be
 installed manually. Typically, extract the downloaded files to a directory such as
@@ -66,7 +70,7 @@ Windows you are running). ImageMagick is packaged with a Windows installer and w
 setup for you. Make sure to check the "Add to PATH" option during install to add the
 appropriate directory to the `PATH`.
 
-In addition to these tools that are directly used by the workflow, you may want to install
+In addition to these tools that the workflow directly uses, you may also want to install
 
 - [Visual Studio Code](https://code.visualstudio.com/) is an IDE that supports Lua
   development. You should also install the Lua plug-in from VSC.
@@ -78,16 +82,15 @@ These tools may not be required, depending on what you want to do.
 
 # Mission Directories
 
-The workflow operates in _mission directories_ that contain all of the files related to the
+The workflow operates in a _Mission Directory_ that contains all of the files related to the
 mission, including source and scripts. A mission directory has the same name as the base
 mission version. For example, the mission directory for a mission `Breaking_Bad` might be
-`C:\Users\Raven\DCS_miz\Breaking_Bad`. Due to limitations in the Windows shell, the full
+`C:\Users\Raven\DCS_miz\Breaking_Bad`. Due to limitations in the Windows scripting, the full
 path to a mission directory should only contain alphanumeric, "-", and "_" characters. For
 example, `C:\Users\Raven\DCS Missions\Reactor #5 Strike` is not a valid mission directory
 name.
 
-> Just keep paths to alphanumeric, "-", and "_" characters, and we'll all be happy. It kinda
-> sucks, but that's Windows for you...
+> Just keep paths to alphanumeric, "-", and "_" characters, and we'll all be happy.
 
 ## Mission Directory Layout
 
@@ -165,7 +168,7 @@ repository on GitHub or as a separate
 The copy of `VFW51_Core_Mission` should be renamed to the mission name. Further, the path to
 this directory should include only alphanumeric, "-" and "_" characters as discussed earlier.
 For example, assuming the new mission is to be called `Breaking_Bad` and the mission directory
-is `C:\Users\Raven\DCS_Missions\`
+is `C:\Users\Raven\DCS_Missions\`,
 
 ```
 C:\Users\Raven\DCS_Missions\> move VFW51_Core_Mission Breaking_Bad
@@ -251,8 +254,8 @@ a DCS `.miz` package for the mission. Within this directory,
 
 - `miz_core\` contains files from the `.miz` mission package that are created, owned, and
   primarily edited by the DCS ME. The workflow may also modify these files.
-- The remaining subdirectories contains files that the workflow owns and incorporates into the
-  `.miz` mission package that the DCS ME does not modify.
+- The remaining subdirectories in `src\` contain files that the workflow owns and incorporates
+  into the `.miz` mission package that the DCS ME does not modify.
 
 The workflow relies on two main scripts to operate: `sync.cmd` (introduced above) and
 `build.cmd`. All scripts must be run from the root level of a mission directory as discussed
@@ -260,20 +263,26 @@ earlier and also support a `--help` command line switch to provide usage informa
 Generally speaking, `sync.cmd` moves data from the `.miz` to the mission directory while
 `build.cmd` moves data from the mission directory to the `.miz`.
 
+The `scripts\` subdirectory of the mission directory contains the scripts that support the
+workflow. All scripts are run from the root of the mission directory using a shell such as
+`cmd.exe` in Windows.
+
 ### _Synchronizing the Mission Directory with `sync.cmd`_
 
 After saving the `.miz` in the DCS ME, you should evenutally use the `sync.cmd` script to
-update the files in the mission directory,
+update files in the mission directory (specifically, the `src\` subdirectory),
 
 ```
 C:\Users\Raven\DCS_Missions\Breaking_Bad> scripts\sync.cmd
 ```
 
 This command updates the content of the mission directory (primarily in `miz_core\`) with the
-contents of the base mission package.
+contents of the base mission package. Remember, scripts are typically run from the root of the
+mission directory.
 
 The `sync.cmd` script has several command line arguments. The main arguments include,
 
+- `--help` lists help information, including some arguments not listed here for brevity.
 - `--dirty` disables clean up of redundnat files in the `src\miz_core\` subdirectory allowing
   you to examine what was pulled from the `.miz` package. The `cleanmission.cmd` script will
   clean up this subdirectory.
@@ -294,10 +303,11 @@ C:\Users\Raven\DCS_Missions\Breaking_Bad> scripts\build.cmd
 ```
 
 By default, the `build.cmd` script will first run `sync.cmd` prior to performing the steps to
-build the mission..
+build the mission.
 
 The `build.cmd` script has several command line arguments. The main arguments include,
 
+- `--help` lists help information, including some arguments not listed here for brevity.
 - `--dirty` disables deletion of the mission package build directory, `build\miz_image\`, after
   the build is complete allowing you to examine what was built in to the `.miz` packages.
 - `--dynamic` builds `.miz` mission packages to use dynamic script handling. By default, the

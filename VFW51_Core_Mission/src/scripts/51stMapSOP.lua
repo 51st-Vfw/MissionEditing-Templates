@@ -2,7 +2,7 @@
 -- Initial version by Blackdog Jan 2022
 --
 -- Tested against MOOSE GITHUB Commit Hash ID:
--- 2022-08-04T20:13:18.0000000Z-fa0549f34ff9c2317de11ec2dfb95c786e1f947c
+-- 2022-09-03T14:28:32.0000000Z-e53ff167ee729509b3af84f5fbf8fadb85de6f06
 --
 -- Version 20220101.1 - Blackdog initial version
 -- Version 20220115.1 - Fix: Tanker speeds adjusted to be close KIAS from SOP + better starting altitudes.
@@ -43,10 +43,21 @@
 --                    - After being relieved, AWACS/Tanker flights change their callsign number to '9' and get off freq.
 --                    - Limited airframes become available to launch again ~1 hour after landing (maint/refueling).
 --                    - Tested/included MOOSE version bump.
+-- Version 20220915.1 - Option to use Zone properties instead of zone naming to set Tanker/AWACS SOP overrides.
+--                    - Airbase ATC silenced by default, enabled by putting Airbase inside an 'Enable ATC' zone(s).
+--                    - Server pause control.
+--                    - AWACS/Tanker get to their orbits much faster when air spawned.
+--                    - Changed 'off duty' Tanker/AWACS callsign flight number to -8 (instead of 9).
+--                    - 'Off duty' Tankers use 58Y (Viper TACAN freezes if you turn a Tanker TACAN off).
+--                    - Use new native MOOSE function for Link4 activation.
+--                    - Tested/included MOOSE version bump.
+-- Version 20220917.1 - Eliminated mysterious aircraft disappearances (remove MOOSE cleanup at SupportBase)
+--                    - Greatly reduced naval rotary aviation accidents (only one helo spawn on carriers) 
+--
 --
 -- Known issues:
 --   - Extra Non-SOP Shell/Magic units act like land-based Tankers/AWACS.
---   - While RTB, relieved Tankers/AWACS still show up in the radio menu, but at least now as the '9' callsign.
+--   - Off-duty tankers/AWACS show up in radio menu under -8 callsigns.
 --   - ACLS does not work for CVN-70 (USS Carl Vincent, apparently not a 'real' DCS SuperCarrier).
 
 ENUMS.UnitType = {
@@ -82,6 +93,7 @@ ENUMS.SupportUnitTemplateFields = {
 ENUMS.SupportUnitTemplate = {
     --                UNITTYPE, FUEL, FLARE, CHAFF, GUNS
     BOOMTANKER  =   { "KC-135",         90700, 60, 120, 100 },
+    BOOMTANKER  =   { "KC-135",         40000, 60, 120, 100 }, --TESTING
     PROBETANKER =   { "KC135MPRS",      90700, 60, 120, 100 },
     NAVYTANKER  =   { "S-3B Tanker",     7813, 30,  30, 100 },
     NAVYAWACS   =   { "E-2C",            5624, 30,  30, 100 },
@@ -148,6 +160,8 @@ SUPPORTUNITS[ "CVN-75" ] = { nil, nil, ENUMS.UnitType.SHIP,  275.40, 75, ENUMS.T
 -- Rescue Helo
 SUPPORTUNITS[ "CSAR1" ] = { CALLSIGN.Aircraft.Pontiac , 8, ENUMS.UnitType.HELICOPTER, nil, nil, nil, nil, nil, nil, nil, nil, nil, 265, nil, false, ENUMS.SupportUnitTemplate.RESCUEHELO }
 
+BASESUPPORTUNITS = routines.utils.deepCopy(SUPPORTUNITS)
+
 -- If no "Support Airbase" exists, then use a default airbase for each map
 local DEFAULTSUPPORTAIRBASES = { 
     AIRBASE.Caucasus.Batumi,
@@ -169,6 +183,20 @@ end
 local SupportBeacons = {}
 local SpawnSchedule = {}
 
+function ServerPause()
+  BASE:I("***Pausing server...***")
+  return net.dostring_in("gui", "return DCS.setPause(true)")
+end
+
+function ServerUnpause()
+  BASE:I("***Unpausing server...***")
+  return net.dostring_in("gui", "return DCS.setPause(false)")
+end
+
+function ServerGetPause()
+  return net.dostring_in("gui", "return DCS.getPause()")
+end
+
 -- Overriding MOOSE function to hack callsign behavior
 -- Don't change template callsign if SpawnTemplateKeepCallsign is True
 local SpawnTemplateKeepCallsign = nil
@@ -186,7 +214,7 @@ function SPAWN:_Prepare( SpawnTemplatePrefix, SpawnIndex ) --R2.2
 	
   local SpawnTemplate
   if self.TweakedTemplate ~= nil and self.TweakedTemplate == true then
-    BASE:I("WARNING: You are using a tweaked template.")
+    --BASE:I("WARNING: You are using a tweaked template.")
     SpawnTemplate = self.SpawnTemplate
   else
     SpawnTemplate = self:_GetTemplate( SpawnTemplatePrefix )
@@ -255,43 +283,6 @@ function SPAWN:_Prepare( SpawnTemplatePrefix, SpawnIndex ) --R2.2
 	self:T3( { "Template:", SpawnTemplate } )
 	return SpawnTemplate
 		
-end
-
---- Activate Link4 system of the CONTROLLABLE. The controllable should be an aircraft carrier!
--- @param #CONTROLLABLE Controllable
--- @param #number Frequency Radio frequency in MHz.
--- @return #CONTROLLABLE Controllable
-function CommandActivateLink4(Controllable, Frequency)
-  local UnitID=UnitID or Controllable:GetID()
-
-  -- Command to activate Link4 system.
-  local CommandActivateLink4Obj= {
-    id = "ActivateLink4",
-    params= {
-      ["frequency"] = Frequency*1000000,
-      ["unitId"] = UnitID,
-    }
-  }
-
-  Controllable:SetCommand(CommandActivateLink4Obj)
-
-  return Controllable
-end
-
---- Dectivate Link4 system of the CONTROLLABLE. The controllable should be an aircraft carrier!
--- @param #CONTROLLABLE Controllable
--- @return #CONTROLLABLE Controllable
-function CommandDeactivateLink4(Controllable)
-
-  -- Command to deactivate Link4 system.
-  local CommandDeactivateLink4Obj= {
-    id = "DeactivateLink4",
-    params= {}
-  }
-
-  Controllable:SetCommand(CommandDeactivateLink4Obj)
-
-  return Controllable
 end
 
 --- Activate ACLS system of the CONTROLLABLE. The controllable should be an aircraft carrier!
@@ -1053,10 +1044,23 @@ end
 
 function InitSupportBases()
 
+  ENUMS.MapsopZoneProperties = {
+    TEMPLATE = "Template",
+    ALTITUDE = "Altitude",
+    SPEED = "Speed",
+    FREQUENCY = "Frequency",
+    TACAN = "TACAN",
+    INVISIBLE = "Invisible",
+    AIRFRAMES = "Airframes",
+    GROUNDSTART = "GroundStart"
+  }
+
+
     local AirbaseName = nil
     local RedAirbaseName = nil
     local AirbaseZone = ZONE:FindByName("Support Airbase")
     local RedAirbaseZone = ZONE:FindByName("Red Support Airbase")
+    local ATCzones = SET_ZONE:New():FilterPrefixes('Enable ATC'):FilterOnce()
     local AircraftCarriers = {}
     local VTOLcarriers = {}
 
@@ -1068,8 +1072,19 @@ function InitSupportBases()
       RedAirbaseName = RedAirbaseZone:GetCoordinate(0):GetClosestAirbase(Airbase.Category.AIRDROME, coalition.side.RED):GetName()
     end
 
+    local Airbases = AIRBASE.GetAllAirbases(nil, Airbase.Category.AIRDROME)
+
+    -- Disable airbase ATC
+    BASE:I("Enabling ATC in " .. ATCzones:Count() .. " Trigger Zones.")
+    for _,CheckAirbase in ipairs(Airbases) do
+      if ATCzones:IsCoordinateInZone(CheckAirbase:GetCoordinate()) then
+        BASE:I("ATC enabled at " .. CheckAirbase:GetName() .. ".")
+      else
+        CheckAirbase:SetRadioSilentMode(true)
+      end
+    end
+
     if not AirbaseName then
-        local Airbases = AIRBASE.GetAllAirbases(nil, Airbase.Category.AIRDROME)
         for _,CheckAirbase in ipairs(Airbases) do
             local CheckAirbaseName = CheckAirbase:GetName()
             for _,DefaultAirbase in ipairs(DEFAULTSUPPORTAIRBASES) do
@@ -1088,7 +1103,8 @@ function InitSupportBases()
       RedSupportBase = AIRBASE:Register(RedAirbaseName)
     end
 
-    CLEANUP_AIRBASE:New(SupportBase:GetName()):SetCleanMissiles(false)
+    -- Disabled, was 'cleaning up' jets taking off at SupportBase
+    --CLEANUP_AIRBASE:New(SupportBase:GetName()):SetCleanMissiles(false)
 
     local CarrierShips = AIRBASE.GetAllAirbases(coalition.side.BLUE, Airbase.Category.SHIP)
     for _,CarrierShip in pairs(CarrierShips) do
@@ -1106,7 +1122,7 @@ function InitSupportBases()
     P2ZoneSet:SortByName()
     local P1zones = P1ZoneSet:GetSetNames()
     local P2zones = P2ZoneSet:GetSetNames()
-    
+
     local callsigns = CALLSIGN.Tanker
     for k,v in pairs(CALLSIGN.AWACS) do callsigns[k] = v end
     callsigns['CSAR'] = 8
@@ -1116,6 +1132,7 @@ function InitSupportBases()
       local callsign, num, param
 
       local IsRed = false
+      local P1ZoneObj = ZONE:FindByName(P1zone)
       local P1zoneParse = P1zone
       if string.find(P1zone, "^RED%-") then
         IsRed = true
@@ -1124,6 +1141,11 @@ function InitSupportBases()
 
       local pattern = "^(%a+)" .. "(%d)" .. "-*" .. "(.*)" .. "-P1"
       callsign, num, param =  string.match(P1zoneParse,  pattern)
+      param = param or ""
+      param = param .. "-done"
+      if num == '0' then
+        num = nil
+      end
 
       if callsigns[callsign] ~= nil then
 
@@ -1135,97 +1157,182 @@ function InitSupportBases()
             FullCallsign = "RED-" .. FullCallsign
           end
 
-          local template,alt,speed,freq,tacan,tacanband,invisible,airframes,groundstart
-
-          template = template or 1
-          
-          if SUPPORTUNITS[ FullCallsign ] == nil then
-            if SUPPORTUNITS[ callsign .. template ] ~= nil then
-              SUPPORTUNITS[ FullCallsign ] = routines.utils.deepCopy(SUPPORTUNITS[ callsign .. "1" ])
-            else
-              SUPPORTUNITS[ FullCallsign ] = routines.utils.deepCopy(SUPPORTUNITS[ callsign .. template ])
-            end
-          end
+          local template,tokentemplate,alt,speed,freq,tacan,tacanband,invisible,airframes,groundstart
 
           if param then
             for token in string.gmatch(param, "[^-]+") do
-              template = template or string.match(token, "T(%d)")
-    
-              local op,newalt = string.match(token, "FL([mp]?)(%d+)")
-              if newalt then
-                if op == "p" then
-                  alt = (SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ] ) + (newalt * 100)
-                elseif op == "m" then
-                  alt = (SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ] ) - (newalt * 100)
-                else
-                  alt = newalt * 100
-                end
-              end
+              tokentemplate = string.match(token, "T(%d)")
 
-              local op,newspeed = string.match(token, "SP([mp]?)(%d+)")
-              if newspeed then
-                if op == "p" then
-                  speed = SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.SPEED ] + newspeed
-                elseif op == "m" then
-                  speed = SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.SPEED ] - newspeed
-                else
-                  speed = newspeed
-                end
+              local ZoneTemplate = P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.TEMPLATE)
+              if ZoneTemplate == 'SOP' then
+                ZoneTemplate = nil
               end
+              template = template or tokentemplate or ZoneTemplate
 
-              freq = freq or string.match(token, "FR(%d+%.*%d*)")
-              tacan = tacan or string.match(token, "TC(%d+)%u")
-              tacanband = tacanband or string.match(token, "TC%d+(%u)")
+
               
+              if template or (SUPPORTUNITS[ FullCallsign ] == nil) then
+                template = template or 1
+                if not BASESUPPORTUNITS[callsign .. template] then
+                  template = 1
+                end
+                SUPPORTUNITS[ FullCallsign ] = routines.utils.deepCopy(BASESUPPORTUNITS[callsign .. template])
+                SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.CALLSIGN_NUM ] = num
+              end
+    
+              local op,parsealt = string.match(token, "FL([mp]?)(%d+)")
+
+              if not alt then
+                local altstring = P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.ALTITUDE)
+                if altstring == 'SOP' then altstring = nil end
+                local altvalue, altsign
+                if altstring then
+                  altsign,altvalue = string.match(altstring, "([%+%-pm]?)(%d+)")
+                end
+
+                if altsign and (altsign == "+" or string.lower(altsign) == "p") then
+                  alt = (SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ] ) + tonumber(altvalue)
+                elseif altsign and (altsign == "-" or string.lower(altsign) == "m") then
+                  alt = (SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ] ) - tonumber(altvalue)
+                elseif altvalue then 
+                  alt = tonumber(altvalue)
+                end
+
+                if parsealt then
+                  if op == "p" then
+                    alt = (SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ] ) + (parsealt * 100)
+                  elseif op == "m" then
+                    alt = (SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ] ) - (parsealt * 100)
+                  else
+                    alt = parsealt * 100
+                  end
+                end
+              end
+
+              if not speed then
+                local speedstring = P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.SPEED)
+                if speedstring == 'SOP' then speedstring = nil end
+                local speedvalue, speedsign
+                if speedstring then
+                  speedvalue = string.match(speedstring, "%+?%-?p?m?(%d+)")
+                  speedsign = string.match(speedstring, "([%+%-pm])%d+")
+                end
+
+                if speedsign and (speedsign == "+" or string.lower(speedsign) == "p") then
+                  op = "p"
+                  speed = (SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.SPEED ] ) + tonumber(speedvalue), alt or SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ]
+                elseif speedsign and (speedsign == "-" or string.lower(speedsign) == "m") then
+                  op = "m"
+                  speed = (SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.SPEED ] ) - tonumber(speedvalue), alt or SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ]
+                elseif speedvalue then 
+                  speed = tonumber(speedvalue)
+                end 
+              end
+
+              local op,parsespeed = string.match(token, "SP([mp]?)(%d+)")
+              if parsespeed then
+                if op == "p" then
+                  speed = SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.SPEED ] + tonumber(parsespeed), alt or SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ]
+                elseif op == "m" then
+                  speed = SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.SPEED ] - tonumber(parsespeed), alt or SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ]
+                else
+                  speed = parsespeed
+                end
+              end
+
+              local freqprop = P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.FREQUENCY)
+              if freqprop == 'SOP' then freqprop = nil end
+              freq = freq or string.match(token, "FR(%d+%.*%d*)") or freqprop
+
+              local tacanStringProp = P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.TACAN)
+              if tacanStringProp == 'SOP' then tacanprop = nil end
+
+              tacan = tacan or string.match(token, "TC(%d+)%u") or tonumber(string.match(tacanStringProp or "", "(%d+)%u"))
+              tacanband = tacanband or string.match(token, "TC%d+(%u)") or string.match(tacanStringProp or "", "%d+(%u)")
+              if tacanband then
+                tacanband = string.upper(tacanband)
+              end
+              if tacan == "" or tacanband == "" then 
+                tacan = nil
+              end
+              
+              local invprop = P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.INVISIBLE)
+              if invprop then invprop = string.lower(invprop) end
+              if invprop == 'true' then
+                invprop = true
+              else
+                invprop = nil
+              end 
               invisible = invisible or string.match(token, "INV")
-              if invisible == "INV" then
-                invisible = true
+              if invisible == "INV" or invprop then
+                invisible = invisible or true
+              else
+                invisible = invisible or nil
               end
 
+              local groundstartprop = P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.GROUNDSTART)
+              if groundstartprop then groundstartprop = string.lower(groundstartprop) end
+              if groundstartprop == 'true' then
+                groundstartprop = true
+              else
+                groundstartprop = nil
+              end 
               groundstart = groundstart or string.match(token, "GND")
-              if groundstart == "GND" then
-                groundstart = true
+              if groundstart == "GND" or groundstartprop then
+                groundstart = groundstart or true
+              else
+                groundstart = groundstart or nil
               end
 
-              airframes = airframes or string.match(token, "QTY(%d+)")
+              airframes = airframes or string.match(token, "QTY(%d+)") or P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.AIRFRAMES)
+              if airframes and airframes == SOP then
+                airframes = airframes or nil
+              else
+                airframes = airframes or tonumber(airframes)
+              end
 
             end
           end
 
-          if airframes then
+          if airframes and tonumber(airframes) and tonumber(airframes) > 0 then
+            BASE:I(FullCallsign .. " SOP override to " .. airframes .. " airframes.")
             SUPPORTUNITS[ FullCallsign ].airframes = airframes
           end
 
-          if num then
-            SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.CALLSIGN_NUM ] = num
-          end
+          SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.CALLSIGN_NUM ] = num
 
           if alt then
+            BASE:I(FullCallsign .. " SOP override to " .. alt .. "ft MSL.")
             SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.ALTITUDE ] = alt
           end
           if speed then
+            BASE:I(FullCallsign .. " SOP override to " .. speed .. " KIAS.")
             SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.SPEED ] = speed
           end
           if freq then
+            BASE:I(FullCallsign .. " SOP override radio frequency to " .. freq .. "MHz AM.")
             SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.RADIOFREQ ] = freq
           end
           if tacan and tacanband then
+            BASE:I(FullCallsign .. " SOP override radio TACAN to " .. tacan .. tacanband .. ".")
             SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.TACANCHAN ] = tacan
             SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.TACANBAND ] = tacanband
           end
 
           if invisible then
+            BASE:I(FullCallsign .. " SOP override to be invisible to AI.")
             SUPPORTUNITS[ FullCallsign ].invisible = true
           end
 
           if groundstart then
+            BASE:I(FullCallsign .. " SOP override initial flight to ground takeoff.")
             SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.GROUNDSTART ] = true
           end
 
           if SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.TACANCHAN ] then
             pattern = "^(%a+)%d"
-            local morse = SUPPORTUNITS[ callsign .. template ][ ENUMS.SupportUnitFields.TACANMORSE ]
-            local MorseAlphas
+            local morse = SUPPORTUNITS[ FullCallsign ][ ENUMS.SupportUnitFields.TACANMORSE ]
+            local MorseAlphas = nil
 
             if morse then
               MorseAlphas = string.match( morse, pattern )
@@ -1305,16 +1412,13 @@ function InitSupportBases()
                 end
 
                 if SupportUnitFields[ENUMS.SupportUnitFields.SPEED] then
-                  BASE:I("Setting speed for " .. SupportUnit .. ".")
-                  SpawnTemplate.route.points[1].speed = 350
-                  SpawnTemplate.units[1].speed = 350
+                  SpawnTemplate.route.points[1].speed = UTILS.KnotsToMps(UTILS.KnotsToAltKIAS(SupportUnitFields[ENUMS.SupportUnitFields.SPEED],SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE]) or 350)
+                  SpawnTemplate.units[1].speed = UTILS.KnotsToMps(UTILS.KnotsToAltKIAS(SupportUnitFields[ENUMS.SupportUnitFields.SPEED],SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE]) or 350)
                 end
 
-                --BASE:I(SpawnTemplate.units[1].callsign)
                 TEMPLATE.SetPayload(SpawnTemplate, SupportUnitInfo[ENUMS.SupportUnitTemplateFields.FUEL], SupportUnitInfo[ENUMS.SupportUnitTemplateFields.FLARE], 
                     SupportUnitInfo[ENUMS.SupportUnitTemplateFields.CHAFF], SupportUnitInfo[ENUMS.SupportUnitTemplateFields.GUNS], {})
 
-                SpawnTemplateKeepCallsign = true -- Use MapSOP SPAWN:_Prepare() callsign hack
                 SPAWN:NewFromTemplate( SpawnTemplate, SupportUnit .. " Group", SupportUnit)
                   :InitLateActivated()
                   :InitModex(SupportUnitFields[ENUMS.SupportUnitFields.MODEX])
@@ -1326,7 +1430,6 @@ function InitSupportBases()
                       end
                     end)
                   :Spawn()
-                SpawnTemplateKeepCallsign = nil
             end
         end
     end
@@ -1400,15 +1503,15 @@ function InitSupport( SupportBaseParam, RedSupportBase, InAir )
 
             local UnlimitedAirframes = false
             if airframes == 0 then
-              BASE:I('Allowing unlimited airframes for ' .. SupportUnit .. '.')
+              BASE:I(SupportUnit .. ' available airframes set to unimited.')
               UnlimitedAirframes = true
             else
-              BASE:I('Limiting ' .. SupportUnit .. ' to ' .. tostring(airframes) .. ' available airframes.')
+              BASE:I(SupportUnit .. ' available airframes set to ' .. tostring(airframes) .. '.')
             end
             
             local Flight = SPAWN:NewWithAlias(SupportUnit, SupportUnit .. " Flight")
                 :InitLimit( 2, airframes )
-                :InitHeading(OrbitDir)
+                :InitHeading(OrbitDir-180)
             
             if red then
               Flight:InitCoalition(coalition.side.RED)
@@ -1418,40 +1521,34 @@ function InitSupport( SupportBaseParam, RedSupportBase, InAir )
             Flight:OnSpawnGroup(
                     function( SpawnGroup, SupportUnit, SupportUnitFields, SupportUnitInfo, Spawn, SupportBase, OrbitLeg, OrbitPt, OrbitDir )
 
-                        local RouteToMission = nil
+                        --local RouteToMission = nil
+                        local FlightGroup = FLIGHTGROUP:New( SpawnGroup )
                         local Mission = nil
+
+                        -- Set Radios / TACANS / Callsigns for off-mission support units
+                        function FlightGroup:PrePostMissionSettings()
+                          if PreviousMission[SupportUnit].flightgroup and PreviousMission[SupportUnit].flightgroup:IsAlive() then
+                            self:SwitchRadio(258.0)
+                            self:GetGroup():CommandSetCallsign(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN], 8)
+
+                            if SupportUnitInfo ~= ENUMS.SupportUnitTemplate.AWACS and
+                                SupportUnitInfo ~= ENUMS.SupportUnitTemplate.NAVYAWACS then
+                              self:SwitchTACAN( 58, "OFF", FlightGroup:GetUnit(), "Y")
+                              self:TurnOffTACAN()
+                            end
+                          end
+                          return self
+                        end
+
+                        FlightGroup:PrePostMissionSettings()
 
                         if SupportUnitFields.invisible then
                           BASE:I("Setting " .. SpawnGroup:GetName() .. " invisible to AI.")
                         end
+
                         SpawnGroup:SetCommandInvisible(SupportUnitFields.invisible)
 
-                        -- Mission to get on-station
-                        RouteToMission = AUFTRAG:NewORBIT(OrbitPt, SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE], 350, OrbitDir, OrbitLeg)
-
-                        function RouteToMission:OnAfterStarted(From, Event, To)
-                          self:I("Started mission " .. self:GetName() .. ".")
-                          table.remove(self:GetOpsGroups()):GetGroup():CommandSetCallsign(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN], SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN_NUM])
-                        end
-                        
-                        function RouteToMission:OnAfterExecuting(From, Event, To)
-                          self:I("Executing mission " .. RouteToMission:GetName() .. ".")
-                          if PreviousMission[SupportUnit].mission then --and PreviousMission[SupportUnit].flightgroup then
-                              PreviousMission[SupportUnit].mission:I("Relief flight on station " .. PreviousMission[SupportUnit].flightgroup:GetName() .. " is RTB.")
-                              PreviousMission[SupportUnit].mission:Success()
-                              PreviousMission[SupportUnit].flightgroup:GetGroup()
-                                :CommandSetCallsign(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN], 9)
-                              PreviousMission[SupportUnit].flightgroup:SwitchRadio(tonumber(SupportUnitFields[ENUMS.SupportUnitFields.RADIOFREQ]) + .8)
-                              PreviousMission[SupportUnit].flightgroup:TurnOffRadio()
-                              PreviousMission[SupportUnit].flightgroup:RTB(SupportBase)
-                          end
-                          PreviousMission[SupportUnit].mission = self
-                          PreviousMission[SupportUnit].flightgroup = table.remove(self:GetOpsGroups())
-                        end
-
-                        RouteToMission:SetDuration(2)
-
-                        -- Actual mission to start when on-station
+                        -- Tanker/AWACS Support Mission
                         if SupportUnitInfo == ENUMS.SupportUnitTemplate.AWACS then
                             Mission=AUFTRAG:NewAWACS(OrbitPt, SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE], 
                               UTILS.KnotsToAltKIAS(SupportUnitFields[ENUMS.SupportUnitFields.SPEED], 
@@ -1462,57 +1559,82 @@ function InitSupport( SupportBaseParam, RedSupportBase, InAir )
                               SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE]), OrbitDir, OrbitLeg, 
                               SupportUnitFields[ENUMS.SupportUnitFields.REFUELINGSYSTEM])
                         end
-                        Mission:SetRadio(SupportUnitFields[ENUMS.SupportUnitFields.RADIOFREQ])
+                        Mission.missionAltitude=Mission.orbitAltitude
+                        --Mission:SetRadio(SupportUnitFields[ENUMS.SupportUnitFields.RADIOFREQ])
 
                         function Mission:OnAfterExecuting(From, Event, To)
-                            self:I("Executing mission " .. self:GetName() .. ".")
+                          self:I("Executing mission " .. self:GetName() .. ".")
 
-                            -- Exclude AWACS from TACAN scheduling
-                            if SupportUnitInfo ~= ENUMS.SupportUnitTemplate.AWACS and
-                               SupportUnitInfo ~= ENUMS.SupportUnitTemplate.NAVYAWACS then
-                                
-                                PreviousMission[SupportUnit].flightgroup:TurnOffTACAN()
+                          if PreviousMission[SupportUnit].mission then --and PreviousMission[SupportUnit].flightgroup then
+                              PreviousMission[SupportUnit].mission:I("Relief flight on station " .. PreviousMission[SupportUnit].flightgroup:GetName() .. " is RTB.")
+                              PreviousMission[SupportUnit].mission:Success()
+                              PreviousMission[SupportUnit].flightgroup:RTB(SupportBase)
 
+                              if SupportUnitInfo ~= ENUMS.SupportUnitTemplate.AWACS and
+                                    SupportUnitInfo ~= ENUMS.SupportUnitTemplate.NAVYAWACS then
                                 -- Stop relieved flight's TACAN schedule
                                 if Scheduler[SupportUnit].Scheduler and Scheduler[SupportUnit].TacanScheduleID then
                                   Scheduler[SupportUnit].Scheduler:Stop(Scheduler[SupportUnit].TacanScheduleID)
                                 end
+                                PreviousMission[SupportUnit].flightgroup:PrePostMissionSettings()
+                              end
+                          end
+                          PreviousMission[SupportUnit].mission = self
+                          PreviousMission[SupportUnit].flightgroup = FlightGroup
 
-                                -- Start Tacan after 1 second and every 5 minutes
-                                Scheduler[SupportUnit].Scheduler, Scheduler[SupportUnit].TacanScheduleID = SCHEDULER:New( nil, 
-                                    function( TacanFlightGroup )
-                                        BASE:I(TacanFlightGroup.lid..string.format(" %s: Activating TACAN Channel %d%s (%s)", TacanFlightGroup:GetName(), 
-                                                TacanFlightGroup.tacanDefault.Channel, TacanFlightGroup.tacanDefault.Band, TacanFlightGroup.tacanDefault.Morse))
-                                        TacanFlightGroup:SwitchTACAN()
-                                    end, { PreviousMission[SupportUnit].flightgroup }, 1, 300
-                                )
-                            end
-                        end
+                          SpawnGroup:CommandSetCallsign(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN], SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN_NUM])
+                          FlightGroup:SwitchRadio(tonumber(SupportUnitFields[ENUMS.SupportUnitFields.RADIOFREQ]))
 
-                        FlightGroup = FLIGHTGROUP:New( SpawnGroup )
+                          if SupportUnitInfo ~= ENUMS.SupportUnitTemplate.AWACS and
+                            SupportUnitInfo ~= ENUMS.SupportUnitTemplate.NAVYAWACS then
+                            -- Start Tacan after 1 second and every 5 minutes
+                            Scheduler[SupportUnit].Scheduler, Scheduler[SupportUnit].TacanScheduleID = SCHEDULER:New( nil, 
+                                function( TacanFlightGroup )
+                                    BASE:I(TacanFlightGroup.lid..string.format(" %s: Activating TACAN Channel %d%s (%s)", TacanFlightGroup:GetName(), 
+                                    SupportUnitFields[ENUMS.SupportUnitFields.TACANCHAN], SupportUnitFields[ENUMS.SupportUnitFields.TACANBAND], SupportUnitFields[ENUMS.SupportUnitFields.TACANMORSE]))
+                                    TacanFlightGroup:SwitchTACAN( SupportUnitFields[ENUMS.SupportUnitFields.TACANCHAN],
+                                                                  SupportUnitFields[ENUMS.SupportUnitFields.TACANMORSE],
+                                                                  FlightGroup:GetUnit(),
+                                                                  SupportUnitFields[ENUMS.SupportUnitFields.TACANBAND])
+                                end, { PreviousMission[SupportUnit].flightgroup }, 1, 300
+                            )
+                          end
 
-                        RouteToMission:SetName(FlightGroup:GetName() .. "-RouteToMission")
-                        Mission:SetName(FlightGroup:GetName() .. "-PrimaryMission")
+                        end --Mission:OnAfterExecuting
+
+                        Mission:SetName(FlightGroup:GetName() .. "-SupportMission")
 
                         FlightGroup:SetFuelLowRefuel(false)
-                              :AddMission( RouteToMission )
                               :AddMission( Mission )
-                              :SetFuelLowThreshold(math.random(25,30))
+                              :SetFuelLowThreshold(math.random(25,30))  
                               :SetFuelLowRTB(false)
                               :SetFuelCriticalThreshold(15)
                               :SetFuelCriticalRTB(true)
                               :SetDefaultSpeed(350)
                               :SetHomebase(SupportBase)
                               :SetDestinationbase(SupportBase)
-                              :SetDefaultTACAN(SupportUnitFields[ENUMS.SupportUnitFields.TACANCHAN],
+                              :SetDefaultTACAN( SupportUnitFields[ENUMS.SupportUnitFields.TACANCHAN],
                                                 SupportUnitFields[ENUMS.SupportUnitFields.TACANMORSE],
                                                 FlightGroup:GetUnit(),
                                                 SupportUnitFields[ENUMS.SupportUnitFields.TACANBAND],
                                                 true)
+                              :PrePostMissionSettings()
+
+                        function FlightGroup:OnAfterMissionStart(From, Event, To, Mission)
+                          -- Set things to the pre-executing mission values
+                          self:PrePostMissionSettings()
+                          return self
+                        end
+
+                        function FlightGroup:OnAfterMissionDone(From, Event, To, Mission)
+                          -- Set things to the pre-executing mission values
+                          self:PrePostMissionSettings()
+                          return self
+                        end
 
                         function FlightGroup:OnAfterDestroyed(From, Event, To)
                             self:I(self:GetName() .. " destroyed, launching relief flight.")
-                            Spawn:SpawnAtAirbase( SupportBase, SPAWN.Takeoff.Hot, nil, AIRBASE.TerminalType.OpenBig, true )
+                            Spawn:SpawnAtAirbase( SupportBase, SPAWN.Takeoff.Cold, nil, AIRBASE.TerminalType.OpenBig, true )
                         end
 
                         function FlightGroup:OnAfterFuelLow(From, Event, To)
@@ -1543,8 +1665,8 @@ function InitSupport( SupportBaseParam, RedSupportBase, InAir )
                   if (Flight:GetFirstAliveGroup() == nil) then
                     if InAir and not SupportUnitFields[ ENUMS.SupportUnitFields.GROUNDSTART ] and not ( timer.getAbsTime()-timer.getTime0() > 30 ) then
                       Flight:InitAirbase(SupportBase, SPAWN.Takeoff.Hot)
-                      local SpawnPt = OrbitPt:Translate( 5000, OrbitDir + 180)
-                        :SetAltitude(UTILS.FeetToMeters(SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE] + 5000), true)
+                      local SpawnPt = OrbitPt:Translate( UTILS.NMToMeters(3), OrbitDir-30, true, false)
+                        :SetAltitude(UTILS.FeetToMeters(SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE]+100), false)
                       Flight:SpawnFromCoordinate(SpawnPt)
                     else
                       Flight:SpawnAtAirbase( SupportBase, SPAWN.Takeoff.Hot, nil, AIRBASE.TerminalType.OpenBig, true )
@@ -1650,26 +1772,21 @@ function InitNavySupport( AircraftCarriers, CarrierMenu, InAir )
                   end
                   if SupportUnitFields[ENUMS.SupportUnitFields.LINK4FREQ] then
                     self:I(SupportUnit .. " Link4 set to " .. SupportUnitFields[ENUMS.SupportUnitFields.LINK4FREQ] .. "MHz." )
-                    CommandActivateLink4(self.carrier, SupportUnitFields[ENUMS.SupportUnitFields.LINK4FREQ])
+                    self.beacon:ActivateLink4(SupportUnitFields[ENUMS.SupportUnitFields.LINK4FREQ], SupportUnitFields[ENUMS.SupportUnitFields.ICLSMORSE])
                   end
 
                 end
 
-                -- Rescue Helo for LHAs and other non-carriers
                 local rescuehelo=RESCUEHELO:New(SupportUnit, "CSAR1")
 
                 if SUPPORTUNITS[ 'CSAR1' ][ ENUMS.SupportUnitFields.GROUNDSTART ] then
                   rescuehelo:SetTakeoffCold()
                 else
-                  if SupportUnit[ ENUMS.SupportUnitFields.GROUNDSTART ] then
-                    rescuehelo:SetTakeoffCold()
-                  else
-                    rescuehelo:SetTakeoffAir()
-                  end
+                  rescuehelo:SetTakeoffAir()
+                  rescuehelo:SetRespawnInAir()
                 end
-
-        rescuehelo:SetModex( SUPPORTUNITS[ 'CSAR1' ][ ENUMS.SupportUnitFields.MODEX ] + 8 )
-        rescuehelo:__Start(2)
+                rescuehelo:SetModex( SUPPORTUNITS[ 'CSAR1' ][ ENUMS.SupportUnitFields.MODEX ] + 8 )
+                rescuehelo:__Start(2)
 
                 Carriers[SupportUnit] = carrier
 
@@ -1714,21 +1831,22 @@ function InitNavySupport( AircraftCarriers, CarrierMenu, InAir )
         end
         SupportBeacons[SupportUnit] = ShipBeacon
 
+        if not SupportUnit:find("CVN") then
         -- Rescue Helo for LHAs and other non-carriers
-        local rescuehelo=RESCUEHELO:New(SupportUnit, "CSAR1")
+          local rescuehelo=RESCUEHELO:New(SupportUnit, "CSAR1")
 
-        if SUPPORTUNITS[ 'CSAR1' ][ ENUMS.SupportUnitFields.GROUNDSTART ] then
-          rescuehelo:SetTakeoffCold()
-        else
-          if SupportUnit[ ENUMS.SupportUnitFields.GROUNDSTART ] then
+          if SUPPORTUNITS[ 'CSAR1' ][ ENUMS.SupportUnitFields.GROUNDSTART ] then
             rescuehelo:SetTakeoffCold()
           else
-            rescuehelo:SetTakeoffAir()
+            if SupportUnit[ ENUMS.SupportUnitFields.GROUNDSTART ] then
+              rescuehelo:SetTakeoffCold()
+            else
+              rescuehelo:SetTakeoffAir()
+            end
           end
+          rescuehelo:SetModex( SUPPORTUNITS[ 'CSAR1' ][ ENUMS.SupportUnitFields.MODEX ] + 8 )
+          rescuehelo:__Start(2)
         end
-
-        rescuehelo:SetModex( SUPPORTUNITS[ 'CSAR1' ][ ENUMS.SupportUnitFields.MODEX ] + 8 )
-        rescuehelo:__Start(2)
       end
     end
     return Carriers
@@ -1815,6 +1933,11 @@ function SetupSKYNET()
   return redIADS
 end
 
+--- Init MapSOP
+ServerUnpause() -- Doesn't help because paused server never executes.
+
+SpawnTemplateKeepCallsign = true -- Use MapSOP SPAWN:_Prepare() callsign hack
+
 local SupportBase = nil
 local RedSupportBase = nil
 local AircraftCarriers = nil
@@ -1854,3 +1977,86 @@ if table.getn(RedSAMs) > 0 then
 else
   BASE:E("No group names with 'Red SAM' found, skipping IADS initialization.")
 end
+
+-- Server Pause/Resume behavior
+local UnpauseZoneSet = SET_ZONE:New():FilterPrefixes("Unpause Client"):FilterOnce()
+local UnpauseUnitNames = {}
+local PauseTime = 30
+
+local ClientSet = SET_CLIENT:New():FilterActive()
+
+BASE:I("Unpause Zone Count: " .. UnpauseZoneSet:Count())
+ClientSet:FilterStart()
+
+UnpauseZoneSet:ForEachZone( 
+  function(Zone)
+    local unitprop = Zone:GetProperty("Unit")
+    if unitprop and string.lower(unitprop) ~= "SOP" and string.lower(unitprop) ~= "none" then 
+      UnpauseUnitNames[unitprop] = Zone:GetName()
+    end
+    PauseTime = Zone:GetProperty("PauseAfter") or PauseTime
+  end, {}
+ )
+BASE:I("Mission auto-pause time: " .. PauseTime)
+
+local PauseScheduler = nil 
+local ConsecutiveNoAlive = nil
+local UnpauseClientsSlotted = nil
+
+if tonumber(PauseTime) > 0 then
+
+  SCHEDULER:New( nil, 
+  function()
+    if not UnpauseClientsSlotted then
+      ServerPause()
+    end
+  end, { }, tonumber(PauseTime)
+  )
+  PauseScheduler = SCHEDULER:New( nil, 
+  function()
+    if ClientSet:CountAlive() == 0 then
+      if ConsecutiveNoAlive then
+        ServerPause()
+      else 
+        ConsecutiveNoAlive = true
+      end
+    else
+      ConsecutiveNoAlive = nil
+    end
+  end, { }, 60, 60
+  )
+end
+
+function SetEventHandler()
+    ClientBirth = ClientSet:HandleEvent(EVENTS.PlayerEnterAircraft)
+end
+
+function ClientSet:OnEventPlayerEnterAircraft(event_data)
+    local unit_name = event_data.IniUnitName
+    local unit = UNIT:FindByName(unit_name)
+    local group = event_data.IniGroup
+    local player_name = event_data.IniPlayerName
+    ConsecutiveNoAlive = nil
+
+    env.info("Client connected!")
+    env.info(unit_name)
+    env.info(player_name)
+
+    if UnpauseZoneSet:Count() > 0 then 
+      if UnpauseZoneSet:IsCoordinateInZone( unit:GetCoordinate() ) and ServerGetPause() then
+        BASE:I(unit_name .. " found inside an Unpause Zone, unpausing server..." )
+        UnpauseClientsSlotted = true
+        ServerUnpause()
+      end
+      if UnpauseUnitNames[unit_name] and ServerGetPause() then
+          BASE:I(unit_name .. " Unit property found in " .. UnpauseUnitNames[unit_name] .. ", unpausing server..." )
+          UnpauseClientsSlotted = true
+          ServerUnpause()
+      end
+    else
+      UnpauseClientsSlotted = true
+      ServerUnpause()
+    end
+end
+
+SetEventHandler()
