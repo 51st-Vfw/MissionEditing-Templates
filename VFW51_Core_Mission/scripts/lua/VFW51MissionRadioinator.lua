@@ -37,7 +37,17 @@ local presetEditCount = 0
 
 function VFW51MissionRadioinator:buildRadioTable(radioSetting, aframe, name, callsign)
     local radio_t = self:deepCopy(radioSetting)
-    for _, radio in ipairs(radio_t) do
+    for radioNum, radio in ipairs(radio_t) do
+
+        local defaultFreq = 0.0
+        if radioNum == 1 then
+            defaultFreq = 230.0
+        elseif radioNum == 2 then
+            defaultFreq = 130.0
+        elseif radioNum == 3 then
+            defaultFreq = 30.0
+        end
+
         for presetNum, presetVal in ipairs(radio["channels"]) do
             self:logTrace(string.format("[%d] %s", presetNum, type(presetVal)))
             if (type(presetVal) == "table") then
@@ -49,7 +59,7 @@ function VFW51MissionRadioinator:buildRadioTable(radioSetting, aframe, name, cal
                 table.sort(patterns)
 
                 -- find matches, searching from least- to more-specific, freq is most specific match.
-                local freq = 0.0
+                local freq = defaultFreq
                 for _, pattern in ipairs(patterns) do
                     if self:matchRadioPattern(pattern, aframe, name, callsign) then
                         freq = presetVal[pattern]["f"]
@@ -166,6 +176,7 @@ function VFW51MissionRadioinator.processMission(mission_t, self)
                 local hasBeenEdited = self:editUnit(coaName, countryName, unit_t)
                 if hasBeenEdited then
                     if unit_t["Radio"] and unit_t["Radio"][1] then
+                        self:logTrace("aligning communication setup to preset 1")
                         group_t["communication"] = false
                         group_t["frequency"] = unit_t["Radio"][1]["channels"][1]
                         group_t["modulation"] = unit_t["Radio"][1]["modulations"][1]
