@@ -45,28 +45,30 @@ function VFW51MissionWaypointinator.processMission(mission_t, self)
         return str
     end
 
-    for _, coa in ipairs(coalitions) do
+    for _, coa in pairs(coalitions) do
         for _, country in pairs(mission_t["coalition"][coa]["country"]) do
-            for groupIdx, group in ipairs(country["plane"]["group"]) do
-                for groupPattern, groupFile in pairs(WaypointSettings) do
-                    local gsubPattern = sanitizePattern(groupPattern)
-                    if string.match(group["name"], gsubPattern) then
-                        self:logInfo(string.format("Updating group '%s', matches key '%s'", group["name"], groupPattern))
-                        if self:loadLuaFile(self.srcPath, "waypoints", groupFile) then
+            if country["plane"] then
+                for groupIdx, group in ipairs(country["plane"]["group"]) do
+                    for groupPattern, groupFile in pairs(WaypointSettings) do
+                        local gsubPattern = sanitizePattern(groupPattern)
+                        if string.match(group["name"], gsubPattern) then
+                            self:logInfo(string.format("Updating group '%s', matches key '%s'", group["name"], groupPattern))
+                            if self:loadLuaFile(self.srcPath, "waypoints", groupFile) then
 ---@diagnostic disable-next-line: undefined-global
-                            for routeIdx, table in ipairs(RouteData) do
-                                if routeIdx > 1 then
-                                    if not country["plane"]["group"][groupIdx]["route"]["points"][routeIdx] then
-                                        country["plane"]["group"][groupIdx]["route"]["points"][routeIdx] = { }
-                                    end
-                                    for key, value in pairs(table) do
-                                        country["plane"]["group"][groupIdx]["route"]["points"][routeIdx][key] = self:deepCopy(value)
+                                for routeIdx, table in ipairs(RouteData) do
+                                    if routeIdx > 1 then
+                                        if not country["plane"]["group"][groupIdx]["route"]["points"][routeIdx] then
+                                            country["plane"]["group"][groupIdx]["route"]["points"][routeIdx] = { }
+                                        end
+                                        for key, value in pairs(table) do
+                                            country["plane"]["group"][groupIdx]["route"]["points"][routeIdx][key] = self:deepCopy(value)
+                                        end
                                     end
                                 end
+                            else
+                                self:logInfo("Waypoint file '" .. groupFile .. "' not found, skipping")
+                                WaypointSettings[groupPattern] = nil
                             end
-                        else
-                            self:logInfo("Waypoint file '" .. groupFile .. "' not found, skipping")
-                            WaypointSettings[groupPattern] = nil
                         end
                     end
                 end
