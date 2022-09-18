@@ -195,14 +195,14 @@ if %ARG_BASE% == 1 set VARIANT_FILES="%MISSION_BASE%\build\%MISSION_NAME%"
 for %%f in (%VARIANT_FILES%) do (
 
     echo ---- Creating mission variant %%~nxf
-    if %ARG_VERBOSE% == 1 echo copy /y /e %%f %MIZ_BLD_PATH%\mission
-    if %ARG_DRY_RUN% == 0 copy /y /e %%f %MIZ_BLD_PATH%\mission >nul 2>&1
+    if %ARG_VERBOSE% == 1 echo copy /y %%f %MIZ_BLD_PATH%\mission
+    if %ARG_DRY_RUN% == 0 copy /y %%f %MIZ_BLD_PATH%\mission >nul 2>&1
     if exist options-%%f (
-        if %ARG_VERBOSE% == 1 echo copy /y /e options-%%f %MIZ_BLD_PATH%\options
-        if %ARG_DRY_RUN% == 0 copy /y /e options-%%f %MIZ_BLD_PATH%\options >nul 2>&1
+        if %ARG_VERBOSE% == 1 echo copy /y options-%%f %MIZ_BLD_PATH%\options
+        if %ARG_DRY_RUN% == 0 copy /y options-%%f %MIZ_BLD_PATH%\options >nul 2>&1
     ) else (
-        if %ARG_VERBOSE% == 1 echo copy /y /e %MIZ_EXT_PATH%\options %MIZ_BLD_PATH%\options
-        if %ARG_DRY_RUN% == 0 copy /y /e %MIZ_EXT_PATH%\options %MIZ_BLD_PATH%\options >nul 2>&1
+        if %ARG_VERBOSE% == 1 echo copy /y %MIZ_EXT_PATH%\options %MIZ_BLD_PATH%\options
+        if %ARG_DRY_RUN% == 0 copy /y %MIZ_EXT_PATH%\options %MIZ_BLD_PATH%\options >nul 2>&1
     )
 
     echo Buildinator - Normalizing mission files for variant %%~nxf
