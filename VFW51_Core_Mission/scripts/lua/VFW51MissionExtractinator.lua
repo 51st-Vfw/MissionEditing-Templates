@@ -47,22 +47,15 @@ function VFW51MissionExtractinator:findPointsFromGroupInCoalition(mission_t, gro
     local numFound = 0
     for _, coa in ipairs(coalitions) do
         for _, country in pairs(mission_t["coalition"][coa]["country"]) do
-            for _, group in ipairs(country["plane"]["group"]) do
-                -- if string.match(group["name"], groupPattern) then
-                if group["name"] == groupPattern then
-                    if numFound == 0 then
-                        foundGroup = group["name"]
-                        numFound = numFound + 1
-                        points = self:deepCopy(group["route"]["points"])
-                        --[[
-                        for _, point in ipairs(points) do
-                            for key, _ in pairs(point) do
-                                if not tableContains(keeperKeys, key) then
-                                    point[key] = nil
-                                end
-                            end
+            if country["plane"] then
+                for _, group in ipairs(country["plane"]["group"]) do
+                    -- if string.match(group["name"], groupPattern) then
+                    if group["name"] == groupPattern then
+                        if numFound == 0 then
+                            foundGroup = group["name"]
+                            numFound = numFound + 1
+                            points = self:deepCopy(group["route"]["points"])
                         end
-                        ]]
                     end
                 end
             end
