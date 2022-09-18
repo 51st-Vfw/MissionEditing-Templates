@@ -377,7 +377,7 @@ function VFW51MissionTriginator.processMission(mission_t, self)
     self.isUpdate = true
     for i = 1,6,1 do
         local action = mission_t["trig"]["actions"][i]
-        if not action or not string.find(action, "*** VFW51: ") then
+        if not action or not string.find(action, "%*%*%* VFW51: ") then
             self.isUpdate = false
         end
     end
