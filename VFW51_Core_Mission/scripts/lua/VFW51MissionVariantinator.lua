@@ -68,7 +68,7 @@ function VFW51MissionVariantinator.processMission(mission_t, args)
     self:logTrace(string.format("Setting mission time for %s", moment))
     if (moment ~= nil) and (moment:lower() ~= "base") then
         local time = self:parseMoment(moment)
-        mission_t["start_time"] = self:deepcCopy(time)
+        mission_t["start_time"] = self:deepCopy(time)
     end
 
     -- set the mission weather
