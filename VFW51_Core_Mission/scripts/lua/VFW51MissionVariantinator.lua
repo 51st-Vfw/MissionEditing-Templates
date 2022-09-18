@@ -110,7 +110,8 @@ function VFW51MissionVariantinator:process()
         local wxName = targ["wx"]
         self:logTrace(string.format("Loading wx file for %s", wxName))
         if wxName and (wxName ~= "base") and (wxVersions[wxName] == nil) then
-            if self:loadLuaFile(self.srcPath, "versions", wxName) then
+            if self:loadLuaFile(self.srcPath, "variants", wxName) then
+---@diagnostic disable-next-line: undefined-global
                 wxVersions[wxName] = WxData
             else
                 self:logInfo("Unable to load weather file " .. wxName)
@@ -125,7 +126,8 @@ function VFW51MissionVariantinator:process()
         local optName = targ["options"]
         self:logTrace(string.format("Loading options file for %s", optName))
         if optName and (optName ~= "base") and (optVersions[optName] == nil) then
-            if self:loadLuaFile(self.srcPath, "versions", optName) then
+            if self:loadLuaFile(self.srcPath, "variants", optName) then
+---@diagnostic disable-next-line: undefined-global
                 optVersions[optName] = OptionsData
             else
                 self:logInfo("Unable to load options file " .. optName)
