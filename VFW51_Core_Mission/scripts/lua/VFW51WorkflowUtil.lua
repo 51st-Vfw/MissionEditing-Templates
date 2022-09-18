@@ -29,6 +29,7 @@ function VFW51WorkflowUtil:logTrace(message)
     end
 end
 
+-- object print functions (courtesy of veaf)
 function VFW51WorkflowUtil:p(o, level)
     if o and type(o) == "table" and (o.x and o.z and o.y)  then
         return string.format("{x=%s, z=%s, y=%s}", self:p(o.x), self:p(o.z), self:p(o.y))
@@ -72,6 +73,16 @@ function VFW51WorkflowUtil:_p(o, level)
       return text
 end
 
+-- given a non-regex pattern string, sanitize any regex specials that appear in the string
+function VFW51WorkflowUtil:sanitizePattern(str)
+    local specials = { "^", "$", "(", ")", ".", "[", "]", "*", "+", "-", "?" }
+    str = string.gsub(str, "%%", "%%")
+    for _, special in pairs(specials) do
+        str = string.gsub(str, "%" .. special, "%%" .. special)
+    end
+    return str
+end
+
 -- check if a radio pattern matches a unit
 function VFW51WorkflowUtil:matchRadioPattern(pattern, unitAframe, unitName, unitCsign)
     local fields = { }
@@ -80,9 +91,11 @@ function VFW51WorkflowUtil:matchRadioPattern(pattern, unitAframe, unitName, unit
         fields[i] = token:lower()
         i = i + 1
     end
+    local regexUnitName = self:sanitizePattern(unitName:lower())
+    local regexUnitCsign = self:sanitizePattern(unitCsign:lower())
     if ((fields[1] == "*") or (fields[1] == unitAframe:lower())) and
-       ((fields[2] == "*") or (string.find(fields[2], unitName:lower(), 1, true) ~= nil)) and
-       ((fields[3] == "*") or (string.find(fields[3], unitCsign:lower(), 1, true) ~= nil))
+       ((fields[2] == "*") or (string.find(fields[2], regexUnitName, 1, true) ~= nil)) and
+       ((fields[3] == "*") or (string.find(fields[3], regexUnitCsign, 1, true) ~= nil))
     then
         return true
     end

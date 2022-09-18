@@ -36,21 +36,12 @@ VFW51MissionWaypointinator = VFW51WorkflowUtil:new()
 function VFW51MissionWaypointinator.processMission(mission_t, self)
     local coalitions = { "blue", "red", "neutrals" }
 
-    local function sanitizePattern(str)
-        local specials = { "^", "$", "(", ")", ".", "[", "]", "*", "+", "-", "?" }
-        str = string.gsub(str, "%%", "%%")
-        for _, special in pairs(specials) do
-            str = string.gsub(str, "%" .. special, "%%" .. special)
-        end
-        return str
-    end
-
     for _, coa in pairs(coalitions) do
         for _, country in pairs(mission_t["coalition"][coa]["country"]) do
             if country["plane"] then
                 for groupIdx, group in ipairs(country["plane"]["group"]) do
                     for groupPattern, groupFile in pairs(WaypointSettings) do
-                        local gsubPattern = sanitizePattern(groupPattern)
+                        local gsubPattern = self:sanitizePattern(groupPattern)
                         if string.match(group["name"], gsubPattern) then
                             self:logInfo(string.format("Updating group '%s', matches key '%s'", group["name"], groupPattern))
                             if self:loadLuaFile(self.srcPath, "waypoints", groupFile) then
