@@ -60,6 +60,7 @@ function VFW51MissionWaypointinator.processMission(mission_t, self)
                                 self:logInfo("Waypoint file '" .. groupFile .. "' not found, skipping")
                                 WaypointSettings[groupPattern] = nil
                             end
+                            self.unitEditCount = self.unitEditCount + 1
                         end
                     end
                 end
@@ -74,12 +75,14 @@ function VFW51MissionWaypointinator:process()
     if settingsPath ~= nil then
         self:logInfo(string.format("Using waypoint settings [%s]", settingsPath))
 
+        self.unitEditCount = 0
+
         -- edit the "mission" file
         local mizMissionPath = self.dstPath .. "mission"
         local editFn = self.processMission
         self:logDebug(string.format("Processing [%s]", mizMissionPath))
         veafMissionEditor.editMission(mizMissionPath, mizMissionPath, "mission", editFn, self)
-        self:logInfo("mission updated")
+        self:logInfo(string.format("mission updated, injected waypoints for %d units", self.unitEditCount))
     else
         self:logInfo("Waypoint settings not found, skipping")
     end
