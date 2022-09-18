@@ -53,6 +53,7 @@
 --                    - Tested/included MOOSE version bump.
 -- Version 20220917.1 - Eliminated mysterious aircraft disappearances (remove MOOSE cleanup at SupportBase)
 --                    - Greatly reduced naval rotary aviation accidents (only one helo spawn on carriers) 
+-- Version 20220917.2 - Removed testing tanker loadout values.
 --
 --
 -- Known issues:
@@ -93,7 +94,6 @@ ENUMS.SupportUnitTemplateFields = {
 ENUMS.SupportUnitTemplate = {
     --                UNITTYPE, FUEL, FLARE, CHAFF, GUNS
     BOOMTANKER  =   { "KC-135",         90700, 60, 120, 100 },
-    BOOMTANKER  =   { "KC-135",         40000, 60, 120, 100 }, --TESTING
     PROBETANKER =   { "KC135MPRS",      90700, 60, 120, 100 },
     NAVYTANKER  =   { "S-3B Tanker",     7813, 30,  30, 100 },
     NAVYAWACS   =   { "E-2C",            5624, 30,  30, 100 },
