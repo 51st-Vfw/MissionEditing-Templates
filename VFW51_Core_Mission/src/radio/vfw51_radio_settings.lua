@@ -27,7 +27,7 @@
 --     <n>      unit name pattern, "*" to match any
 --     <c>      unit callsign pattern, "*" to match any
 --
--- the value is a table with two keys,
+-- the fields <a>, <n>, and <c> may not contain ":" characters. the value is a table with two keys,
 --
 --     "f" : <number>       preset frequency (MHz), 0 if the frequency is unassigned
 --     "d" : <string>       descriptive string
