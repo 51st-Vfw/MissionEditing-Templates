@@ -5,7 +5,7 @@
 -- TODO: don't think there's a way to use different kneeboards for different coalitions...
 --
 -- the KboardSettings table is keyed by a kneeboard filename (from src/kneeboards) that will be placed in
--- the KNEEBOARDS hierarchy in the final .miz file. the filename should be a .jpg or .png file.
+-- the KNEEBOARD hierarchy in the final .miz file. the filename should be a .jpg or .png file.
 --
 -- a table with the following key/value pairs supplies the value for these keys,
 --

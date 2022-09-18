@@ -38,9 +38,9 @@ function VFW51MissionKboardinator:process()
             -- create the kneeboard directory if it doesn't exist
             local dstDir
             if (kbInfo["airframe"] == nil) or (kbInfo["airframe"]:lower() == "all") then
-                dstDir = self.dstPath .. "KNEEBOARDS\\IMAGES\\"
+                dstDir = self.dstPath .. "KNEEBOARD\\IMAGES\\"
             else
-                dstDir = self.dstPath .. "KNEEBOARDS\\" .. kbInfo["airframe"] .. "\\IMAGES\\"
+                dstDir = self.dstPath .. "KNEEBOARD\\" .. kbInfo["airframe"] .. "\\IMAGES\\"
             end
             os.execute("if not exist " .. dstDir .. " mkdir " .. dstDir)
 
