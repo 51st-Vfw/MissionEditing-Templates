@@ -67,7 +67,7 @@ RadioPresetsBlue = {
     },
     ["$RADIO_1_04"] = { },
     ["$RADIO_1_05"] = {
-        ["*:*:*"]                       = { ["f"] =   0.00, ["d"] = "AWACS Overlord 1-1 (AI)" }
+        ["*:*:*"]                       = { ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" }
      },
     ["$RADIO_1_06"] = {
         ["*:*:*"]                       = { ["f"] =   0.00, ["d"] = "AAR #1" },
@@ -146,8 +146,8 @@ RadioPresetsBlue = {
     },
     ["$RADIO_2_04"] = { },
     ["$RADIO_2_05"] = {
-        ["F-14B:*:*"]                   = { ["f"] =   0.00, ["d"] = "AWACS Overlord 1-1 (AI)" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] =   0.00, ["d"] = "AWACS Overlord 1-1 (AI)" }
+        ["F-14B:*:*"]                   = { ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" },
+        ["FA-18C_hornet:*:*"]           = { ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" }
     },
     ["$RADIO_2_06"] = {
         ["F-14B:*:*"]                   = { ["f"] = 253.00, ["d"] = "AAR Arco 1-1 (53Y)" },
