@@ -59,14 +59,14 @@ function VFW51MissionKboardinator:process()
                             val = "\"" .. val .. "\""
                         end
                         muXform = string.gsub(muXform, var, val)
-                    elseif not string.find(var, "^$_") then
+                    elseif not string.find(var, "^%$_") then
                         muXform = string.gsub(muXform, var, "")
                     end
                 end
-                muXform = string.gsub(muXform, "$_air", kbInfo["airframe"])
-                muXform = string.gsub(muXform, "$_mbd", self.srcPath .. "..")
-                muXform = string.gsub(muXform, "$_src", self.srcPath .. "kneeboards\\" .. kbInfo["template"])
-                muXform = string.gsub(muXform, "$_dst", dstFile)
+                muXform = string.gsub(muXform, "%$_air", kbInfo["airframe"])
+                muXform = string.gsub(muXform, "%$_mbd", self.srcPath .. "..")
+                muXform = string.gsub(muXform, "%$_src", self.srcPath .. "kneeboards\\")
+                muXform = string.gsub(muXform, "%$_dst", dstFile)
                 self:logTrace(string.format("Kneeboard [%s] --> [%s]", kbFile, dstFile))
                 self:logTrace(string.format("  Transform [%s]", muXform))
                 os.execute(muXform)
