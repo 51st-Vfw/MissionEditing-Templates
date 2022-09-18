@@ -132,7 +132,7 @@ function VFW51MissionExtractinator:new(o, arg)
             isArgBad = true
         end
     end
-    print(self.mizPath)
+
     if isArgBad or not self.mizPath or (self.isWx and self.isOpt) then
         print("Usage: VFW51MissionExtractinator <miz_path> <--wx|--opt|--wp <group>> [--debug|--trace]")
         return nil
