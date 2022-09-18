@@ -24,49 +24,50 @@ set ARG_LUADEBUG=0
 set ARG_LUATRACE=0
 set ARG_NOSYNC=0
 set ARG_TAG=0
+set ARG_TAG_PARAM=""
 set ARG_VERBOSE=0
 
-:ParseArgs
-if "%~1" == "" (
-    goto ParseDone
-) else if "%~1" == "--help" (
-    goto Usage
-) else if "%~1" == "--base" (
-    set ARG_BASE=1
-) else if "%~1" == "--dirty" (
-    set ARG_DIRTY=1
-    set SYNC_ARGS=%SYNC_ARGS% --dirty
-) else if "%~1" == "--dryrun" (
-    set ARG_DRY_RUN=1
-    set ARG_VERBOSE=1
-    set SYNC_ARGS=%SYNC_ARGS% --dryrun
-) else if "%~1" == "--dynamic" (
-    set ARG_DYNAMIC=1
-    set LUA_DYNAMIC=--dynamic
-    set SYNC_ARGS=%SYNC_ARGS% --dynamic
-) else if "%~1" == "--nosync" (
-    set ARG_NOSYNC=1
-) else if "%~1" == "--luadebug" (
-    set ARG_LUADEBUG=1
-    set SYNC_ARGS=%SYNC_ARGS% --luadebug
-) else if "%~1" == "--luatrace" (
-    set ARG_LUATRACE=1
-    set SYNC_ARGS=%SYNC_ARGS% --luatrace
-) else if "%~1" == "--tag" (
-    if "%~2" == "" goto Usage
-    if "%~2" == "0" goto Usage
-    set ARG_TAG=%~2
-    set LUA_TAG=--tag %~2
-    shift
-) else if "%~1" == "--verbose" (
-    set ARG_VERBOSE=1
-    set SYNC_ARGS=%SYNC_ARGS% --verbose
-) else (
-    goto Usage
+for %%x in (%*) do (
+    if "%%~x" == "--help" (
+        goto Usage
+    ) else if "%%~x" == "--base" (
+        set ARG_BASE=1
+    ) else if "%%~x" == "--dirty" (
+        set ARG_DIRTY=1
+        set SYNC_ARGS=!SYNC_ARGS! --dirty
+    ) else if "%%~x" == "--dryrun" (
+        set ARG_DRY_RUN=1
+        set ARG_VERBOSE=1
+        set SYNC_ARGS=!SYNC_ARGS! --dryrun
+    ) else if "%%~x" == "--dynamic" (
+        set ARG_DYNAMIC=1
+        set LUA_DYNAMIC=--dynamic
+        set SYNC_ARGS=!SYNC_ARGS! --dynamic
+    ) else if "%%~x" == "--nosync" (
+        set ARG_NOSYNC=1
+    ) else if "%%~x" == "--luadebug" (
+        set ARG_LUADEBUG=1
+        set SYNC_ARGS=!SYNC_ARGS! --luadebug
+    ) else if "%%~x" == "--luatrace" (
+        set ARG_LUATRACE=1
+        set SYNC_ARGS=!SYNC_ARGS! --luatrace
+    ) else if "%%~x" == "--tag" (
+        set ARG_TAG_PARAM=1
+    ) else if "%%~x" == "--verbose" (
+        set ARG_VERBOSE=1
+        set SYNC_ARGS=!SYNC_ARGS! --verbose
+    ) else if !ARG_TAG_PARAM! == 1 (
+        if %%~x == 0 goto Usage
+        set ARG_TAG_PARAM=0
+        set ARG_TAG=%%~x
+        set LUA_DATA=--tag %%~x
+    ) else (
+        echo Unknown command line argument
+        goto Usage
+    )
 )
-shift
-goto ParseArgs
-:ParseDone
+
+if %ARG_TAG_PARAM% == 1 if %ARG_TAG% == 0 goto Usage
 
 rem ======== set up variables
 
@@ -181,14 +182,14 @@ if %ARG_BASE% == 1 set VARIANT_FILES="%MISSION_BASE%\build\%MISSION_NAME%"
 for %%f in (%VARIANT_FILES%) do (
 
     echo ---- Creating mission variant %%~nxf
-    if %ARG_VERBOSE% == 1 echo xcopy /y /e %%f %MIZ_BLD_PATH%\mission
-    if %ARG_DRY_RUN% == 0 xcopy /y /e %%f %MIZ_BLD_PATH%\mission >nul 2>&1
+    if %ARG_VERBOSE% == 1 echo copy /y /e %%f %MIZ_BLD_PATH%\mission
+    if %ARG_DRY_RUN% == 0 copy /y /e %%f %MIZ_BLD_PATH%\mission >nul 2>&1
     if exist options-%%f (
-        if %ARG_VERBOSE% == 1 echo xcopy /y /e options-%%f %MIZ_BLD_PATH%\options
-        if %ARG_DRY_RUN% == 0 xcopy /y /e options-%%f %MIZ_BLD_PATH%\options >nul 2>&1
+        if %ARG_VERBOSE% == 1 echo copy /y /e options-%%f %MIZ_BLD_PATH%\options
+        if %ARG_DRY_RUN% == 0 copy /y /e options-%%f %MIZ_BLD_PATH%\options >nul 2>&1
     ) else (
-        if %ARG_VERBOSE% == 1 echo xcopy /y /e %MIZ_EXT_PATH%\options %MIZ_BLD_PATH%\options
-        if %ARG_DRY_RUN% == 0 xcopy /y /e %MIZ_EXT_PATH%\options %MIZ_BLD_PATH%\options >nul 2>&1
+        if %ARG_VERBOSE% == 1 echo copy /y /e %MIZ_EXT_PATH%\options %MIZ_BLD_PATH%\options
+        if %ARG_DRY_RUN% == 0 copy /y /e %MIZ_EXT_PATH%\options %MIZ_BLD_PATH%\options >nul 2>&1
     )
 
     echo Buildinator - Normalizing mission files for variant %%~nxf
@@ -196,8 +197,8 @@ for %%f in (%VARIANT_FILES%) do (
     if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% veafMissionNormalizer.lua %MIZ_BLD_PATH% %VFW51_LUA_LOG%
 
     echo Buildinator - Backing up previous .miz file for variant %%~nxf
-    if %ARG_VERBOSE% == 1 echo xcopy /y %MISSION_BASE%\%%~nxf.miz %MISSION_BASE%\backup\
-    if %ARG_DRY_RUN% == 0 xcopy /y %MISSION_BASE%\%%~nxf.miz %MISSION_BASE%\backup\ >nul 2>&1
+    if %ARG_VERBOSE% == 1 echo copy /y %MISSION_BASE%\%%~nxf.miz %MISSION_BASE%\backup\
+    if %ARG_DRY_RUN% == 0 copy /y %MISSION_BASE%\%%~nxf.miz %MISSION_BASE%\backup\ >nul 2>&1
 
     echo Buildinator - Packing mission into %%~nxf.miz
     if %ARG_VERBOSE% == 1 echo %VFW51_7ZIP_EXE% a -r -tzip %MISSION_BASE%\%%~nxf.miz %MIZ_BLD_PATH%\* -mem=AES256
@@ -210,6 +211,9 @@ if %ARG_DIRTY% == 1 goto SkipClean
 echo ---- Cleanup temporary mission build files
 if %ARG_VERBOSE% == 1 echo rmdir /s /q %MIZ_BLD_PATH%
 if %ARG_DRY_RUN% == 0 rmdir /s /q %MIZ_BLD_PATH% >nul 2>&1
+
+if %ARG_VERBOSE% == 1 echo del /q %MISSION_BASE%\build\*%MISSION_NAME%*
+if %ARG_DRY_RUN% == 0 del /q %MISSION_BASE%\build\*%MISSION_NAME%* >nul 2>&1
 :SkipClean
 
 if %ARG_DYNAMIC% == 0 goto StaticBuild

@@ -19,44 +19,53 @@ rem ======== parse command line
 set ARG_WX=0
 set ARG_OPT=0
 set ARG_WP=""
+set ARG_WP_PARAM=0
 set ARG_MIZ=""
 set ARG_LUADEBUG=1
 set ARG_LUATRACE=1
 
-:ParseArgs
-if "%~1" == "" (
-    goto ParseDone
-) else if "%~1" == "--help" (
-    goto Usage
-) else if "%~1" == "--wx" (
-    if %ARG_OPT% == 1 goto Usage
-    set ARG_WX=1
-    set LUA_DATA=--wx
-) else if "%~1" == "--opt" (
-    if %ARG_WX% == 1 goto Usage
-    set ARG_OPT=1
-    set LUA_DATA=--opt
-) else if "%~1" == "--wp" (
-    if "%~2" == "" goto Usage
-    set ARG_WP=%~2
-    set LUA_DATA=--wp %~2
-    shift
-) else if "%~1" == "--luadebug" (
-    set ARG_LUADEBUG=1
-) else if "%~1" == "--luatrace" (
-    set ARG_LUATRACE=1
-) else if %ARG_MIZ% == "" (
-    set ARG_MIZ=%~1
-) else (
-    goto Usage
+for %%x in (%*) do (
+    if "%%~x" == "--help" (
+        goto Usage
+    ) else if "%%~x" == "--wx" (
+        if !ARG_WP_PARAM! == 1 goto Usage
+        if !ARG_OPT! == 1 goto Usage
+        if !ARG_WP! == 1 goto Usage
+        set ARG_WX=1
+        set LUA_DATA=--wx
+    ) else if "%%~x" == "--opt" (
+        if !ARG_WP_PARAM! == 1 goto Usage
+        if !ARG_WX! == 1 goto Usage
+        if !ARG_WP! == 1 goto Usage
+        set ARG_OPT=1
+        set LUA_DATA=--opt
+    ) else if "%%~x" == "--wp" (
+        if !ARG_WP_PARAM! == 1 goto Usage
+        if !ARG_WX! == 1 goto Usage
+        if !ARG_OPT! == 1 goto Usage
+        set ARG_WP_PARAM=1
+    ) else if "%%~x" == "--luadebug" (
+        if !ARG_WP_PARAM! == 1 goto Usage
+        set ARG_LUADEBUG=1
+    ) else if "%%~x" == "--luatrace" (
+        if !ARG_WP_PARAM! == 1 goto Usage
+        set ARG_LUATRACE=1
+    ) else if !ARG_WP_PARAM! == 1 (
+        set ARG_WP_PARAM=0
+        set ARG_WP="%%~x"
+        set LUA_DATA=--wp "%%~x"
+    ) else if !ARG_MIZ! == "" (
+        set ARG_MIZ="%%~x"
+    ) else (
+        echo Unknown command line argument
+        goto Usage
+    )
 )
-shift
-goto ParseArgs
-:ParseDone
 
 if %ARG_WX% == 0 if %ARG_OPT% == 0 if %ARG_WP% == "" goto Usage
+if %ARG_WP_PARAM% == 1 goto Usage
 if exist %ARG_MIZ% goto GoodMiz
-echo Unable to open .miz '%ARG_MIZ%` 1>&2
+echo Unable to open .miz %ARG_MIZ% 1>&2
 goto Usage
 :GoodMiz
 

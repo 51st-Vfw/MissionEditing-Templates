@@ -18,17 +18,14 @@ rem ======== parse command line
 
 set ARG_NO_HDR=0
 
-:ParseArgs
-if "%~1" == "" (
-    goto ParseDone
-) else if "%~1" == "--noheader" (
-    set ARG_NO_HDR=1
-) else (
-    goto Usage
+for %%x in (%*) do (
+    if "%%~x" == "--noheader" (
+        set ARG_NO_HDR=1
+    ) else (
+        echo Unknown command line argument
+        goto Usage
+    )
 )
-shift
-goto ParseArgs
-:ParseDone
 
 rem ======== set up variables
 
@@ -49,6 +46,9 @@ echo ========================================================
 
 echo ---- Removing redundant files and directories from unpacked .miz
 if exist %MIZ_EXT_PATH%\KNEEBOARD rmdir /s /q %MIZ_EXT_PATH%\KNEEBOARD >nul 2>&1
+if exist %MIZ_EXT_PATH%\UHF_RADIO rmdir /s /q %MIZ_EXT_PATH%\UHF_RADIO >nul 2>&1
+if exist %MIZ_EXT_PATH%\VHF_AM_RADIO rmdir /s /q %MIZ_EXT_PATH%\VHF_AM_RADIO >nul 2>&1
+if exist %MIZ_EXT_PATH%\VHF_FM_RADIO rmdir /s /q %MIZ_EXT_PATH%\VHF_FM_RADIO >nul 2>&1
 if exist %MIZ_EXT_PATH%\Config rmdir /s /q %MIZ_EXT_PATH%\Config >nul 2>&1
 if exist %MIZ_EXT_PATH%\Scripts rmdir /s /q %MIZ_EXT_PATH%\Scripts >nul 2>&1
 if exist %MIZ_EXT_PATH%\track rmdir /s /q %MIZ_EXT_PATH%\track >nul 2>&1

@@ -18,38 +18,39 @@ rem ======== parse command line
 
 set ARG_DRY_RUN=0
 set ARG_FINALIZE=0
-set ARG_MAP=0
-set ARG_MIZ=0
+set ARG_MAP=""
+set ARG_MAP_PARAM=0
+set ARG_MIZ=""
+set ARG_MIZ_PARAM=0
 set ARG_VERBOSE=0
 
-:ParseArgs
-if "%~1" == "" (
-    goto ParseDone
-) else if "%~1" == "--help" (
-    goto Usage
-) else if "%~1" == "--dryrun" (
-    set ARG_DRY_RUN=1
-    set ARG_VERBOSE=1
-) else if "%~1" == "--dynamic" (
-    set ARG_DYNAMIC=--dynamic
-) else if "%~1" == "--finalize" (
-    set ARG_FINALIZE=1
-) else if "%~1" == "--map" (
-    if "%~2" == "" goto Usage
-    set ARG_MAP=%~2
-    shift
-) else if "%~1" == "--miz" (
-    if "%~2" == "" goto Usage
-    set ARG_MIZ=%~2
-    shift
-) else if "%~1" == "--verbose" (
-    set ARG_VERBOSE=1
-) else (
-    goto Usage
+for %%x in (%*) do (
+    if "%%~x" == "--help" (
+        goto Usage
+    ) else if "%%~x" == "--dryrun" (
+        set ARG_DRY_RUN=1
+        set ARG_VERBOSE=1
+    ) else if "%%~x" == "--dynamic" (
+        set ARG_DYNAMIC=--dynamic
+    ) else if "%%~x" == "--finalize" (
+        set ARG_FINALIZE=1
+    ) else if "%%~x" == "--map" (
+        set ARG_MAP_PARAM=1
+    ) else if "%%~x" == "--miz" (
+        set ARG_MIZ_PARAM=1
+    ) else if "%%~x" == "--verbose" (
+        set ARG_VERBOSE=1
+    ) else if !ARG_MAP_PARAM! == 1 (
+        set ARG_MAP_PARAM=0
+        set ARG_MAP=%%~x
+    ) else if !ARG_MIZ_PARAM! == 1 (
+        set ARG_MIZ_PARAM=0
+        set ARG_MIZ="%%~x"
+    ) else (
+        echo Unknown command line argument
+        goto Usage
+    )
 )
-shift
-goto ParseArgs
-:ParseDone
 
 rem ======== set up variables
 
@@ -74,13 +75,13 @@ if %ARG_FINALIZE% == 1 goto FinalizeMiz
 
 if %ARG_MAP% == 0 goto CheckMiz
 if exist Tmplt_%ARG_MAP%_core.miz goto HaveMap
-echo Unable to find template for map '%ARG_MAP%'
+echo Unable to find template for map %ARG_MAP%
 exit /be -1
 
 :CheckMiz
 if %ARG_MIZ% == 0 goto NoInput
 if exist %ARG_MIZ% goto HaveMiz
-echo Unable to find mission file '%ARG_MAP%'
+echo Unable to find mission file %ARG_MIZ%
 exit /be -1
 
 :NoInput

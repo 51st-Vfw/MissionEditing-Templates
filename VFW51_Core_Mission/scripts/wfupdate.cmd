@@ -24,35 +24,31 @@ set ARG_DRY_RUN=0
 set ARG_VERBOSE=0
 set ARG_TARG_MDIR=""
 
-:ParseArgs
-if "%~1" == "" (
-    goto ParseDone
-) else if "%~1" == "--help" (
-    goto Usage
-) else if "%~1" == "--dryrun" (
-    set ARG_DRY_RUN=1
-    set ARG_VERBOSE=1
-) else if "%~1" == "--force" (
-    set ARG_NO_FORCE=1
-) else if "%~1" == "--frame" (
-    set ARG_NO_FRAME=0
-) else if "%~1" == "--script" (
-    set ARG_NO_SCRIPTS=0
-) else if "%~1" == "--settings" (
-    set ARG_NO_WFLOW=0
-) else if "%~1" == "--verbose" (
-    set ARG_VERBOSE=1
-) else if %ARG_TARG_MDIR% == "" (
-    set ARG_TARG_MDIR=%~1
-) else (
-    goto Usage
+for %%x in (%*) do (
+    if "%%~x" == "--help" (
+        goto Usage
+    ) else if "%%~x" == "--dryrun" (
+        set ARG_DRY_RUN=1
+        set ARG_VERBOSE=1
+    ) else if "%%~x" == "--force" (
+        set ARG_FORCE=1
+    ) else if "%%~x" == "--frame" (
+        set ARG_NO_FRAME=0
+    ) else if "%%~x" == "--script" (
+        set ARG_NO_SCRIPTS=0
+    ) else if "%%~x" == "--settings" (
+        set ARG_NO_WFLOW=0
+    ) else if "%%~x" == "--verbose" (
+        set ARG_VERBOSE=1
+    ) else if !ARG_TARG_MDIR! == "" (
+        set ARG_TARG_MDIR=%%~x
+    ) else (
+        goto Usage
+    )
 )
-shift
-goto ParseArgs
-:ParseDone
 
 if exist %ARG_TARG_MDIR% goto ValidTarget
-echo Target mission directory '%ARG_TARG_MDIR%' not found
+echo Target mission directory %ARG_TARG_MDIR% not found
 goto Usage
 :ValidTarget
 if exist %ARG_TARG_MDIR%\src goto ValidSrc
@@ -148,7 +144,7 @@ if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\scripts\mist_*_*_*.lua %TARG_MDIR_
 
 :FrameDone
 
-if %ARG_NO_FRAME% == 1 goto SettingsDone
+if %ARG_NO_WFLOW% == 1 goto SettingsDone
 if %ARG_FORCE% == 1 goto SettingsUpdate
 if %THIS_VERS_WKFLOW% leq %TARG_VERS_WKFLOW% goto SettingsDone
 

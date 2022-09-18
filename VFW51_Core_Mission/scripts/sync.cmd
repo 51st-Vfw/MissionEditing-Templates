@@ -23,32 +23,29 @@ set ARG_LUADEBUG=0
 set ARG_LUATRACE=0
 set ARG_VERBOSE=0
 
-:ParseArgs
-if "%~1" == "" (
-    goto ParseDone
-) else if "%~1" == "--help" (
-    goto Usage
-) else if "%~1" == "--import" (
-    set ARG_IMPORT=1
-) else if "%~1" == "--dirty" (
-    set ARG_DIRTY=1
-) else if "%~1" == "--dryrun" (
-    set ARG_DRY_RUN=1
-    set ARG_VERBOSE=1
-) else if "%~1" == "--dynamic" (
-    set LUA_DYNAMIC=--dynamic
-) else if "%~1" == "--verbose" (
-    set ARG_VERBOSE=1
-) else if "%~1" == "--luadebug" (
-    set ARG_LUADEBUG=1
-) else if "%~1" == "--luatrace" (
-    set ARG_LUATRACE=1
-) else (
-    goto Usage
+for %%x in (%*) do (
+    if "%%~x" == "--help" (
+        goto Usage
+    ) else if "%%~x" == "--import" (
+        set ARG_IMPORT=1
+    ) else if "%%~x" == "--dirty" (
+        set ARG_DIRTY=1
+    ) else if "%%~x" == "--dryrun" (
+        set ARG_DRY_RUN=1
+        set ARG_VERBOSE=1
+    ) else if "%%~x" == "--dynamic" (
+        set LUA_DYNAMIC=--dynamic
+    ) else if "%%~x" == "--verbose" (
+        set ARG_VERBOSE=1
+    ) else if "%%~x" == "--luadebug" (
+        set ARG_LUADEBUG=1
+    ) else if "%%~x" == "--luatrace" (
+        set ARG_LUATRACE=1
+    ) else (
+        echo Unknown command line argument
+        goto Usage
+    )
 )
-shift
-goto ParseArgs
-:ParseDone
 
 rem ======== set up variables
 
