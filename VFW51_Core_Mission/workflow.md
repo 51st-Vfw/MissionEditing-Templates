@@ -1,6 +1,6 @@
 # Mission Editing and Packaging Workflow
 
-_Version: 1.0 of 9-Sep-22_
+_Version: 1.0.0 of 18-Sep-22_
 
 This document describes a directory structure and workflows for mission editing along with
 packaging missions and associated materials. As of DCS 2.7, the handling of assets such as
@@ -34,13 +34,14 @@ To use the workflow,
   contain only alphanumeric, "-", and "_" characters.
 - Start `cmd.exe` and change directories to the mission directory you created in the previous
   step.
-- Run "`scripts\setup.cmd --map <map>`" where `<map>` is either "CAU" (Caucuses), "MAR"
-  (Marianas), "NTTR" (NTTR), "PG" (Persian Gulf), or "SYR" (Syria) depending on the map your
-  mission uses, see
+- If you are creating a new mission, run "`scripts\setup.cmd --map <map>`" where `<map>` is
+  either "CAU" (Caucuses), "MAR" (Marianas), "NTTR" (NTTR), "PG" (Persian Gulf), or "SYR"
+  (Syria) depending on the map your mission uses, see
   [Setting up the Workflow](#Setting-up-the-Workflow).
-- After making changes, use `scripts\build.cmd` to rebuild the mission and synchronize the
-  mission directory with the `.miz` package, see
+- Run `scripts\build.cmd` to rebuild the mission and synchronize the mission directory with the
+  `.miz` package, see
   [Basic Concepts and Operation](#Basic-Concepts-and-Operation).
+  Generally, you should do this every time you make changes to the mission.
 
 It is worth reading on, the wokflow can do a lot more than you can describe in a paragraph or
 two...
