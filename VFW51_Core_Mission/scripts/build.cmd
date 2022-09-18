@@ -216,7 +216,7 @@ if %ARG_DYNAMIC% == 0 goto StaticBuild
 echo.
 echo **** NOTE: You have built .miz file(s) that use dynamic loading of Lua scripts. Such
 echo **** NOTE: versions are only appropriate for local debug and are not (typically) suitable
-echo **** NOTE: for deployment on a server.
+echo **** NOTE: for deployment on a server or different system.
 :StaticBuild
 
 exit /be 0
@@ -226,14 +226,15 @@ echo.
 echo Usage: build [--help] [--dirty] [--base] [--dynamic] [--version {version}] [--nosync]
 echo              [--dryrun] [--verbose] [--luadebug, --luatrace]
 echo.
-echo Assemble and build the .miz mission file(s) described by the mission directory. The files
-echo are output at the root level of the mission directory.
+echo Assemble and build the .miz mission file(s) described by the mission directory. The .miz
+echo files are output at the root level of the mission directory. The sync.cmd script is
+echo run before the build by default.
 echo.
 echo This script must be run from the root of a mission directory.
 echo.
 echo Command line arguments:
 echo.
-echo   --help               Displays this usage information.
+echo   --help               Displays this usage information
 echo   --nosync             Do not run sync script prior to build
 echo   --dirty              Leave the mission build directory in place after building
 echo   --base               Build base mission only, do not build any other variants
@@ -241,8 +242,8 @@ echo   --dynamic            Build mission for dynamic script loading
 echo   --version {version}  Add non-zero integer {version} to the .miz file name(s) as version tag
 echo   --dryrun             Dry run, print but do not execute commands (implies --verbose)
 echo   --verbose            Verbose logging output
-echo   --luatrace           Use "--trace" for Lua logging
-echo   --luadebug           Use "--debug" for Lua logging
+echo   --luatrace           Pass "--trace" to Lua scripts to set "trace" level logging
+echo   --luadebug           Pass "--debug" to Lua scripts to set "debug" level logging
 echo.
 echo Note --dirty, --dryrun, --dynamic, --verbose, and --luadebug/trace are passed through to sync.
 echo.

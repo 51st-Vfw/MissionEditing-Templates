@@ -73,7 +73,7 @@ echo This script must be run from the root of a mission directory.
 echo.
 echo Command line parameters:
 echo.
-echo   --help                  Displays this usage information
-echo   --noheader             Do not display header information
+echo   --help                 Displays this usage information
+echo   --noheader             Do not output header information
 
 exit /be -1

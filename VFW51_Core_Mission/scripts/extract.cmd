@@ -97,17 +97,19 @@ exit /be 0
 echo.
 echo Usage: extract [--help] [--wx] [--opt] [--wp {group}] [--luadebug, --luatrace] {miz_path}
 echo.
-echo TODO
+echo Extract Lua for a particular property from a .miz file.
+echo.
+echo This script must be run from the root of a mission directory.
 echo.
 echo Command line arguments:
 echo.
-echo   --help               Displays this usage information.
+echo   --help               Displays this usage information
 echo   --wx                 Extract weather information
 echo   --opt                Extract mission options
 echo   --wp {group}         Extract waypoints for group {group}
 echo   {miz_path}           Path to .miz to extract the information from
-echo   --luatrace           Use "--trace" for Lua logging
-echo   --luadebug           Use "--debug" for Lua logging
+echo   --luatrace           Pass "--trace" to Lua scripts to set "trace" level logging
+echo   --luadebug           Pass "--debug" to Lua scripts to set "debug" level logging
 echo.
 echo Environment variables:
 echo.

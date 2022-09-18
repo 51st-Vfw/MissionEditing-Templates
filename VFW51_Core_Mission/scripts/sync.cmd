@@ -145,7 +145,8 @@ echo.
 echo Usage: sync [--help] [--dirty] [--dryrun] [--dynamic] [--import] [--verbose]
 echo             [--luatrace, --luadebug]
 echo.
-echo Unpack a DCS .miz file, normalizing and sanitizing it. The mission files from the .miz
+echo Unpack a DCS .miz file, normalizing and sanitizing it before using the unpacked mission
+echo to update the mission directory.
 echo.
 echo This script must be run from the root of a mission directory.
 echo.
@@ -161,8 +162,8 @@ echo                        directory. This will over-write existing files in th
 echo                        directory src tree. Typically, this is only used to set up an
 echo                        existing mission to use the workflow.
 echo   --verbose            Verbose logging output
-echo   --luatrace           Use "--trace" for Lua logging
-echo   --luadebug           Use "--debug" for Lua logging
+echo   --luatrace           Pass "--trace" to Lua scripts to set "trace" level logging
+echo   --luadebug           Pass "--debug" to Lua scripts to set "debug" level logging
 echo.
 echo Environment variables:
 echo.
