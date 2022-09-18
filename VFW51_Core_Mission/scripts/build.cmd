@@ -78,8 +78,21 @@ if [%VFW51_LUA_LOG%] == [] (
     if %ARG_LUADEBUG% == 1 set VFW51_LUA_LOG=--debug
 )
 
-rem extracts the mission name from the path to the current directory.
+rem script extracts the mission name from the path to the current directory.
 for /f %%i in ('%VFW51_LUA_EXE% scripts\lua\VFW51WorkflowGetMission.lua %cd%') do set MISSION_NAME=%%i
+
+set HOUR=%TIME:~0,2%
+if "%HOUR:~0,1%" == " " set HOUR=0%HOUR:~1,1%
+set MIN=%TIME:~3,2%
+if "%MIN:~0,1%" == " " set MIN=0%MIN:~1,1%
+set SECS=%TIME:~6,2%
+if "%SECS:~0,1%" == " " set SECS=0%SECS:~1,1%
+set MONTH=%DATE:~4,2%
+if "%MONTH:~0,1%" == " " set MONTH=0%MONTH:~1,1%
+set DAY=%DATE:~7,2%
+if "%DAY:~0,1%" == " " set DAY=0%DAY:~1,1%
+set YEAR=%DATE:~-4%
+set CUR_DATE=%YEAR%%MONTH%%DAY%-%HOUR%%MIN%%SECS%
 
 set MISSION_BASE=%cd%
 set MISSION_SRC=%MISSION_BASE%\src
@@ -197,10 +210,13 @@ for %%f in (%VARIANT_FILES%) do (
     if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% veafMissionNormalizer.lua %MIZ_BLD_PATH% %VFW51_LUA_LOG%
 
     echo Buildinator - Backing up previous .miz file for variant %%~nxf
-    if %ARG_VERBOSE% == 1 echo copy /y %MISSION_BASE%\%%~nxf.miz %MISSION_BASE%\backup\
-    if %ARG_DRY_RUN% == 0 copy /y %MISSION_BASE%\%%~nxf.miz %MISSION_BASE%\backup\ >nul 2>&1
+    if %ARG_VERBOSE% == 1 echo copy /y %MISSION_BASE%\%%~nxf.miz %MISSION_BASE%\backup\%CUR_DATE%-%%~nxf.miz
+    if %ARG_DRY_RUN% == 0 copy /y %MISSION_BASE%\%%~nxf.miz %MISSION_BASE%\backup\%CUR_DATE%-%%~nxf.miz >nul 2>&1
 
     echo Buildinator - Packing mission into %%~nxf.miz
+    if %ARG_VERBOSE% == 1 echo del /f /q %MISSION_BASE%\%%~nxf.miz
+    if %ARG_DRY_RUN% == 0 del /f /q %MISSION_BASE%\%%~nxf.miz >nul 2>&1
+
     if %ARG_VERBOSE% == 1 echo %VFW51_7ZIP_EXE% a -r -tzip %MISSION_BASE%\%%~nxf.miz %MIZ_BLD_PATH%\* -mem=AES256
     if %ARG_DRY_RUN% == 0 %VFW51_7ZIP_EXE% a -r -tzip %MISSION_BASE%\%%~nxf.miz %MIZ_BLD_PATH%\* -mem=AES256 >nul 2>&1
 )
