@@ -65,16 +65,16 @@ function VFW51MissionVariantinator.processMission(mission_t, args)
 
     -- set the mission time
     local moment = targInfo["moment"]
-    self:logTrace(string.format("Setting mission time for %s", moment))
     if (moment ~= nil) and (moment:lower() ~= "base") then
         local time = self:parseMoment(moment)
+        self:logTrace(string.format("Setting mission time for %s to %s", moment, tostring(time)))
         mission_t["start_time"] = self:deepCopy(time)
     end
 
     -- set the mission weather
     local wx = targInfo["wx"]
-    self:logTrace(string.format("Setting mission Wx for %s", wx))
     if (wx ~= nil) and (wx:lower() ~= "base") then
+        self:logTrace(string.format("Setting mission Wx for %s", wx))
         mission_t["weather"] = self:deepCopy(wxVersions[wx])
     end
 
@@ -88,8 +88,10 @@ function VFW51MissionVariantinator.processOptions(options_t, args)
     local targInfo = args["targInfo"]
 
     local opt = targInfo["options"]
-    self:logTrace(string.format("Setting mission options for %s", opt))
-    options_t["difficulty"] = self:deepCopy(optVersions[opt])
+    if (opt ~= nil) and (opt:lower() ~= "base") then
+        self:logTrace(string.format("Setting mission options for %s", opt))
+        options_t["difficulty"] = self:deepCopy(optVersions[opt])
+    end
     return options_t
 end
 
@@ -108,8 +110,8 @@ function VFW51MissionVariantinator:process()
     self:logDebug(string.format("Loading weather"))
     for targName, targ in pairs(VariantSettings["variants"]) do
         local wxName = targ["wx"]
-        self:logTrace(string.format("Loading wx file for %s", wxName))
         if wxName and (wxName ~= "base") and (wxVersions[wxName] == nil) then
+            self:logTrace(string.format("Loading wx file for %s", wxName))
             if self:loadLuaFile(self.srcPath, "variants", wxName) then
 ---@diagnostic disable-next-line: undefined-global
                 wxVersions[wxName] = WxData
@@ -124,8 +126,8 @@ function VFW51MissionVariantinator:process()
     self:logDebug(string.format("Loading options"))
     for targName, targ in pairs(VariantSettings["variants"]) do
         local optName = targ["options"]
-        self:logTrace(string.format("Loading options file for %s", optName))
         if optName and (optName ~= "base") and (optVersions[optName] == nil) then
+            self:logTrace(string.format("Loading options file for %s", optName))
             if self:loadLuaFile(self.srcPath, "variants", optName) then
 ---@diagnostic disable-next-line: undefined-global
                 optVersions[optName] = OptionsData
