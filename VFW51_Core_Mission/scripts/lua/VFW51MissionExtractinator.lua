@@ -33,15 +33,6 @@ function VFW51MissionExtractinator:findPointsFromGroupInCoalition(mission_t, gro
     local keeperKeys = { "alt", "alt_type", "speed", "speed_locked", "type", "x", "y"}
     local points = nil
 
-    local function tableContains(table, element)
-        for _, value in pairs(table) do
-            if value == element then
-                return true
-            end
-        end
-        return false
-    end
-
     local coalitions = { "blue", "red", "neutrals" }
     local foundGroup = nil
     local numFound = 0
@@ -49,6 +40,18 @@ function VFW51MissionExtractinator:findPointsFromGroupInCoalition(mission_t, gro
         for _, country in pairs(mission_t["coalition"][coa]["country"]) do
             if country["plane"] then
                 for _, group in ipairs(country["plane"]["group"]) do
+                    -- TODO: for regex match, use string.match(group["name"], sanitize(groupPattern))
+                    if group["name"] == groupPattern then
+                        if numFound == 0 then
+                            foundGroup = group["name"]
+                            numFound = numFound + 1
+                            points = self:deepCopy(group["route"]["points"])
+                        end
+                    end
+                end
+            end
+            if country["helicopter"] then
+                for _, group in ipairs(country["helicopter"]["group"]) do
                     -- TODO: for regex match, use string.match(group["name"], sanitize(groupPattern))
                     if group["name"] == groupPattern then
                         if numFound == 0 then

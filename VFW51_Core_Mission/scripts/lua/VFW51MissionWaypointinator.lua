@@ -65,6 +65,33 @@ function VFW51MissionWaypointinator.processMission(mission_t, self)
                     end
                 end
             end
+            if country["helicopter"] then
+                for groupIdx, group in ipairs(country["helicopter"]["group"]) do
+                    for groupPattern, groupFile in pairs(WaypointSettings) do
+                        local gsubPattern = self:sanitizePattern(groupPattern)
+                        if string.match(group["name"], gsubPattern) then
+                            self:logInfo(string.format("Updating group '%s', matches key '%s'", group["name"], groupPattern))
+                            if self:loadLuaFile(self.srcPath, "waypoints", groupFile) then
+---@diagnostic disable-next-line: undefined-global
+                                for routeIdx, table in ipairs(RouteData) do
+                                    if routeIdx > 1 then
+                                        if not country["helicopter"]["group"][groupIdx]["route"]["points"][routeIdx] then
+                                            country["helicopter"]["group"][groupIdx]["route"]["points"][routeIdx] = { }
+                                        end
+                                        for key, value in pairs(table) do
+                                            country["helicopter"]["group"][groupIdx]["route"]["points"][routeIdx][key] = self:deepCopy(value)
+                                        end
+                                    end
+                                end
+                            else
+                                self:logInfo("Waypoint file '" .. groupFile .. "' not found, skipping")
+                                WaypointSettings[groupPattern] = nil
+                            end
+                            self.unitEditCount = self.unitEditCount + 1
+                        end
+                    end
+                end
+            end
         end
     end
     return mission_t
