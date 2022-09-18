@@ -108,7 +108,7 @@ if %ARG_IMPORT% == 1 (
 
 if %ARG_DIRTY% == 1 goto SkipClean
 if %ARG_VERBOSE% == 1 echo call "%cd%\scripts\cleanmission.cmd" --noheader
-if %ARG_DRY_RUN% == 1 call "%cd%\scripts\cleanmission.cmd" --noheader
+if %ARG_DRY_RUN% == 0 call "%cd%\scripts\cleanmission.cmd" --noheader
 :SkipClean
 
 pushd scripts\lua
