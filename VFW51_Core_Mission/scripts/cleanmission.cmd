@@ -42,6 +42,7 @@ echo.
 echo ========================================================
 echo Cleaning %MISSION_NAME%
 echo ========================================================
+echo.
 :SkipHeader
 
 echo ---- Removing redundant files and directories from unpacked .miz

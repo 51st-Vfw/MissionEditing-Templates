@@ -1,7 +1,7 @@
 # TODO
 
 Known issues
-- `unpack.cmd --import` should import `KNEEBOARDS` content as well.
+- `unpack.cmd --import` should import `KNEEBOARD` content as well.
 
 Upcoming features
 - TBD

@@ -106,11 +106,6 @@ if %ARG_IMPORT% == 1 (
     if exist "%MIZ_EXT_DFLT_PATH%\*.lua" xcopy /q /v /y "%MIZ_EXT_DFLT_PATH%\*.lua" ".\src\scripts" >nul 2>&1
 )
 
-if %ARG_DIRTY% == 1 goto SkipClean
-if %ARG_VERBOSE% == 1 echo call "%cd%\scripts\cleanmission.cmd" --noheader
-if %ARG_DRY_RUN% == 0 call "%cd%\scripts\cleanmission.cmd" --noheader
-:SkipClean
-
 pushd scripts\lua
 
 echo ---- Updating scripting triggers
@@ -134,6 +129,11 @@ if %ARG_VERBOSE% == 1 echo %VFW51_LUA_EXE% veafMissionNormalizer.lua %MIZ_EXT_PA
 if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% veafMissionNormalizer.lua %MIZ_EXT_PATH% %VFW51_LUA_LOG%
 
 popd
+
+if %ARG_DIRTY% == 1 goto SkipClean
+if %ARG_VERBOSE% == 1 echo call "%cd%\scripts\cleanmission.cmd" --noheader
+if %ARG_DRY_RUN% == 0 call "%cd%\scripts\cleanmission.cmd" --noheader
+:SkipClean
 
 exit /be 0
 
