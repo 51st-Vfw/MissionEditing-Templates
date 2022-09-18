@@ -32,6 +32,7 @@ VFW51MissionRadioinator = VFW51WorkflowUtil:new()
 -- Core methods
 ---------------------------------------------------------------------------------------------------------------
 
+local unitEditCount = 0
 local presetEditCount = 0
 
 function VFW51MissionRadioinator:buildRadioTable(radioSetting, aframe, name, callsign)
@@ -129,8 +130,9 @@ function VFW51MissionRadioinator:editUnit(coaName, countryName, unit_t)
                     self:logTrace("  Country checked")
                     local type = setting_t["type"]
                     self:logTrace(string.format("  type=[%s] / [%s]", self:p(type), self:p(unitType)))
-                    if not(type) or unitType:lower() == type:lower() or string.match(unitType:lower(), type:lower()) then
-                        self:logTrace("  Unit type checked")
+                    local regexType = self:sanitizePattern(type:lower())
+                    if not(type) or unitType:lower() == type:lower() or string.match(unitType:lower(), regexType) then
+                        self:logTrace("  Unit type checked " .. regexType)
                         -- edit the unit
                         self:logDebug(string.format("-> Edited unit unitType=%s, unitName=%s, unitId=%s in coaName=%s, countryName=%s) ", self:p(unitType), self:p(unitName), self:p(unitId),self:p(coaName), self:p(countryName)))
                         if setting_t["Radio"] then
@@ -160,12 +162,18 @@ function VFW51MissionRadioinator.processMission(mission_t, self)
         for group, group_t in pairs(groups_t) do
             self:logTrace(string.format("Browsing group [%s]", group))
             local units_t = group_t["units"]
-            for unit, unit_t in pairs(units_t) do
+            for _, unit_t in pairs(units_t) do
                 local hasBeenEdited = self:editUnit(coaName, countryName, unit_t)
                 if hasBeenEdited then
+                    if unit_t["Radio"] and unit_t["Radio"][1] then
+                        group_t["communication"] = false
+                        group_t["frequency"] = unit_t["Radio"][1]["channels"][1]
+                        group_t["modulation"] = unit_t["Radio"][1]["modulations"][1]
+                    end
                     -- set the "radioSet" value to false
                     self:logTrace("seting the radioSet value to false")
-                    group_t["radioSet"] = false
+                    group_t["radioSet"] = true
+                    unitEditCount = unitEditCount + 1
                 end
             end
         end
@@ -212,7 +220,7 @@ function VFW51MissionRadioinator:process()
         local editFn = self.processMission
         self:logDebug(string.format("Processing [%s]", mizMissionPath))
         veafMissionEditor.editMission(mizMissionPath, mizMissionPath, "mission", editFn, self)
-        self:logInfo("Mission updated, " .. presetEditCount .. " presets injected")
+        self:logInfo(string.format("mission updated, inject %d presets in %d units", presetEditCount, unitEditCount))
 
         -- emit legacy presets if necessary
         for key, value in pairs(RadioSettings) do
