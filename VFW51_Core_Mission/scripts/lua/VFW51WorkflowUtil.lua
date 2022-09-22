@@ -91,11 +91,11 @@ function VFW51WorkflowUtil:matchRadioPattern(pattern, unitAframe, unitName, unit
         fields[i] = token:lower()
         i = i + 1
     end
-    local regexUnitName = self:sanitizePattern(unitName:lower())
-    local regexUnitCsign = self:sanitizePattern(unitCsign:lower())
+    local regexUnitName = self:sanitizePattern(fields[2])
+    local regexUnitCsign = self:sanitizePattern(fields[3])
     if ((fields[1] == "*") or (fields[1] == unitAframe:lower())) and
-       ((fields[2] == "*") or (string.find(fields[2], regexUnitName, 1, true) ~= nil)) and
-       ((fields[3] == "*") or (string.find(fields[3], regexUnitCsign, 1, true) ~= nil))
+       ((fields[2] == "*") or (string.find(unitName:lower(), regexUnitName, 1, true) ~= nil)) and
+       ((fields[3] == "*") or (string.find(unitCsign:lower(), regexUnitCsign, 1, true) ~= nil))
     then
         return true
     end
@@ -136,12 +136,14 @@ function VFW51WorkflowUtil:fileExists(path)
 
 -- load settings file, returns path on success, nil on error
 function VFW51WorkflowUtil:loadLuaFile(srcPath, dir, file)
-    local path = srcPath .. dir .. "\\" .. file
-    if self:fileExists(path) then
-        local data = loadfile(path)
-        if data then
-            data()
-            return path
+    if srcPath and dir and file then
+        local path = srcPath .. dir .. "\\" .. file
+        if self:fileExists(path) then
+            local data = loadfile(path)
+            if data then
+                data()
+                return path
+            end
         end
     end
     return nil
