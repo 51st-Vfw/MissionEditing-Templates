@@ -55,15 +55,9 @@ function VFW51KbFlightCardinator:getDescription(rules, airframe)
     if type(rules) == "number" then
         desc = string.format("%.2f MHz", rules)
     elseif type(rules) == "table" then
-        local rkeys = {}
-        for k in pairs(rules) do
-            table.insert(rkeys, k)
-        end
-        table.sort(rkeys)
-        for _, k in ipairs(rkeys) do
-            local raf = string.match(k, "[^:]+", 1)
-            local rule = rules[k]
-            if ((raf == "*") or (raf == airframe)) and (rule["d"] ~= nil) then
+        for _, rule in ipairs(rules) do
+            local raf = string.match(rule["p"], "[^:]+", 1)
+            if ((raf == "*") or (raf:lower() == airframe:lower())) and (rule["d"] ~= nil) then
                 desc = rule["d"]
             end
         end
@@ -82,7 +76,7 @@ function VFW51KbFlightCardinator:processText(lines, airframe)
             end
             lines = string.gsub(lines, var, desc, 1)
         elseif string.match(var, "$COMM2_TYPE") then
-            local desc = mapAframeComm1[airframe]
+            local desc = mapAframeComm2[airframe]
             if desc == nil then
                 desc = "VHF"
             end

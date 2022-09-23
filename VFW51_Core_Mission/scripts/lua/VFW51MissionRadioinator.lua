@@ -38,7 +38,6 @@ local presetEditCount = 0
 function VFW51MissionRadioinator:buildRadioTable(radioSetting, aframe, name, callsign)
     local radio_t = self:deepCopy(radioSetting)
     for radioNum, radio in ipairs(radio_t) do
-
         local defaultFreq = 0.0
         if radioNum == 1 then
             defaultFreq = 230.0
@@ -51,18 +50,11 @@ function VFW51MissionRadioinator:buildRadioTable(radioSetting, aframe, name, cal
         for presetNum, presetVal in ipairs(radio["channels"]) do
             self:logTrace(string.format("[%d] %s", presetNum, type(presetVal)))
             if (type(presetVal) == "table") then
-                -- sort rules for preset
-                local patterns = { }
-                for pattern, value in pairs(presetVal) do
-                    table.insert(patterns, pattern)
-                end
-                table.sort(patterns)
-
-                -- find matches, searching from least- to more-specific, freq is most specific match.
                 local freq = defaultFreq
-                for _, pattern in ipairs(patterns) do
+                for _, preset in ipairs(presetVal) do
+                    local pattern = preset["p"]
                     if self:matchRadioPattern(pattern, aframe, name, callsign) then
-                        freq = presetVal[pattern]["f"]
+                        freq = preset["f"]
                         self:logTrace(string.format("'%s' -- %s, %s, %s <<< **** MATCH **** %.2f", pattern, aframe, name, callsign, freq))
                     else
                         self:logTrace(string.format("'%s' -- %s, %s, %s", pattern, aframe, name, callsign))
@@ -70,6 +62,8 @@ function VFW51MissionRadioinator:buildRadioTable(radioSetting, aframe, name, cal
                 end
                 radio["channels"][presetNum] = freq
                 presetEditCount = presetEditCount + 1
+            else
+                radio["channels"][presetNum] = presetVal
             end
         end
     end
@@ -78,21 +72,23 @@ end
 
 function VFW51MissionRadioinator:buildRadioFiles(dstPath, fileSetting, aframe, name, callsign)
     for file, presets in pairs(fileSetting) do
+        local defaultFreq = 0.0
+        if file == "UHF_RADIO" then
+            defaultFreq = 230.0
+        elseif file == "VHF_AM_RADIO" then
+            defaultFreq = 130.0
+        elseif file == "VHF_FM_RADIO" then
+            defaultFreq = 30.0
+        end
+
         for presetNum, presetVal in ipairs(presets["presets"]) do
             self:logTrace(string.format("[%d] %s", presetNum, type(presetVal)))
             if (type(presetVal) == "table") then
-                -- sort rules for preset
-                local patterns = { }
-                for pattern, value in pairs(presetVal) do
-                    table.insert(patterns, pattern)
-                end
-                table.sort(patterns)
-
-                -- find matches, searching from least- to more-specific, freq is most specific match.
-                local freq = 0.0
-                for _, pattern in ipairs(patterns) do
+                local freq = defaultFreq
+                for _, preset in ipairs(presetVal) do
+                    local pattern = preset["p"]
                     if self:matchRadioPattern(pattern, aframe, name, callsign) then
-                        freq = presetVal[pattern]["f"]
+                        freq = preset["f"]
                         self:logTrace(string.format("'%s' -- %s, %s, %s <<< **** MATCH **** %.2f", pattern, aframe, name, callsign, freq))
                     else
                         self:logTrace(string.format("'%s' -- %s, %s, %s", pattern, aframe, name, callsign))
@@ -101,7 +97,7 @@ function VFW51MissionRadioinator:buildRadioFiles(dstPath, fileSetting, aframe, n
 
                 presets["presets"][presetNum] = math.floor(freq * 1000000)
             else
-                presets["presets"][presetNum] = math.floor(presets["presets"][presetNum] * 1000000)
+                presets["presets"][presetNum] = math.floor(presetVal * 1000000)
             end
         end
         local tableAsLua = veafMissionEditor.serialize("settings", presets)
@@ -251,7 +247,7 @@ function VFW51MissionRadioinator:new(o, arg)
     self.__index = self
 
     self.id = "Radioinator"
-    self.version = "1.0.0"
+    self.version = "1.1.0"
 
     local isArgBad = false
     for _, val in ipairs(arg) do

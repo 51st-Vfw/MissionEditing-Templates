@@ -8,37 +8,33 @@
 -- may depend on the airframe, unit name, and callsign of the aircraft being set up. the tables contain the
 -- following key/value pairs:
 --
---     <string> : <table>|<number>      assigns the frequency for the radio/preset combo identified by
---                                      <string> according to a <table> or <number>.
+--     <string> : <array>|<number>      assigns the frequency for the radio/preset combo identified by
+--                                      <string> according to a <array> or <number>.
 --
--- the key (a string) identifies the radio and button that the value applies to. the value may be a table
--- or a number.
+-- the key (a string) identifies the specific radio (1 is UHF, 2 is VHF AM, and 3 is VHF FM) and preset
+-- button (1-20) that the value applies to. the value may be an array or a number.
 --
--- a number value specifies a frequency (in MHz) that a preset should be set to on a radio. the key
--- identifies the specific radio and presset. this assignment is independent of unit properties. a zero
--- value indicates the preset is given a default "unassigned" value.
+-- a number value specifies a fixed preset frequency (in MHz) to use, with zero indicating the default
+-- frequency appropriate for the radio.
 --
--- a table value allows the specification of a frequency value that depends on the properties (specifically,
--- airframe, name, and callsign) of the unit. an empty table indicates the value preset is given a default
--- "unassigned" value. keys in this table are strings of the form "<a>:<n>:<c>" (e.g., "F-16C_50:*:Uzi"),
--- where
+-- an array value specifies a variable preset frequency (in MHz) that depends on unit properties
+-- (specifically, airframe, unit name, and unit callsign) with an table indicating the default frequency
+-- appropriate for the radio.
 --
---     <a>      unit airframe name, "*" to match any
---     <n>      unit name pattern, "*" to match any
---     <c>      unit callsign pattern, "*" to match any
+-- each element of the array is a table with the following key/value pairs,
 --
--- the fields <a>, <n>, and <c> may not contain ":" characters. the value is a table with two keys,
---
---     "f" : <number>       preset frequency (MHz), 0 if the frequency is unassigned
+--     "p" : <string>       airframe/name/callsign pattern to match
+--     "f" : <number>       preset frequency (MHz), 0 for default freqency appropriate for the radio
 --     "d" : <string>       descriptive string
 --
--- frequency is determined by matching the airframe, name, and callsign to the keys in the table in order of
--- less to more specific. while the airframe must exactly match, the name and callsign only need to contain
--- the text in <n> or <c>. all comparisons are case-insensitive.
+-- the "p" string is of the form "<a>:<n>:<c>" (e.g., "F-16C_50:*:Uzi"), where
 --
--- matching continues until all keys are considered, with every match updating the frequency the preset is
--- assigned to. this way, a more specific rule (e.g., "F-16C_50:*:*") will override a less specific rule
--- (e.g., "*:*:*").
+--     <a>      unit airframe name (may not contain ":"), "*" matches any airfram
+--     <n>      unit name pattern (may not contain ":"), "*" matches any name
+--     <c>      unit callsign pattern (may not contain ":"), "*" matches any callsign
+--
+-- each element in the array is tested against the "p" pattern in the array the frequency and description
+-- for the preset is given by the last element that specifies "f" or "d" and where the unit matches "p".
 --
 -- the RadioSettings table provides templates to inject into the main mission table for a unit in order to
 -- configure its presets.
@@ -57,68 +53,68 @@ RadioPresetsBlue = {
     -----------------------------------------------------------------------------------------------------------
 
     ["$RADIO_1_01"] = {
-        ["*:*:*"]                       = { ["f"] = 270.00, ["d"] = "Tac Common" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 270.00, ["d"] = "Tac Common" },
     },
     ["$RADIO_1_02"] = {
-        ["*:*:*"]                       = { ["f"] =   0.00, ["d"] = "Departure ATIS (UHF)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00, ["d"] = "Departure ATIS (UHF)" }
     },
     ["$RADIO_1_03"] = {
-        ["*:*:*"]                       = { ["f"] =   0.00, ["d"] = "Departure Tower (UHF)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00, ["d"] = "Departure Tower (UHF)" }
     },
     ["$RADIO_1_04"] = { },
     ["$RADIO_1_05"] = {
-        ["*:*:*"]                       = { ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" }
      },
     ["$RADIO_1_06"] = {
-        ["*:*:*"]                       = { ["f"] =   0.00, ["d"] = "AAR #1" },
-        ["A-10C:*:*"]                   = { ["f"] = 251.00, ["d"] = "AAR Texaco 1-1 (51Y)" },
-        ["F-16C_50:*:*"]                = { ["f"] = 251.00, ["d"] = "AAR Texaco 1-1 (51Y)" },
-        ["F-14B:*:*"]                   = { ["f"] = 253.00, ["d"] = "AAR Arco 1-1 (53Y)" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 253.00, ["d"] = "AAR Arco 1-1 (53Y)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00, ["d"] = "AAR #1" },
+        [2] = { ["p"] = "A-10C:*:*",         ["f"] = 251.00, ["d"] = "AAR Texaco 1-1 (51Y)" },
+        [3] = { ["p"] = "F-16C_50:*:*",      ["f"] = 251.00, ["d"] = "AAR Texaco 1-1 (51Y)" },
+        [4] = { ["p"] = "F-14B:*:*",         ["f"] = 253.00, ["d"] = "AAR Arco 1-1 (53Y)" },
+        [5] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 253.00, ["d"] = "AAR Arco 1-1 (53Y)" }
     },
     ["$RADIO_1_07"] = {
-        ["*:*:*"]                       = { ["f"] =   0.00, ["d"] = "AAR #2" },
-        ["A-10C:*:*"]                   = { ["f"] = 252.00, ["d"] = "AAR Texaco 2-1 (52Y)" },
-        ["F-16C_50:*:*"]                = { ["f"] = 252.00, ["d"] = "AAR Texaco 2-1 (52Y)" },
-        ["F-14B:*:*"]                   = { ["f"] = 254.00, ["d"] = "AAR Arco 2-1 (54Y)" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 254.00, ["d"] = "AAR Arco 2-1 (54Y)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00, ["d"] = "AAR #2" },
+        [2] = { ["p"] = "A-10C:*:*",         ["f"] = 252.00, ["d"] = "AAR Texaco 2-1 (52Y)" },
+        [3] = { ["p"] = "F-16C_50:*:*",      ["f"] = 252.00, ["d"] = "AAR Texaco 2-1 (52Y)" },
+        [4] = { ["p"] = "F-14B:*:*",         ["f"] = 254.00, ["d"] = "AAR Arco 2-1 (54Y)" },
+        [5] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 254.00, ["d"] = "AAR Arco 2-1 (54Y)" }
     },
     ["$RADIO_1_08"] = {
-        ["*:*:*"]                       = { ["f"] = 238.00, ["d"] = "JTAC/AFAC Darknight 1-1 (UHF, AI)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 238.00, ["d"] = "JTAC/AFAC Darknight 1-1 (UHF, AI)" }
     },
     ["$RADIO_1_09"] = {
-        ["*:*:*"]                       = { ["f"] = 238.10, ["d"] = "JTAC/AFAC (UHF, Human)" },
+        [1] = { ["p"] = "*:*:*",             ["f"] = 238.10, ["d"] = "JTAC/AFAC (UHF, Human)" },
      },
     ["$RADIO_1_10"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 271.40, ["d"] = "CVN-71 ATC" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 271.40, ["d"] = "CVN-71 ATC" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 271.40, ["d"] = "CVN-71 ATC" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 271.40, ["d"] = "CVN-71 ATC" }
     },
     ["$RADIO_1_11"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 271.60, ["d"] = "CVN-71 AWACS Magic 1-1" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 271.60, ["d"] = "CVN-71 AWACS Magic 1-1" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 271.60, ["d"] = "CVN-71 AWACS Magic 1-1" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 271.60, ["d"] = "CVN-71 AWACS Magic 1-1" }
     },
     ["$RADIO_1_12"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 271.80, ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 271.80, ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 271.80, ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 271.80, ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" }
     },
     ["$RADIO_1_13"] = { },
     ["$RADIO_1_14"] = { },
     ["$RADIO_1_15"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 275.40, ["d"] = "CVN-75 ATC" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 275.40, ["d"] = "CVN-75 ATC" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 275.40, ["d"] = "CVN-75 ATC" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 275.40, ["d"] = "CVN-75 ATC" }
     },
     ["$RADIO_1_16"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 275.60, ["d"] = "CVN-75 AWACS Magic 5-1" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 275.60, ["d"] = "CVN-75 AWACS Magic 5-1" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 275.60, ["d"] = "CVN-75 AWACS Magic 5-1" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 275.60, ["d"] = "CVN-75 AWACS Magic 5-1" }
     },
     ["$RADIO_1_17"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 275.80, ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 275.80, ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 275.80, ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 275.80, ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" }
     },
     ["$RADIO_1_18"] = { },
     ["$RADIO_1_19"] = { },
     ["$RADIO_1_20"] = {
-        ["*:*:*"]                       = { ["f"] = 243.00, ["d"] = "Guard (UHF)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 243.00, ["d"] = "Guard (UHF)" }
     },
 
 
@@ -127,72 +123,72 @@ RadioPresetsBlue = {
     -----------------------------------------------------------------------------------------------------------
 
     ["$RADIO_2_01"] = {
-        ["*:*:*"]                       = { ["f"] =   0.00, ["d"] = "Intraflight" },
-        ["A-10C:*:*"]                   = { ["f"] = 141.25 },
-        ["A-10C:*:Hawg"]                = { ["f"] = 141.25 },
-        ["A-10C:*:Pig"]                 = { ["f"] = 141.75 },
-        ["F-16C_50:*:Cowboy"]           = { ["f"] = 138.25 },
-        ["F-16C_50:*:Lobo"]             = { ["f"] = 138.75 },
-        ["F-14B:*:Dodge1"]              = { ["f"] = 140.25 },
-        ["F-14B:*:Dodge2"]              = { ["f"] = 140.75 },
-        ["FA-18C_hornet:*:Enfield"]     = { ["f"] = 254.00 },
-        ["FA-18C_hornet:*:Springfield"] = { ["f"] = 254.00 }
+        [ 1] = { ["p"] = "*:*:*",                        ["f"] =   0.00, ["d"] = "Intraflight" },
+        [ 2] = { ["p"] = "A-10C:*:*",                    ["f"] = 141.25 },
+        [ 3] = { ["p"] = "A-10C:*:Hawg",                 ["f"] = 141.25 },
+        [ 4] = { ["p"] = "A-10C:*:Pig",                  ["f"] = 141.75 },
+        [ 5] = { ["p"] = "F-16C_50:*:Cowboy",            ["f"] = 138.25 },
+        [ 6] = { ["p"] = "F-16C_50:*:Lobo",              ["f"] = 138.75 },
+        [ 7] = { ["p"] = "F-14B:*:Dodge1",               ["f"] = 140.25 },
+        [ 8] = { ["p"] = "F-14B:*:Dodge2",               ["f"] = 140.75 },
+        [ 9] = { ["p"] = "FA-18C_hornet:*:Enfield",      ["f"] = 254.00 },
+        [10] = { ["p"] = "FA-18C_hornet:*:Springfield",  ["f"] = 254.00 }
     },
     ["$RADIO_2_02"] = {
-        ["*:*:*"]                       = { ["f"] =   0.00, ["d"] = "Departure ATIS (VHF)" }
+        [1] = { ["p"] = "*:*:*",                         ["f"] =   0.00, ["d"] = "Departure ATIS (VHF)" }
     },
     ["$RADIO_2_03"] = {
-        ["*:*:*"]                       = { ["f"] =   0.00, ["d"] = "Departure Tower (VHF)" }
+        [1] = { ["p"] = "*:*:*",                         ["f"] =   0.00, ["d"] = "Departure Tower (VHF)" }
     },
     ["$RADIO_2_04"] = { },
     ["$RADIO_2_05"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" }
+        [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" }
     },
     ["$RADIO_2_06"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 253.00, ["d"] = "AAR Arco 1-1 (53Y)" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 253.00, ["d"] = "AAR Arco 1-1 (53Y)" }
+        [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 253.00, ["d"] = "AAR Arco 1-1 (53Y)" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 253.00, ["d"] = "AAR Arco 1-1 (53Y)" }
     },
     ["$RADIO_2_07"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 254.00, ["d"] = "AAR Arco 2-1 (54Y)" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 254.00, ["d"] = "AAR Arco 2-1 (54Y)" }
+        [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 254.00, ["d"] = "AAR Arco 2-1 (54Y)" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 254.00, ["d"] = "AAR Arco 2-1 (54Y)" }
     },
     ["$RADIO_2_08"] = {
-        ["*:*:*"]                       = { ["f"] = 138.00, ["d"] = "JTAC/AFAC Darknight 1-1 (VHF, AI)" }
+        [1] = { ["p"] = "*:*:*",                         ["f"] = 138.00, ["d"] = "JTAC/AFAC Darknight 1-1 (VHF, AI)" }
     },
     ["$RADIO_2_09"] = {
-        ["*:*:*"]                       = { ["f"] = 138.10, ["d"] = "JTAC/AFAC (VHF, Human)" },
+        [1] = { ["p"] = "*:*:*",                         ["f"] = 138.10, ["d"] = "JTAC/AFAC (VHF, Human)" },
     },
     ["$RADIO_2_10"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 271.40, ["d"] = "CVN-71 ATC" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 271.40, ["d"] = "CVN-71 ATC" }
+        [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 271.40, ["d"] = "CVN-71 ATC" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 271.40, ["d"] = "CVN-71 ATC" }
     },
     ["$RADIO_2_11"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 271.60, ["d"] = "CVN-71 AWACS Magic 1-1" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 271.60, ["d"] = "CVN-71 AWACS Magic 1-1" }
+        [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 271.60, ["d"] = "CVN-71 AWACS Magic 1-1" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 271.60, ["d"] = "CVN-71 AWACS Magic 1-1" }
     },
     ["$RADIO_2_12"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 271.80, ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 271.80, ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" }
+        [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 271.80, ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 271.80, ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" }
     },
     ["$RADIO_2_13"] = { },
     ["$RADIO_2_14"] = { },
     ["$RADIO_2_15"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 275.40, ["d"] = "CVN-75 ATC" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 275.40, ["d"] = "CVN-75 ATC" }
+        [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 275.40, ["d"] = "CVN-75 ATC" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 275.40, ["d"] = "CVN-75 ATC" }
     },
     ["$RADIO_2_16"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 275.60, ["d"] = "CVN-75 AWACS Magic 5-1" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 275.60, ["d"] = "CVN-75 AWACS Magic 5-1" }
+        [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 275.60, ["d"] = "CVN-75 AWACS Magic 5-1" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 275.60, ["d"] = "CVN-75 AWACS Magic 5-1" }
     },
     ["$RADIO_2_17"] = {
-        ["F-14B:*:*"]                   = { ["f"] = 275.80, ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" },
-        ["FA-18C_hornet:*:*"]           = { ["f"] = 275.80, ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" }
+        [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 275.80, ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 275.80, ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" }
     },
     ["$RADIO_2_18"] = { },
     ["$RADIO_2_19"] = { },
     ["$RADIO_2_20"] = {
-        ["*:*:*"]                       = { ["f"] = 121.50, ["d"] = "Guard (VHF)" }
+        [1] = { ["p"] = "*:*:*",                         ["f"] = 121.50, ["d"] = "Guard (VHF)" }
     },
 
 
@@ -252,7 +248,7 @@ RadioPresetsRed =
     -----------------------------------------------------------------------------------------------------------
 
     ["$RADIO_1_01"] = {
-        ["*:*:*"]                       = { ["f"] = 270.00, ["d"] = "Tac Common" }
+        [1] = { ["p"] = "*:*:*", ["f"] = 270.00, ["d"] = "Tac Common" }
     },
     ["$RADIO_1_02"] = { },
     ["$RADIO_1_03"] = { },
@@ -280,7 +276,7 @@ RadioPresetsRed =
     -----------------------------------------------------------------------------------------------------------
 
     ["$RADIO_2_01"] = {
-        ["*:*:*"]                       = { ["f"] = 138.00, ["d"] = "Intraflight" }
+        [1] = { ["p"] = "*:*:*", ["f"] = 138.00, ["d"] = "Intraflight" }
     },
     ["$RADIO_2_02"] = { },
     ["$RADIO_2_03"] = { },
