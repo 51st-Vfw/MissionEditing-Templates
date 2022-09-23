@@ -1,13 +1,13 @@
 -- ************************************************************************************************************
 --
--- vfw51_stpts.lua: steerpoint set up for flight card created by VFW51KbFlightCardinator
+-- vfw51_waypts.lua: waypoint set up for flight card created by VFW51KbFlightCardinator
 --
--- SteerpointDesc is an array of steerpoint descriptions (strings) indexed by steerpoint number. the strings
+-- WaypointDesc is an array of steerpoint descriptions (strings) indexed by steerpoint number. the strings
 -- are injected into the template steerpoint table.
 --
 -- ************************************************************************************************************
 
-SteerpointDesc = {
+WaypointDesc = {
 --[[
     [1] = "KLSV",
     [2] = "Ingress rally point",

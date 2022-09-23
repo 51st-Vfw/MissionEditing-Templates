@@ -38,7 +38,7 @@ KboardSettings = {
         ["$mission"] = "Operation New Workflow",
         ["$flight"] = "VENOM, LOBO; SEAD/DEAD on Hama SA-10",
         ["$loadout"] = "Pilot's discretion",
-        ["$stpts"] = "vfw51_stpts.lua"
+        ["$stpts"] = "vfw51_waypts.lua"
     }
 ]]
 }

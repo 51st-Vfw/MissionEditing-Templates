@@ -97,10 +97,10 @@ function VFW51KbFlightCardinator:processText(lines, airframe)
                 lines = string.gsub(lines, var, "Unassigned", 1)
                 lines = string.gsub(lines, "fill=\"#FFFFFF\"", "fill=\"#9B9B9B\"", 1)
             end
-        elseif string.match(var, "$STEER_") and SteerpointDesc then
+        elseif string.match(var, "$WAYPT") and WaypointDesc then
             local num = math.floor(string.match(var, "^$STEER_(%d+)"))
-            if SteerpointDesc[num] then
-                lines = string.gsub(lines, var, SteerpointDesc[num], 1)
+            if WaypointDesc[num] then
+                lines = string.gsub(lines, var, WaypointDesc[num], 1)
             else
                 lines = string.gsub(lines, var, "Unassigned", 1)
                 lines = string.gsub(lines, "fill=\"#FFFFFF\"", "fill=\"#9B9B9B\"", 1)

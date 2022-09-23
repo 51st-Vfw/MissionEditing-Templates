@@ -25,13 +25,13 @@
                     <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="574" height="48"></rect>
                     <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="2.84217094e-14" width="136" height="48"></rect>
                     <text id="C4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="864" y="33">$STEER_16</tspan>
+                        <tspan x="864" y="33">$WAYPT_16</tspan>
                     </text>
                     <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="761.096" y="33">16</tspan>
                     </text>
                     <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="150" y="33">$STEER_08</tspan>
+                        <tspan x="150" y="33">$WAYPT_08</tspan>
                     </text>
                     <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="58.548" y="33">8</tspan>
@@ -43,13 +43,13 @@
                     <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="574" height="48"></rect>
                     <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="2.84217094e-14" width="136" height="48"></rect>
                     <text id="C4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="864" y="33">$STEER_15</tspan>
+                        <tspan x="864" y="33">$WAYPT_15</tspan>
                     </text>
                     <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="761.096" y="33">15</tspan>
                     </text>
                     <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="150" y="33">$STEER_07</tspan>
+                        <tspan x="150" y="33">$WAYPT_07</tspan>
                     </text>
                     <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="58.548" y="33">7</tspan>
@@ -61,13 +61,13 @@
                     <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="574" height="48"></rect>
                     <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="2.84217094e-14" width="136" height="48"></rect>
                     <text id="C4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="864" y="33">$STEER_14</tspan>
+                        <tspan x="864" y="33">$WAYPT_14</tspan>
                     </text>
                     <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="761.096" y="33">14</tspan>
                     </text>
                     <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="150" y="33">$STEER_06</tspan>
+                        <tspan x="150" y="33">$WAYPT_06</tspan>
                     </text>
                     <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="58.548" y="33">6</tspan>
@@ -79,13 +79,13 @@
                     <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="574" height="48"></rect>
                     <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="2.84217094e-14" width="136" height="48"></rect>
                     <text id="C4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="864" y="33">$STEER_13</tspan>
+                        <tspan x="864" y="33">$WAYPT_13</tspan>
                     </text>
                     <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="761.096" y="33">13</tspan>
                     </text>
                     <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="150" y="33">$STEER_05</tspan>
+                        <tspan x="150" y="33">$WAYPT_05</tspan>
                     </text>
                     <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="58.548" y="33">5</tspan>
@@ -97,13 +97,13 @@
                     <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="574" height="48"></rect>
                     <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="2.84217094e-14" width="136" height="48"></rect>
                     <text id="C4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="864" y="33">$STEER_12</tspan>
+                        <tspan x="864" y="33">$WAYPT_12</tspan>
                     </text>
                     <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="761.096" y="33">12</tspan>
                     </text>
                     <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="150" y="33">$STEER_04</tspan>
+                        <tspan x="150" y="33">$WAYPT_04</tspan>
                     </text>
                     <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="58.548" y="33">4</tspan>
@@ -115,13 +115,13 @@
                     <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="574" height="48"></rect>
                     <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="2.84217094e-14" width="136" height="48"></rect>
                     <text id="C4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="864" y="33">$STEER_11</tspan>
+                        <tspan x="864" y="33">$WAYPT_11</tspan>
                     </text>
                     <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="761.096" y="33">11</tspan>
                     </text>
                     <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="150" y="33">$STEER_03</tspan>
+                        <tspan x="150" y="33">$WAYPT_03</tspan>
                     </text>
                     <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="58.548" y="33">3</tspan>
@@ -133,13 +133,13 @@
                     <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="574" height="48"></rect>
                     <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="2.84217094e-14" width="136" height="48"></rect>
                     <text id="C4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="864" y="33">$STEER_10</tspan>
+                        <tspan x="864" y="33">$WAYPT_10</tspan>
                     </text>
                     <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="761.096" y="33">10</tspan>
                     </text>
                     <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="150" y="33">$STEER_02</tspan>
+                        <tspan x="150" y="33">$WAYPT_02</tspan>
                     </text>
                     <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="58.548" y="33">2</tspan>
@@ -151,13 +151,13 @@
                     <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="574" height="48"></rect>
                     <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="2.84217094e-14" width="136" height="48"></rect>
                     <text id="C4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="864" y="33">$STEER_09</tspan>
+                        <tspan x="864" y="33">$WAYPT_09</tspan>
                     </text>
                     <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="770.548" y="33">9</tspan>
                     </text>
                     <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="150" y="33">$STEER_01</tspan>
+                        <tspan x="150" y="33">$WAYPT_01</tspan>
                     </text>
                     <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
                         <tspan x="58.548" y="33">1</tspan>
@@ -183,8 +183,8 @@
                 </g>
             </g>
             <g id="Tag" fill="#FFFFFF" font-size="38">
-                <text id="Steerpoints" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="bold">
-                    <tspan x="42" y="37">Steerpoints</tspan>
+                <text id="WAYPTpoints" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="bold">
+                    <tspan x="42" y="37">WAYPTpoints</tspan>
                 </text>
                 <text id="❖" font-family="ZapfDingbatsITC, Zapf Dingbats" font-weight="normal">
                     <tspan x="0" y="39">❖</tspan>
