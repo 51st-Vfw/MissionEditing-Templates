@@ -259,7 +259,7 @@ echo   --nosync             Do not run sync script prior to build
 echo   --dirty              Leave the mission build directory in place after building
 echo   --base               Build base mission only, do not build any other variants
 echo   --dynamic            Build mission for dynamic script loading
-echo   --version {version}  Add non-zero integer {version} to the .miz file name(s) as version tag
+echo   --tag {tag}          Add tag "v{tag}" to the .miz file name(s) as a version tag
 echo   --dryrun             Dry run, print but do not execute commands (implies --verbose)
 echo   --verbose            Verbose logging output
 echo   --luatrace           Pass "--trace" to Lua scripts to set "trace" level logging
