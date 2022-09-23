@@ -171,17 +171,14 @@ function VFW51MissionVariantinator:new(o, arg)
     self.version = "1.0.1"
 
     local isArgBad = false
-    local isArgVers = false
-    local argVers = 0
+    local isArgTag = false
+    local argTag = nil
     for _, val in ipairs(arg) do
-        if val:lower() == "--version" then
-            isArgVers = true
-        elseif isArgVers then
-            argVers = val
-            if string.find(val, "[^%d]+") then
-                isArgBad = true
-            end
-            isArgVers = false
+        if val:lower() == "--tag" then
+            isArgTag = true
+        elseif isArgTag then
+            argTag = val
+            isArgTag = false
         elseif self.missionName == nil then
             self.missionName = val
         elseif self.srcPath == nil then
@@ -192,12 +189,12 @@ function VFW51MissionVariantinator:new(o, arg)
             isArgBad = true
         end
     end
-    if isArgBad or isArgVers or not self.missionName or not self.srcPath or not self.dstPath then
-        print("Usage: VFW51MissionVariantinator <mission_name> <src_path> <dst_path> [--version <version>] [--debug|--trace]")
+    if isArgBad or isArgTag or not self.missionName or not self.srcPath or not self.dstPath then
+        print("Usage: VFW51MissionVariantinator <mission_name> <src_path> <dst_path> [--tag <tag>] [--debug|--trace]")
         return nil
     end
-    if argVers ~= 0 then
-        self.missionName = self.missionName .. "-v" .. argVers
+    if argTag then
+        self.missionName = self.missionName .. "-v" .. argTag
     end
 
     return o

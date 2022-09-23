@@ -60,7 +60,7 @@ for %%x in (%*) do (
         if %%~x == 0 goto Usage
         set ARG_TAG_PARAM=0
         set ARG_TAG=%%~x
-        set LUA_DATA=--tag %%~x
+        set LUA_TAG=--tag %%~x
     ) else (
         echo Unknown command line argument
         goto Usage
