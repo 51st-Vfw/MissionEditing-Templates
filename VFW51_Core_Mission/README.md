@@ -1,9 +1,8 @@
 # 51st VFW Core Mission Template
 
 > This is the base 51st VFW mission template supporting the Caucusas, Marianas, NTTR, Persian
-> Gulf, and Syria maps. The template uses the 51st VFW workflow the
-> [`workflow.md`](https://github.com/51st-Vfw/MissionEditing-Templates/blob/main/VFW51_Core_Mission/workflow.md)
-> document describes. The template includes default setup for all 51st VFW airframes and
+> Gulf, and Syria maps using the
+> [51st VFW workflow](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/me_workflow.md). The template includes default setup for all 51st VFW airframes and
 > flights, support flights, and carrier groups per 
 > [51st VFW SOPs](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/missionsEditingSOPs.md).
 > These units will need to be positioned (or deleted) according to the needs of the mission. The
@@ -19,8 +18,7 @@
 
 # Mission Name
 
-> To rebuild the mission from source, make sure you have the support tools installed to enable
-> 51st VFW workflow (see `workflow.md`), then run `scripts\build.cmd` from a command shell.
+Capsule summary of mission here.
 
 |What|Notes|
 |---|---|
@@ -31,6 +29,13 @@
 ## Overview
 
 Overview of the mission would go here
+
+## Building from this Package
+
+> This mission uss the 51st VFW workflow. To rebuild the mission from the source, make sure you have the
+> support tools installed to enable 51st VFW workflow (see the
+> [51st VFW workflow](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/me_workflow.md) documentation),
+> then run `scripts\build.cmd` from a command shell.
 
 ## Required Modules
 
@@ -43,5 +48,5 @@ with variations of the base mission.
 
 ## Revision History
 
-- **v1.0** 16-Sep-2022
+- **v1.0** 21-Sep-2022
     - Initial release

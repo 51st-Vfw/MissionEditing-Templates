@@ -51,16 +51,16 @@ for %%x in (%*) do (
     ) else if "%%~x" == "--luatrace" (
         set ARG_LUATRACE=1
         set SYNC_ARGS=!SYNC_ARGS! --luatrace
-    ) else if "%%~x" == "--tag" (
-        set ARG_TAG_PARAM=1
+rem ) else if "%%~x" == "--tag" (
+rem     set ARG_TAG_PARAM=1
     ) else if "%%~x" == "--verbose" (
         set ARG_VERBOSE=1
         set SYNC_ARGS=!SYNC_ARGS! --verbose
-    ) else if !ARG_TAG_PARAM! == 1 (
-        if %%~x == 0 goto Usage
-        set ARG_TAG_PARAM=0
-        set ARG_TAG=%%~x
-        set LUA_TAG=--tag %%~x
+rem ) else if !ARG_TAG_PARAM! == 1 (
+rem     if %%~x == 0 goto Usage
+rem     set ARG_TAG_PARAM=0
+rem     set ARG_TAG=%%~x
+rem     set LUA_TAG=--tag %%~x
     ) else (
         echo Unknown command line argument
         goto Usage
@@ -243,8 +243,8 @@ exit /be 0
 
 :Usage
 echo.
-echo Usage: build [--help] [--dirty] [--base] [--dynamic] [--version {version}] [--nosync]
-echo              [--dryrun] [--verbose] [--luadebug, --luatrace]
+echo Usage: build [--help] [--nosync] [--dirty] [--base] [--dynamic] [--dryrun] [--verbose]
+echo              [--luadebug, --luatrace]
 echo.
 echo Assemble and build the .miz mission file(s) described by the mission directory. The .miz
 echo files are output at the root level of the mission directory. The sync.cmd script is
@@ -259,7 +259,6 @@ echo   --nosync             Do not run sync script prior to build
 echo   --dirty              Leave the mission build directory in place after building
 echo   --base               Build base mission only, do not build any other variants
 echo   --dynamic            Build mission for dynamic script loading
-echo   --tag {tag}          Add tag "v{tag}" to the .miz file name(s) as a version tag
 echo   --dryrun             Dry run, print but do not execute commands (implies --verbose)
 echo   --verbose            Verbose logging output
 echo   --luatrace           Pass "--trace" to Lua scripts to set "trace" level logging
