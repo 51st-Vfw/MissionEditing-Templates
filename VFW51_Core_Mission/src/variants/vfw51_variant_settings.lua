@@ -53,7 +53,7 @@ VariantSettings = {
         ["dawn"] = {
             ["wx"] = "base",
             ["moment"] = "morning",
-            ["options"] = "opt_base_sop.lua"
+            ["options"] = "opt_sop.lua"
         },
         ["night-ovc"] = {
             ["wx"] = "wx_overcast_rain_1.lua",

@@ -78,21 +78,14 @@ function VFW51MissionVariantinator.processMission(mission_t, args)
         mission_t["weather"] = self:deepCopy(wxVersions[wx])
     end
 
-    return mission_t
-end
-
--- edit function for veafMissionEditor.editMission, since that is not OO, we define this with . and
--- pass self explicitly as the arg
-function VFW51MissionVariantinator.processOptions(options_t, args)
-    local self = args["self"]
-    local targInfo = args["targInfo"]
-
+    -- set the mission options
     local opt = targInfo["options"]
     if (opt ~= nil) and (opt:lower() ~= "base") then
         self:logTrace(string.format("Setting mission options for %s", opt))
-        options_t["difficulty"] = self:deepCopy(optVersions[opt])
+        mission_t["forcedOptions"] = self:deepCopy(optVersions[opt])
     end
-    return options_t
+
+    return mission_t
 end
 
 function VFW51MissionVariantinator:process()
@@ -154,11 +147,6 @@ function VFW51MissionVariantinator:process()
         inPath = self.dstPath .. "mission"
         outPath = self.dstPath .. "..\\" .. self.missionName .. "-" .. targName
         veafMissionEditor.editMission(inPath, outPath, "mission", editFn, editArgs)
-
-        editFn = VFW51MissionVariantinator.processOptions
-        inPath = self.dstPath .. "options"
-        outPath = self.dstPath .. "..\\options-" .. self.missionName .. "-" .. targName
-        veafMissionEditor.editMission(inPath, outPath, "options", editFn, editArgs)
     end
 end
 
@@ -168,7 +156,7 @@ function VFW51MissionVariantinator:new(o, arg)
     self.__index = self
 
     self.id = "Variantinator"
-    self.version = "1.0.1"
+    self.version = "1.1.0"
 
     local isArgBad = false
     local isArgTag = false

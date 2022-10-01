@@ -83,9 +83,9 @@ function VFW51MissionExtractinator:process()
 ---@diagnostic disable-next-line: undefined-global
         luaData = mission["weather"]
         tableName = "WxData"
-    elseif self.isOpt and self:loadLuaFile(self.mizPath, "", "options") then
+    elseif self.isOpt and self:loadLuaFile(self.mizPath, "", "mission") then
 ---@diagnostic disable-next-line: undefined-global
-        luaData = options["difficulty"]
+        luaData = mission["forcedOptions"]
         tableName = "OptionsData"
     elseif self.wpGroup and self:loadLuaFile(self.mizPath, "", "mission") then
 ---@diagnostic disable-next-line: undefined-global
@@ -103,7 +103,7 @@ function VFW51MissionExtractinator:new(o, arg)
     self.__index = self
 
     self.id = "Extractinator"
-    self.version = "1.0.0"
+    self.version = "1.1.0"
 
     self.isWx = false
     self.isOpts = false
