@@ -9,33 +9,35 @@
 --
 -- the key/value pairs in the "moments" table associate a moment name with a time,
 --
---   <moment_name> : <string>   Define <moment_name> as the time from <string>. The time is formatted
---                              as "<[H]H>:<MM>" (e.g., "16:30") using a 24-hour clock. the <moment_name>
+--   <moment_name> : <string>   Define <moment_name> as the time from <string>. The time is formatted as
+--                              "<[H]H>:<MM>" (e.g., "16:30") using a 24-hour clock. the <moment_name>
 --                              "base" is reserved.
 --
 -- the key/value pairs in the "variants" table define each of the variants that the build will construct.
 -- each variant specifies a change to the time, weather, and options in the base mission.
 --
---   <variant_name> : <table>   Associates <variant_name> with the changes outlined in <table>. the
---                              <variant_name> "base" is reserved.
+--   <variant_name> : <table>   Associates <variant_name> with the changes to the base mission <table>
+--                              describes. the <variant_name> "base" is reserved.
 --
 -- key/value pairs in the <variant_name> table include,
 --
---   "moment" : <string>        Sets the time in the variant according to the moment named by <string>.
---                              a moment name of "base" or nil indicates no changes to the time in the base
---                              mission.
---   "wx" : <string>            Sets the weather in the variant according to the weather file named
---                              by <string>. This file should be located in src/variants. a wx file of
---                              "base" or nil indicates no changes to the weather in the base mission.
+--   "moment" : <string>        Sets the time in the variant according to the moment named by <string>. if
+--                              this key/value pair is not defined or the moment name is "base", the variant
+--                              uses the time from the base mission.
+--   "wx" : <string>            Sets the weather in the variant according to the weather file named by
+--                              <string>. This file should be located in src/variants. if this key/value
+--                              pair is not defined or the weather file is "base", the variant uses the 
+--                              weather from the base mission.
 --   "options" : <string>       Sets the mission options in the variant according to the file named by
---                              <string>. This file should be located in src/variants. an options of "base"
---                              or nil indicates no changes to the options in the base mission.
+--                              <string>. This file should be located in src/variants. if this key/value
+--                              pair is not defined or the options file is "base", the variant uses the 
+--                              options from the base mission.
 --
 -- the weather file is a Lua file that defines a single table "WxData" that contains the key/value pairs from
 -- the "weather" table in the mission file for the desired weather setup.
 --
--- the options file is a Lua file that defines a single table "OptionsData" that contains the key/value
--- pairs from the "options" table in the mission file for the desired options setup.
+-- the options file is a Lua file that defines a single table "OptionsData" that contains the key/value pairs
+-- from the "forcedOptions" table in the mission file for the desired options setup.
 --
 -- the extract script may be used to extract options and weather in the proper format using the --wx and --opt
 -- arguments.

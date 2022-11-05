@@ -14,6 +14,7 @@
 OptionsData = {
     ["accidental_failures"] = false,
     ["birds"] = 0,
+    ["civTraffic"] = "low",
     ["cockpitStatusBarAllowed"] = false,
     ["cockpitVisualRM"] = false,
     ["easyCommunication"] = false,

@@ -71,6 +71,28 @@ function VFW51MissionRadioinator:buildRadioTable(radioSetting, aframe, name, cal
 end
 
 function VFW51MissionRadioinator:buildRadioFiles(dstPath, fileSetting, aframe, name, callsign)
+    local function DecodePresetVal(presetVal, defaultFreq)
+        local freq = defaultFreq
+        if (type(presetVal) == "table") then
+            for _, preset in ipairs(presetVal) do
+                local pattern = preset["p"]
+                if self:matchRadioPattern(pattern, aframe, name, callsign) then
+                    freq = preset["f"]
+                    self:logTrace(string.format("'%s' -- %s, %s, %s <<< **** MATCH **** %.2f", pattern, aframe, name, callsign, freq))
+                else
+                    self:logTrace(string.format("'%s' -- %s, %s, %s", pattern, aframe, name, callsign))
+                end
+            end
+
+            freq = math.floor(freq * 1000000)
+        elseif ((type(presetVal) == "number") and (presetVal > 1000000)) then
+            freq = math.floor(presetVal)
+        else
+            freq = math.floor(presetVal * 1000000)
+        end
+        return freq
+    end
+
     for file, presets in pairs(fileSetting) do
         local defaultFreq = 0.0
         if file == "UHF_RADIO" then
@@ -83,23 +105,10 @@ function VFW51MissionRadioinator:buildRadioFiles(dstPath, fileSetting, aframe, n
 
         for presetNum, presetVal in ipairs(presets["presets"]) do
             self:logTrace(string.format("[%d] %s", presetNum, type(presetVal)))
-            if (type(presetVal) == "table") then
-                local freq = defaultFreq
-                for _, preset in ipairs(presetVal) do
-                    local pattern = preset["p"]
-                    if self:matchRadioPattern(pattern, aframe, name, callsign) then
-                        freq = preset["f"]
-                        self:logTrace(string.format("'%s' -- %s, %s, %s <<< **** MATCH **** %.2f", pattern, aframe, name, callsign, freq))
-                    else
-                        self:logTrace(string.format("'%s' -- %s, %s, %s", pattern, aframe, name, callsign))
-                    end
-                end
-
-                presets["presets"][presetNum] = math.floor(freq * 1000000)
-            else
-                presets["presets"][presetNum] = math.floor(presetVal * 1000000)
-            end
+            presets["presets"][presetNum] = DecodePresetVal(presetVal, defaultFreq)
         end
+        presets["dials"]["manual_frequency"] = DecodePresetVal(presets["dials"]["manual_frequency"], defaultFreq)
+
         local tableAsLua = veafMissionEditor.serialize("settings", presets)
 
         local settingsPath = dstPath .. file .. "\\"

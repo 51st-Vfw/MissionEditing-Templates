@@ -8,53 +8,49 @@
 -- ************************************************************************************************************
 
 WxData = {
-	["wind"] = 
-	{
-		["at8000"] = 
-		{
-			["speed"] = 9.3589157883919,
-			["dir"] = 264,
-		}, -- end of ["at8000"]
-		["at2000"] = 
-		{
-			["speed"] = 4.0214021600045,
-			["dir"] = 268,
-		}, -- end of ["at2000"]
-		["atGround"] = 
-		{
-			["speed"] = 1,
-			["dir"] = 260,
-		}, -- end of ["atGround"]
-	}, -- end of ["wind"]
-	["enable_fog"] = false,
-	["qnh"] = 763.524,
-	["cyclones"] = 
-	{
-	}, -- end of ["cyclones"]
-	["dust_density"] = 0,
-	["enable_dust"] = false,
-    ["clouds"] = 
-    {
-        ["thickness"] = 200,
-        ["density"] = 0,
-        ["preset"] = "RainyPreset1",
-        ["base"] = 2900,
-        ["iprecptns"] = 0,
-    }, -- end of ["clouds"]
     ["atmosphere_type"] = 0,
-	["groundTurbulence"] = 7.0098697350721,
-	["type_weather"] = 0,
-	["fog"] = 
-	{
-		["thickness"] = 0,
-		["visibility"] = 0,
-	}, -- end of ["fog"]
-	["season"] = 
-	{
-		["temperature"] = 16.442,
-	}, -- end of ["season"]
-	["visibility"] = 
-	{
-		["distance"] = 80000,
-	}, -- end of ["visibility"]
-}
+    ["clouds"] = {
+        ["base"] = 2900,
+        ["density"] = 0,
+        ["iprecptns"] = 0,
+        ["preset"] = "RainyPreset1",
+        ["thickness"] = 200,
+    }, -- end of ["clouds"]
+    ["cyclones"] = {
+    }, -- end of ["cyclones"]
+    ["dust_density"] = 0,
+    ["enable_dust"] = false,
+    ["enable_fog"] = false,
+    ["fog"] = {
+        ["thickness"] = 0,
+        ["visibility"] = 0,
+    }, -- end of ["fog"]
+    ["groundTurbulence"] = 0,
+    ["halo"] = {
+        ["preset"] = "auto",
+    }, -- end of ["halo"]
+    ["modifiedTime"] = false,
+    ["name"] = "Winter, clean sky",
+    ["qnh"] = 760,
+    ["season"] = {
+        ["temperature"] = 20,
+    }, -- end of ["season"]
+    ["type_weather"] = 0,
+    ["visibility"] = {
+        ["distance"] = 80000,
+    }, -- end of ["visibility"]
+    ["wind"] = {
+        ["at2000"] = {
+            ["dir"] = 0,
+            ["speed"] = 0,
+        }, -- end of ["at2000"]
+        ["at8000"] = {
+            ["dir"] = 0,
+            ["speed"] = 0,
+        }, -- end of ["at8000"]
+        ["atGround"] = {
+            ["dir"] = 0,
+            ["speed"] = 0,
+        }, -- end of ["atGround"]
+    }, -- end of ["wind"]
+} -- end of WxData
