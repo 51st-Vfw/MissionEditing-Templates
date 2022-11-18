@@ -73,13 +73,13 @@ rem ======== map versus miz vector
 
 if %ARG_FINALIZE% == 1 goto FinalizeMiz
 
-if %ARG_MAP% == 0 goto CheckMiz
+if %ARG_MAP% == "" goto CheckMiz
 if exist Tmplt_%ARG_MAP%_core.miz goto HaveMap
 echo Unable to find template for map %ARG_MAP%
 exit /be -1
 
 :CheckMiz
-if %ARG_MIZ% == 0 goto NoInput
+if %ARG_MIZ% == "" goto NoInput
 if exist %ARG_MIZ% goto HaveMiz
 echo Unable to find mission file %ARG_MIZ%
 exit /be -1
