@@ -21,6 +21,9 @@
 --
 -- code adapted from and riffs on the veaf tools (specifically, veafMissionRadioPresetsEditor), by zip.
 --
+-- TODO: at present, emitting the legacy settings for the A-10 messes up presets of jets that encode their
+-- TODO: presets in the unit table. for now, we disable the legacy setup.
+--
 -- ************************************************************************************************************
 
 require("veafMissionEditor")
@@ -186,8 +189,8 @@ function VFW51MissionRadioinator.processMission(mission_t, self)
                         group_t["frequency"] = unit_t["Radio"][1]["channels"][1]
                         group_t["modulation"] = unit_t["Radio"][1]["modulations"][1]
                     end
-                    -- set the "radioSet" value to false
-                    self:logTrace("seting the radioSet value to false")
+                    -- set the "radioSet" value to true
+                    self:logTrace("seting the radioSet value to true")
                     group_t["radioSet"] = true
                     unitEditCount = unitEditCount + 1
                 end
@@ -239,12 +242,16 @@ function VFW51MissionRadioinator:process()
         self:logInfo(string.format("mission updated, inject %d presets in %d units", presetEditCount, unitEditCount))
 
         -- emit legacy presets if necessary
+        --[[
+        -- TODO: the legacy files appear to apply to *all* units, even those with "radio" keys.
+        -- TODO: for now, avoid emitting the legacy files.
         for key, value in pairs(RadioSettings) do
             if value["emit"] then
                 self:logInfo("Emitting legacy settings for " .. value["emit"])
                 self:buildRadioFiles(self.dstPath, value["files"], value["emit"], "<?>", "<?>")
             end
         end
+        ]]
     else
         self:logInfo("Radio settings not found, skipping")
     end
