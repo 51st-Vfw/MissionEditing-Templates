@@ -48,6 +48,9 @@ with variations of the base mission.
 
 ## Revision History
 
+- **v20221211**, Workflow 1-6-1
+    - Adopt MapSOP Version 20221211.1
+    - Added template for South Atlantic (SAT) map
 - **v20221205**, Workflow 1-6-1
     - Disabled legacy preset functionality in radioinator due to DCS behavior (or bug?) that causes
       legacy presets to over-ride non-legacy presets.

@@ -1,5 +1,5 @@
 -- 51st MapSOP
-MAPSOP_VERSION = "20221130.1"
+MAPSOP_VERSION = "20221211.1"
 -- Initial version by Blackdog Jan 2022
 --
 -- Tested against MOOSE GITHUB Commit Hash ID:
@@ -62,9 +62,14 @@ MAPSOP_VERSION = "20221130.1"
 --                    - Added declaration of multiple orbit tracks for each tanker/AWACs.
 --                    - Added scheduled flight launches and orbit track changes.
 --                    - F10 menu mission starts and track pushes.
+--                    - Fixed F10 map unit callsign labels.
 --                    - Deprecated 'zone name' SOP setting overrides in favor of Zone Properties.
 --                    - Tested/included MOOSE version bump.
 --                    - Added Mount Pleasant as default Support Base for South Atlantic map.
+-- Version 20221211.1 - New 'MapSOP Settings' zone with global MapSOP setting properties.
+--                    - Moved 'PauseAfter' property from 'Unpause Client' zone(s) to 'MapSOP Settings'.
+--                    - Added RespawnAir option for Tankers/AWACS relief flights to air spawn.
+--                    - Added scripting only functions RemoveFlight() and ReAddFlight().
 --                    
 -- Known issues/limitations:
 --   - A paused server will not unpause unless a client enters a (valid) aircraft slot.
@@ -159,12 +164,13 @@ ENUMS.SupportUnitFields = {
     MODEX           =   13, -- 511 -- Number -- Board number, etc.
     REFUELINGSYSTEM =   14, -- ENUMS.RefuelingSystem.BOOM -- Tanker refueling system
     GROUNDSTART     =   15, -- false -- whether to takeoff from the gound (and no airspawn for carrier units)
-    TEMPLATE        =   16,  -- ENUMS.SupportUnitTemplate.BOOMTANKER -- Unit template type
-    PUSHTIME        =   17   -- 300 -- Seconds after start to autopush track. Default/'SOP' is always nil.
-                             --        nil = Autostart default/initial track at mission start,
-                             --              never autopush other tracks (menu push only).
-                             --        0/  = Do not autostart default/initial track,
-                             --              never autopush other tracks (menu push only).
+    TEMPLATE        =   16, -- ENUMS.SupportUnitTemplate.BOOMTANKER -- Unit template type
+    PUSHTIME        =   17, -- 300 -- Seconds after start to autopush track. Default/'SOP' is always nil.
+                            --        nil = Autostart default/initial track at mission start,
+                            --              never autopush other tracks (menu push only).
+                            --        0/  = Do not autostart default/initial track,
+                            --              never autopush other tracks (menu push only).
+    RESPAWNAIR      =   18  -- false -- whether to spawn relief flights in the air.
 }
 
 local SUPPORTUNITS = {}
@@ -1365,6 +1371,7 @@ function InitSupportBases()
     IMMORTAL = "Immortal",
     AIRFRAMES = "Airframes",
     GROUNDSTART = "GroundStart",
+    RESPAWNAIR = "RespawnAir",
     PUSHTIME = "PushTime"
   }
 
@@ -1482,7 +1489,7 @@ function InitSupportBases()
             FullCallsign = "RED-" .. FullCallsign
           end
 
-          local template,notemplate,tokentemplate,alt,speed,freq,tacan,tacanband,invisible,immortal,airframes,groundstart
+          local template,notemplate,tokentemplate,alt,speed,freq,tacan,tacanband,invisible,immortal,airframes,groundstart,respawnair
 
           if param then
             for token in string.gmatch(param, "[^-]+") do
@@ -1627,6 +1634,14 @@ function InitSupportBases()
                 groundstart = groundstart or nil
               end
 
+              local respawnairprop = P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.RESPAWNAIR)
+              if respawnairprop then respawnairprop = string.lower(respawnairprop) end
+              if respawnairprop == 'true' then
+                respawnair = true
+              else
+                respawnair = nil
+              end
+
               local pushtimeprop
               pushtimeprop = P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.PUSHTIME)
               if pushtimeprop and string.lower(pushtimeprop) ~= 'sop' then
@@ -1687,8 +1702,13 @@ function InitSupportBases()
           end
 
           if groundstart then
-            BASE:I(FullCallsign .. " SOP override Default flight to ground takeoff.")
+            BASE:I(FullCallsign .. " SOP override Default track to ground takeoff.")
             SUPPORTUNITS[trackname][ FullCallsign ][ ENUMS.SupportUnitFields.GROUNDSTART ] = true
+          end
+
+          if respawnair then
+            BASE:I(FullCallsign .. " SOP override relief flights to respawn in the air.")
+            SUPPORTUNITS[trackname][ FullCallsign ][ ENUMS.SupportUnitFields.RESPAWNAIR ] = true
           end
 
           if pushtime and pushtime > 0 then
@@ -1953,7 +1973,11 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
         if SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission then --and SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup then
           SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission:I("Relief flight on station " .. SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:GetName() .. " is RTB.")
           SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission:Success()
-          SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:RTB(SupportBase)
+          if SUPPORTUNITS["_"][SupportUnit][ENUMS.SupportUnitFields.RESPAWNAIR] then
+            SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:Destroy()
+          else
+            SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:RTB(SupportBase)
+          end
 
           if unittype ~= ENUMS.UnitType.AWACS then
             -- Stop relieved flight's TACAN schedule
@@ -2032,7 +2056,9 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
 
   function FlightGroup:OnAfterMissionDone(From, Event, To, Mission)
     -- Set things to the pre-executing mission values
-    self:PrePostMissionSettings(true)
+    if FlightGroup:IsAlive() then
+      self:PrePostMissionSettings(true)
+    end
     return self
   end
 
@@ -2067,7 +2093,11 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
     
     local SpawnedGroup
     if CURRENTUNITTRACK[SupportUnit] then
-      SpawnedGroup = Spawn:SpawnAtAirbase( SupportBase, SPAWN.Takeoff.Hot )
+      if SUPPORTUNITS["_"][SupportUnit][ ENUMS.SupportUnitFields.RESPAWNAIR ] and SUPPORTUNITS["_"][SupportUnit].SpawnPt then
+        SpawnedGroup = Spawn:SpawnFromCoordinate( SUPPORTUNITS["_"][SupportUnit].SpawnPt )
+      else
+        SpawnedGroup = Spawn:SpawnAtAirbase( SupportBase, SPAWN.Takeoff.Hot )
+      end
     end
 
   end
@@ -2090,7 +2120,7 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
   end
 end
 
-function InitSupport( SupportBaseParam, RedSupportBase, InAir ) 
+function InitSupport( SupportBaseParam, RedSupportBase) 
 
   for SupportUnit,SupportUnitFields in pairs(SUPPORTUNITS["_"]) do
     local SupportBase = SupportBaseParam
@@ -2169,7 +2199,7 @@ function InitSupport( SupportBaseParam, RedSupportBase, InAir )
             end
 
             SUPPORTUNITS["_"][SupportUnit].UnlimitedAirframes = UnlimitedAirframes
-            
+          
             local Spawn = SPAWN:NewWithAlias(SupportUnit, SupportUnit .. " Flight")
                 :InitLimit( 2, airframes )
                 :InitHeading(OrbitDir-180)
@@ -2225,16 +2255,18 @@ function InitSupport( SupportBaseParam, RedSupportBase, InAir )
                     ManageFlights, SupportUnit, nil
                   )
             SUPPORTUNITS["_"][SupportUnit].Spawn = Spawn
+
             if SUPPORTUNITS["_"][SupportUnit].Scheduler == nil then
               SUPPORTUNITS["_"][SupportUnit].Scheduler, SUPPORTUNITS["_"][SupportUnit].ScheduleID = SCHEDULER:New( nil,
                 function()
                   if (Spawn:GetFirstAliveGroup() == nil) then
                     Spawn:FixAliveGroupCount()
-                    if InAir and not SupportUnitFields[ ENUMS.SupportUnitFields.GROUNDSTART ] and not ( timer.getAbsTime()-timer.getTime0() > 30 ) then
+                    if SupportUnitFields[ ENUMS.SupportUnitFields.RESPAWNAIR ] or
+                        (not SupportUnitFields[ ENUMS.SupportUnitFields.GROUNDSTART ] and not ( timer.getAbsTime()-timer.getTime0() > 30 )) then
                       Spawn:InitAirbase(SupportBase, SPAWN.Takeoff.Hot)
-                      local SpawnPt = OrbitPt:Translate( UTILS.NMToMeters(3), OrbitDir-30, true, false)
+                      SUPPORTUNITS["_"][SupportUnit].SpawnPt = OrbitPt:Translate( UTILS.NMToMeters(3), OrbitDir-30, true, false)
                         :SetAltitude(UTILS.FeetToMeters(SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE]+100), false)
-                      Spawn:SpawnFromCoordinate(SpawnPt)
+                      Spawn:SpawnFromCoordinate(SUPPORTUNITS["_"][SupportUnit].SpawnPt)
                     else
                       Spawn:SpawnAtAirbase( SupportBase, SPAWN.Takeoff.Hot)
                     end
@@ -2250,7 +2282,7 @@ function InitSupport( SupportBaseParam, RedSupportBase, InAir )
   end
 end
 
-function InitNavySupport( AircraftCarriers, CarrierMenu, InAir )
+function InitNavySupport( AircraftCarriers, CarrierMenu)
 
     local function ends_with(str, ending)
       return ending == "" or str:sub(-#ending) == ending
@@ -2503,26 +2535,27 @@ end
 
 -- Init MapSOP
 
+local MapSopSettingsZone = ZONE:FindByName("MapSOP Settings")
+local MapSopSettings = {}
+if MapSopSettingsZone then
+  MapSopSettings = MapSopSettingsZone:GetAllProperties()
+end
+
 SpawnTemplateKeepCallsign = true -- Use MapSOP SPAWN:_Prepare() callsign hack
 
 local SupportBase = nil
 local RedSupportBase = nil
 local AircraftCarriers = nil
-local AirStart = SupportFlightAirStart or true
-
 local CarrierMenu = nil
 
 -- Initialize Airbase & Carriers
 SupportBase, RedSupportBase, AircraftCarriers = InitSupportBases()
 
 -- Init land-based support units
-InitSupport(SupportBase, RedSupportBase, AirStart)
-
--- Periodically re-launch each Flight if none in the air
-local SupportFlightScheduler = SCHEDULER:New( nil, InitSupportWings, {SupportBase}, 300, 300 )
+InitSupport(SupportBase, RedSupportBase)
 
 -- Setup carrier and carrier group support units
-local Carriers = InitNavySupport(AircraftCarriers, CarrierMenu, AirStart)
+local Carriers = InitNavySupport(AircraftCarriers, CarrierMenu)
 
 -- Base Tacan reset menu
 local TacanMenu = MENU_MISSION:New("TACAN Control")
@@ -2548,7 +2581,7 @@ end
 -- Server Pause/Resume behavior
 local UnpauseZoneSet = SET_ZONE:New():FilterPrefixes("Unpause Client"):FilterOnce()
 local UnpauseUnitNames = {}
-local PauseTime = 30
+local PauseTime = tonumber(MapSopSettings['PauseTime'] or MapSopSettings['pausetime'] or MapSopSettings['PAUSETIME'] or 30)
 
 local ClientSet = SET_CLIENT:New():FilterActive()
 
@@ -2561,7 +2594,6 @@ UnpauseZoneSet:ForEachZone(
     if unitprop and string.lower(unitprop) ~= "SOP" and string.lower(unitprop) ~= "none" then 
       UnpauseUnitNames[unitprop] = Zone:GetName()
     end
-    PauseTime = Zone:GetProperty("PauseAfter") or PauseTime
   end, {}
  )
 BASE:I("Mission auto-pause time: " .. PauseTime)
@@ -2570,14 +2602,14 @@ local PauseScheduler = nil
 local ConsecutiveNoAlive = nil
 local UnpauseClientsSlotted = nil
 
-if tonumber(PauseTime) > 0 then
+if PauseTime > 0 then
 
   SCHEDULER:New( nil, 
   function()
     if not UnpauseClientsSlotted then
       ServerPause()
     end
-  end, { }, tonumber(PauseTime)
+  end, { }, PauseTime
   )
   PauseScheduler = SCHEDULER:New( nil, 
   function()
@@ -2595,7 +2627,6 @@ function ClientSet:OnEventPlayerEnterAircraft(event_data)
     local unit = UNIT:FindByName(unit_name)
     local group = event_data.IniGroup
     local player_name = event_data.IniPlayerName
-    ConsecutiveNoAlive = nil
 
     env.info("Client connected!")
     env.info(unit_name)
@@ -2616,6 +2647,31 @@ function ClientSet:OnEventPlayerEnterAircraft(event_data)
       UnpauseClientsSlotted = true
       ServerUnpause()
     end
+end
+
+-- Scripting-only function to instantly remove a flight and stop re-launch/re-spawns
+function RemoveFlight(FlightName)
+  if SUPPORTUNITS["_"][FlightName] then
+    BASE:I("RemoveFlight called for " .. FlightName .. ", removing.")
+    if SUPPORTUNITS["_"][FlightName].PreviousMission and SUPPORTUNITS["_"][FlightName].PreviousMission.flightgroup then
+      if SUPPORTUNITS["_"][FlightName].PreviousMission.flightgroup:IsAlive() then
+        SUPPORTUNITS["_"][FlightName].PreviousMission.flightgroup:Destroy()
+      end
+    end
+    if SUPPORTUNITS["_"][FlightName].Scheduler then
+      SUPPORTUNITS["_"][FlightName].Scheduler:Stop()
+    end
+  end
+end
+
+-- Scripting-only function to instantly re-add a flight removed by RemoveFlight
+function ReAddFlight(FlightName)
+  if SUPPORTUNITS["_"][FlightName] then
+    BASE:I("ReAddFlight called for " .. FlightName .. ", re-adding.")
+    if SUPPORTUNITS["_"][FlightName].Scheduler then
+      SUPPORTUNITS["_"][FlightName].Scheduler:Start()
+    end
+  end
 end
 
 SetEventHandler()
