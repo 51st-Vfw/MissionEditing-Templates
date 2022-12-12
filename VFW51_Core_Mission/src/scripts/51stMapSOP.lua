@@ -67,7 +67,7 @@ MAPSOP_VERSION = "20221211.1"
 --                    - Tested/included MOOSE version bump.
 --                    - Added Mount Pleasant as default Support Base for South Atlantic map.
 -- Version 20221211.1 - New 'MapSOP Settings' zone with global MapSOP setting properties.
---                    - Moved 'PauseAfter' property from 'Unpause Client' zone(s) to 'MapSOP Settings'.
+--                    - Moved 'PauseAfter' property from 'Unpause Client' zone(s) to 'MapSOP Settings' as 'PauseTime'.
 --                    - Added RespawnAir option for Tankers/AWACS relief flights to air spawn.
 --                    - Added scripting only functions RemoveFlight() and ReAddFlight().
 --                    
