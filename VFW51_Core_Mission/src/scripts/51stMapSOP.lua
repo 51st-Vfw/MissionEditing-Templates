@@ -1,9 +1,9 @@
 -- 51st MapSOP
-MAPSOP_VERSION = "20221211.1"
+MAPSOP_VERSION = "20230125.1"
 -- Initial version by Blackdog Jan 2022
 --
 -- Tested against MOOSE GITHUB Commit Hash ID:
--- 2022-11-30T17:37:28.0000000Z-2a8d166c54330c8423dee1e76e95d1636309b220
+-- 2023-01-22T12:11:13.0000000Z-24d47ef353558883bfa24fe43d0e17698b9025f4
 --
 -- Version 20220101.1 - Blackdog initial version
 -- Version 20220115.1 - Fix: Tanker speeds adjusted to be close KIAS from SOP + better starting altitudes.
@@ -70,6 +70,21 @@ MAPSOP_VERSION = "20221211.1"
 --                    - Moved 'PauseAfter' property from 'Unpause Client' zone(s) to 'MapSOP Settings' as 'PauseTime'.
 --                    - Added RespawnAir option for Tankers/AWACS relief flights to air spawn.
 --                    - Added scripting only functions RemoveFlight() and ReAddFlight().
+-- Version 20230125.1 - Updated to latest MOOSE devel branch (Text-to-Speech via MSRS/DCS-gRPC plugin!).
+--                    - Starts DCS-gRPC if present (required for TTS, must be configured on server)
+--                    - Tankers/AWACS use SRS TTS to report new track push / arrived on station (on TacCommon).
+--                    - Carrier SRS TTS report when turning into wind / return to initial course (Carrier ATC freq).
+--                    - Option to set MapSOP Settings by global 'MAPSOP_Settings' table variable.
+--                    - Added 'PrefixRedSAM', 'PrefixRedEWR', and 'PrefixRedAWACS' to 'MapSOP Settings' zone options.
+--                    - Added 'UseSRS' and 'TacCommon' as a 'MapSOP Settings' zone option for TTS reports.
+--                    - Added 'UseSubMenu' option to 'MapSOP Settings' that puts MapSOP F10 menus in own sub-menu.
+--                    - Added 'DisableATC' option to 'MapSOP Settings' to disable all AI ATC (defaults to disabled)
+--                    - Added 'Disable ATC' zones to enable AI ATC at airbases when DisableATC option is 'false'.
+--                    - Arco-2 is now 'low and slow' KC-130 per SOP change.
+--                    - Fixed a potential 'PauseTime' related Lua error.
+--                    - Fixed a potential 'Support Base' / 'Red Support Base' related Lua error.
+--                    - Improved documentation (readme.md)
+
 --                    
 -- Known issues/limitations:
 --   - A paused server will not unpause unless a client enters a (valid) aircraft slot.
@@ -142,6 +157,7 @@ ENUMS.SupportUnitTemplate = {
     --                UNITTYPE, FUEL, FLARE, CHAFF, GUNS
     BOOMTANKER  =   { "KC-135",         90700, 60, 120, 100 },
     PROBETANKER =   { "KC135MPRS",      90700, 60, 120, 100 },
+    KC130TANKER  =  { "KC130",          30000, 60, 120, 100 },
     NAVYTANKER  =   { "S-3B Tanker",     7813, 30,  30, 100 },
     NAVYAWACS   =   { "E-2C",            5624, 30,  30, 100 },
     AWACS       =   { "E-3A",           65000, 60, 120, 100 },
@@ -173,6 +189,38 @@ ENUMS.SupportUnitFields = {
     RESPAWNAIR      =   18  -- false -- whether to spawn relief flights in the air.
 }
 
+ENUMS.GoogleVoices = {
+  "en-US-Wavenet-A",
+  "en-US-Wavenet-B",
+  "en-US-Wavenet-C",
+  "en-US-Wavenet-D",
+  "en-US-Wavenet-E",
+  "en-US-Wavenet-F",
+  "en-US-Wavenet-G",
+  "en-US-Wavenet-H",
+  "en-US-Wavenet-I",
+  "en-US-Wavenet-J",
+  "en-US-Neural2-A",
+  "en-US-Neural2-C",
+  "en-US-Neural2-D",
+  "en-US-Neural2-E",
+  "en-US-Neural2-F",
+  "en-US-Neural2-G",
+  "en-US-Neural2-H",
+  "en-US-Neural2-I",
+  "en-US-Neural2-J",
+  "en-US-News-K",
+  "en-US-News-L",
+  "en-US-News-M",
+  "en-US-News-N",
+}
+
+ENUMS.WinVoices = {
+  "David",
+  "Mark",
+  "Zira"
+}
+
 local SUPPORTUNITS = {}
 SUPPORTUNITS["_"] = {}
 
@@ -180,17 +228,17 @@ SUPPORTUNITS["_"] = {}
 -- CALLSIGN, CALLSIGN_NUM, TYPE, RADIOFREQ, TACANCHAN, TACANBAND, TACANMORSE, ICLSCHAN, ICLSMORSE, LINK4FREQ, ALTITUDE, SPEED, MODEX, REFUELINGSYSTEM, GROUNDSTART, TEMPLATE
 
 -- Tankers
-SUPPORTUNITS["_"][ "Texaco1" ] = { CALLSIGN.Tanker.Texaco,  1, ENUMS.UnitType.TANKER,  251.00, 51, ENUMS.TacanBand.Y, "TX1", nil, nil, nil, 25000, 300, 251, ENUMS.RefuelingSystem.BOOM, false, ENUMS.SupportUnitTemplate.BOOMTANKER }
-SUPPORTUNITS["_"][ "Texaco2" ] = { CALLSIGN.Tanker.Texaco,  2, ENUMS.UnitType.TANKER,  252.00, 52, ENUMS.TacanBand.Y, "TX2", nil, nil, nil, 15000, 220, 252, ENUMS.RefuelingSystem.BOOM, false, ENUMS.SupportUnitTemplate.BOOMTANKER }
-SUPPORTUNITS["_"][ "Arco1" ]   = { CALLSIGN.Tanker.Arco,    1, ENUMS.UnitType.TANKER,  253.00, 53, ENUMS.TacanBand.Y, "AR1", nil, nil, nil, 20000, 285, 254, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.PROBETANKER }
-SUPPORTUNITS["_"][ "Arco2" ]   = { CALLSIGN.Tanker.Arco,    2, ENUMS.UnitType.TANKER,  254.00, 54, ENUMS.TacanBand.Y, "AR2", nil, nil, nil, 21000, 285, 255, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.PROBETANKER }
+SUPPORTUNITS["_"][ "Texaco1" ] = { CALLSIGN.Tanker.Texaco,  1, ENUMS.UnitType.TANKER,  251.00, 51, ENUMS.TacanBand.Y, "TX1", nil, nil, nil, 25000, 300, 251, ENUMS.RefuelingSystem.BOOM,  false, ENUMS.SupportUnitTemplate.BOOMTANKER }
+SUPPORTUNITS["_"][ "Texaco2" ] = { CALLSIGN.Tanker.Texaco,  2, ENUMS.UnitType.TANKER,  252.00, 52, ENUMS.TacanBand.Y, "TX2", nil, nil, nil, 15000, 220, 252, ENUMS.RefuelingSystem.BOOM,  false, ENUMS.SupportUnitTemplate.BOOMTANKER }
+SUPPORTUNITS["_"][ "Arco1" ]   = { CALLSIGN.Tanker.Arco,    1, ENUMS.UnitType.TANKER,  253.00, 53, ENUMS.TacanBand.Y, "AR1", nil, nil, nil, 20000, 285, 253, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.PROBETANKER }
+SUPPORTUNITS["_"][ "Arco2" ]   = { CALLSIGN.Tanker.Arco,    2, ENUMS.UnitType.TANKER,  254.00, 54, ENUMS.TacanBand.Y, "AR2", nil, nil, nil, 17000, 240, 254, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.KC130TANKER }
 -- Tankers for each CVN
-SUPPORTUNITS["_"][ "Shell9" ] =  { CALLSIGN.Tanker.Shell,   9, ENUMS.UnitType.TANKER,  270.80, 120, ENUMS.TacanBand.Y, "SH9", nil, nil, nil,  6000, 285, 220, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
-SUPPORTUNITS["_"][ "Shell1" ]  = { CALLSIGN.Tanker.Shell,   1, ENUMS.UnitType.TANKER,  271.80, 121, ENUMS.TacanBand.Y, "SH1", nil, nil, nil,  6000, 285, 221, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
-SUPPORTUNITS["_"][ "Shell2" ]  = { CALLSIGN.Tanker.Shell,   2, ENUMS.UnitType.TANKER,  272.80, 122, ENUMS.TacanBand.Y, "SH2", nil, nil, nil,  6000, 285, 222, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
-SUPPORTUNITS["_"][ "Shell3" ]  = { CALLSIGN.Tanker.Shell,   3, ENUMS.UnitType.TANKER,  273.80, 123, ENUMS.TacanBand.Y, "SH3", nil, nil, nil,  6000, 285, 223, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
-SUPPORTUNITS["_"][ "Shell4" ]  = { CALLSIGN.Tanker.Shell,   4, ENUMS.UnitType.TANKER,  274.80, 124, ENUMS.TacanBand.Y, "SH4", nil, nil, nil,  6000, 285, 224, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
-SUPPORTUNITS["_"][ "Shell5" ]  = { CALLSIGN.Tanker.Shell,   5, ENUMS.UnitType.TANKER,  275.80, 125, ENUMS.TacanBand.Y, "SH5", nil, nil, nil,  6000, 285, 225, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
+SUPPORTUNITS["_"][ "Shell9" ] =  { CALLSIGN.Tanker.Shell,   9, ENUMS.UnitType.TANKER,  270.80, 120, ENUMS.TacanBand.Y, "SH9", nil, nil, nil, 6000, 285, 220, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
+SUPPORTUNITS["_"][ "Shell1" ]  = { CALLSIGN.Tanker.Shell,   1, ENUMS.UnitType.TANKER,  271.80, 121, ENUMS.TacanBand.Y, "SH1", nil, nil, nil, 6000, 285, 221, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
+SUPPORTUNITS["_"][ "Shell2" ]  = { CALLSIGN.Tanker.Shell,   2, ENUMS.UnitType.TANKER,  272.80, 122, ENUMS.TacanBand.Y, "SH2", nil, nil, nil, 6000, 285, 222, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
+SUPPORTUNITS["_"][ "Shell3" ]  = { CALLSIGN.Tanker.Shell,   3, ENUMS.UnitType.TANKER,  273.80, 123, ENUMS.TacanBand.Y, "SH3", nil, nil, nil, 6000, 285, 223, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
+SUPPORTUNITS["_"][ "Shell4" ]  = { CALLSIGN.Tanker.Shell,   4, ENUMS.UnitType.TANKER,  274.80, 124, ENUMS.TacanBand.Y, "SH4", nil, nil, nil, 6000, 285, 224, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
+SUPPORTUNITS["_"][ "Shell5" ]  = { CALLSIGN.Tanker.Shell,   5, ENUMS.UnitType.TANKER,  275.80, 125, ENUMS.TacanBand.Y, "SH5", nil, nil, nil, 6000, 285, 225, ENUMS.RefuelingSystem.PROBE, false, ENUMS.SupportUnitTemplate.NAVYTANKER }
 
 -- AWACS
 SUPPORTUNITS["_"][ "Overlord1" ] = { CALLSIGN.AWACS.Overlord,    1, ENUMS.UnitType.AWACS,  240.00, nil, nil, nil, nil, nil, nil, 30000, 310, 240, nil, false, ENUMS.SupportUnitTemplate.AWACS }
@@ -203,18 +251,29 @@ SUPPORTUNITS["_"][ "Magic4" ]    = { CALLSIGN.AWACS.Magic,       4, ENUMS.UnitTy
 SUPPORTUNITS["_"][ "Magic5" ]    = { CALLSIGN.AWACS.Magic,       5, ENUMS.UnitType.AWACS,  275.60, nil, nil, nil, nil, nil, nil, 25000, 259, 245, nil, false, ENUMS.SupportUnitTemplate.NAVYAWACS }
 
 -- Navy
-SUPPORTUNITS["_"][ "LHA-1"  ] = { nil, nil, ENUMS.UnitType.SHIP,  264.40, 64, ENUMS.TacanBand.X, "TAR", 1,   "TAR", nil,    nil, nil, 264, nil, false, nil }
-SUPPORTUNITS["_"][ "CVN-70" ] = { nil, nil, ENUMS.UnitType.SHIP,  270.40, 70, ENUMS.TacanBand.X, "CVN", 10,  "CVN", 270.20, nil, nil, 270, nil, false, nil }
-SUPPORTUNITS["_"][ "CVN-71" ] = { nil, nil, ENUMS.UnitType.SHIP,  271.40, 71, ENUMS.TacanBand.X, "TDY", 11,  "TDY", 271.20, nil, nil, 271, nil, false, nil }
-SUPPORTUNITS["_"][ "CVN-72" ] = { nil, nil, ENUMS.UnitType.SHIP,  272.40, 72, ENUMS.TacanBand.X, "ABE", 12,  "ABE", 272.20, nil, nil, 272, nil, false, nil }
-SUPPORTUNITS["_"][ "CVN-73" ] = { nil, nil, ENUMS.UnitType.SHIP,  273.40, 73, ENUMS.TacanBand.X, "WSH", 13,  "WSH", 273.20, nil, nil, 273, nil, false, nil }
-SUPPORTUNITS["_"][ "CVN-74" ] = { nil, nil, ENUMS.UnitType.SHIP,  274.40, 74, ENUMS.TacanBand.X, "STN", 14,  "STN", 274.20, nil, nil, 274, nil, false, nil }
-SUPPORTUNITS["_"][ "CVN-75" ] = { nil, nil, ENUMS.UnitType.SHIP,  275.40, 75, ENUMS.TacanBand.X, "TRU", 15,  "TRU", 275.20, nil, nil, 275, nil, false, nil }
+SUPPORTUNITS["_"][ "LHA-1"  ] = { "Proud Eagle" , nil, ENUMS.UnitType.SHIP,  264.40, 64, ENUMS.TacanBand.X, "TAR", 1,   "TAR", nil,    nil, nil, 264, nil, false, nil }
+SUPPORTUNITS["_"][ "CVN-70" ] = { "Gold Eagle"  , nil, ENUMS.UnitType.SHIP,  270.40, 70, ENUMS.TacanBand.X, "CVN", 10,  "CVN", 270.20, nil, nil, 270, nil, false, nil }
+SUPPORTUNITS["_"][ "CVN-71" ] = { "Rough Rider" , nil, ENUMS.UnitType.SHIP,  271.40, 71, ENUMS.TacanBand.X, "TDY", 11,  "TDY", 271.20, nil, nil, 271, nil, false, nil }
+SUPPORTUNITS["_"][ "CVN-72" ] = { "Union"       , nil, ENUMS.UnitType.SHIP,  272.40, 72, ENUMS.TacanBand.X, "ABE", 12,  "ABE", 272.20, nil, nil, 272, nil, false, nil }
+SUPPORTUNITS["_"][ "CVN-73" ] = { "Warfighter"  , nil, ENUMS.UnitType.SHIP,  273.40, 73, ENUMS.TacanBand.X, "WSH", 13,  "WSH", 273.20, nil, nil, 273, nil, false, nil }
+SUPPORTUNITS["_"][ "CVN-74" ] = { "Courage"     , nil, ENUMS.UnitType.SHIP,  274.40, 74, ENUMS.TacanBand.X, "STN", 14,  "STN", 274.20, nil, nil, 274, nil, false, nil }
+SUPPORTUNITS["_"][ "CVN-75" ] = { "Lone Warrior", nil, ENUMS.UnitType.SHIP,  275.40, 75, ENUMS.TacanBand.X, "TRU", 15,  "TRU", 275.20, nil, nil, 275, nil, false, nil }
 
 -- Rescue Helo
 SUPPORTUNITS["_"][ "CSAR1" ] = { CALLSIGN.Aircraft.Pontiac , 8, ENUMS.UnitType.HELICOPTER, nil, nil, nil, nil, nil, nil, nil, nil, nil, 265, nil, false, ENUMS.SupportUnitTemplate.RESCUEHELO }
 
-BASESUPPORTUNITS = routines.utils.deepCopy(SUPPORTUNITS)
+local BASESUPPORTUNITS = routines.utils.deepCopy(SUPPORTUNITS)
+
+local MAPSOPSETTINGS = {}
+MAPSOPSETTINGS.Defaults = {}
+MAPSOPSETTINGS.Defaults.PauseTime      = 30
+MAPSOPSETTINGS.Defaults.TacCommon      = 270.0
+MAPSOPSETTINGS.Defaults.UseSRS         = "win"
+MAPSOPSETTINGS.Defaults.PrefixRedSAM   = "Red SAM"
+MAPSOPSETTINGS.Defaults.PrefixRedEWR   = "Red EWR"
+MAPSOPSETTINGS.Defaults.PrefixRedAWACS = "Red AWACS"
+MAPSOPSETTINGS.Defaults.UseSubMenu     = false
+MAPSOPSETTINGS.Defaults.DisableATC     = true
 
 CURRENTUNITTRACK = {}
 
@@ -237,6 +296,90 @@ function TEMPLATE.SetPayload(Template, Fuel, Flare, Chaff, Gun, Pylons, UnitNum)
     Template["units"][UnitNum or 1]["payload"]["gun"] = Gun or 0
     Template["units"][UnitNum or 1]["payload"]["pylons"] = Pylons or {}
     return Template
+end
+
+-- Init MapSOP Settings
+local MapSopSettingsZone = ZONE:FindByName("MapSOP Settings")
+
+-- Allow 'MAPSOP_Settings' to be set via Lua before MapSOP
+MAPSOP_Settings = MAPSOP_Settings or {}
+
+for setting, value in pairs(MAPSOPSETTINGS.Defaults) do
+  MAPSOPSETTINGS[setting] = value
+end
+
+for setting, value in pairs(MAPSOP_Settings) do
+  MAPSOPSETTINGS[setting] = value
+end
+
+if MapSopSettingsZone then
+  for setting, value in pairs(MapSopSettingsZone:GetAllProperties()) do
+    MAPSOPSETTINGS[setting] = value
+  end
+end
+
+for setting,value in pairs(MAPSOPSETTINGS) do
+  if type(value) == 'string' and string.lower(value) == 'sop' then
+    MAPSOPSETTINGS[setting] = nil
+  end
+  if setting == "UseSRS" then
+    MAPSOPSETTINGS.UseSRS = string.lower(value)
+  end
+  if type(value) == 'string' and string.lower(value) == 'false' then
+    MAPSOPSETTINGS[setting] = false
+  end
+  if setting == 'TacCommon' or setting == 'PauseTime' then
+    MAPSOPSETTINGS[setting] = tonumber(value)
+  end
+end
+
+-- Initialize Menus
+local BlueParentMenu
+local RedParentMenu
+
+-- Parent MapSOP menu if enabled
+if MAPSOPSETTINGS.UseSubMenu then
+  BlueParentMenu = MENU_COALITION:New(coalition.side.BLUE, "MapSOP Controls")
+  RedParentMenu = MENU_COALITION:New(coalition.side.RED, "MapSOP Controls")
+end
+
+-- Tanker / AWACS menus
+local TankerMenu = MENU_COALITION:New(coalition.side.BLUE, "Tanker Control", BlueParentMenu)
+local AWACSMenu = MENU_COALITION:New(coalition.side.BLUE, "AWACS Control", BlueParentMenu)
+local RedTankerMenu = MENU_COALITION:New(coalition.side.RED, "Tanker Control", RedParentMenu)
+local RedAWACSMenu = MENU_COALITION:New(coalition.side.RED, "AWACS Control", RedParentMenu)
+local CarrierMenu = nil
+
+-- Initialize Text-to-Speech
+local SpeechVoices, AllSpeechVoices
+if GRPC and MAPSOPSETTINGS.UseSRS then
+  BASE:I("MapSOP: Enabling DCS-gRPC for Text-to-Speech.")
+  -- If DCS-gRPC is present, make sure it is loaded.
+  if GRPC then
+    GRPC.load()
+  end
+
+  MSRS.SetDefaultBackendGRPC()
+
+  if not VFW51ST_TACCOMMON_msrs then
+    VFW51ST_TACCOMMON_msrs = MSRS:New('', MAPSOPSETTINGS.TacCommon)
+  end
+  VFW51ST_TACCOMMON_msrs:SetLabel("MapSOP")
+  if MAPSOPSETTINGS.UseSRS == 'gcloud' or MAPSOPSETTINGS.UseSRS == 'google' then
+    VFW51ST_TACCOMMON_msrs:SetGoogle()
+    AllSpeechVoices = ENUMS.GoogleVoices
+  else
+    VFW51ST_TACCOMMON_msrs:SetWin()
+    AllSpeechVoices = ENUMS.WinVoices
+  end
+  SpeechVoices = UTILS.DeepCopy(AllSpeechVoices)
+
+  if not VFW51ST_TACCOMMON_msrsQ then
+    VFW51ST_TACCOMMON_msrsQ = MSRSQUEUE:New("Support Units")
+  end
+  VFW51ST_TACCOMMON_msrsQ:SetTransmitOnlyWithPlayers(true)
+else
+  BASE:I("MapSOP: Not using Text-to-Speech.")
 end
 
 -- time hh:mm:ss mm:ss :ss or ss -- returns seconds in integers
@@ -287,12 +430,6 @@ end
 function ServerUnpause()
   net.dostring_in("gui", "return DCS.setPause(false)")
 end
-
--- Tanker / AWACS menus
-local TankerMenu = MENU_COALITION:New(coalition.side.BLUE, "Tanker Control")
-local AWACSMenu = MENU_COALITION:New(coalition.side.BLUE, "AWACS Control")
-local RedTankerMenu = MENU_COALITION:New(coalition.side.RED, "Tanker Control")
-local RedAWACSMenu = MENU_COALITION:New(coalition.side.RED, "AWACS Control")
 
 function UpdateFlightMenu(TrackFlight, track, oldtrack)
   -- oldtrack only passed when attempting a change, not for init
@@ -1381,27 +1518,46 @@ function InitSupportBases()
     local AirbaseZone = ZONE:FindByName("Support Airbase")
     local RedAirbaseZone = ZONE:FindByName("Red Support Airbase")
     local ATCzones = SET_ZONE:New():FilterPrefixes('Enable ATC'):FilterOnce()
+    local NoATCzones = SET_ZONE:New():FilterPrefixes('Disable ATC'):FilterOnce()
     local AircraftCarriers = {}
     local VTOLcarriers = {}
     local IngressZone, EgressZone
 
     if AirbaseZone then
-        AirbaseName = AirbaseZone:GetCoordinate(0):GetClosestAirbase(Airbase.Category.AIRDROME, coalition.side.BLUE):GetName()
+        local Airbase = AirbaseZone:GetCoordinate(0):GetClosestAirbase(Airbase.Category.AIRDROME, coalition.side.BLUE)
+        if Airbase then
+          AirbaseName = Airbase:GetName()
+        end
     end
 
     if RedAirbaseZone then
-      RedAirbaseName = RedAirbaseZone:GetCoordinate(0):GetClosestAirbase(Airbase.Category.AIRDROME, coalition.side.RED):GetName()
+      local RedAirbase = RedAirbaseZone:GetCoordinate(0):GetClosestAirbase(Airbase.Category.AIRDROME, coalition.side.RED)
+      if RedAirbase then
+        RedAirbaseName = RedAirbase:GetName()
+      end
     end
 
     local Airbases = AIRBASE.GetAllAirbases(nil, Airbase.Category.AIRDROME)
 
-    -- Disable airbase ATC
-    BASE:I("Enabling ATC in " .. ATCzones:Count() .. " Trigger Zones.")
-    for _,CheckAirbase in ipairs(Airbases) do
-      if ATCzones:IsCoordinateInZone(CheckAirbase:GetCoordinate()) then
-        BASE:I("ATC enabled at " .. CheckAirbase:GetName() .. ".")
-      else
-        CheckAirbase:SetRadioSilentMode(true)
+    -- Airbase ATC settings
+    if MAPSOPSETTINGS.DisableATC then
+      -- If DisableATC, disable by default then selectively enable
+      BASE:I("All ATC AI set to 'disable' by default, enabling ATC in " .. ATCzones:Count() .. " 'Enable ATC'-prefixed Trigger Zones.")
+      for _,CheckAirbase in ipairs(Airbases) do
+        if ATCzones:IsCoordinateInZone(CheckAirbase:GetCoordinate()) then
+          BASE:I("ATC enabled at " .. CheckAirbase:GetName() .. ".")
+        else
+          CheckAirbase:SetRadioSilentMode(true)
+        end
+      end
+    else
+      -- If not DisableATC, enable by default then selectively disable
+      BASE:I("All ATC AI set to 'enable' by default, disabling ATC in " .. NoATCzones:Count() .. " 'Disable ATC'-prefixed Trigger Zones.")
+      for _,CheckAirbase in ipairs(Airbases) do
+        if NoATCzones:IsCoordinateInZone(CheckAirbase:GetCoordinate()) then
+          BASE:I("ATC disabled at " .. CheckAirbase:GetName() .. ".")
+          CheckAirbase:SetRadioSilentMode(true)
+        end
       end
     end
 
@@ -1489,7 +1645,7 @@ function InitSupportBases()
             FullCallsign = "RED-" .. FullCallsign
           end
 
-          local template,notemplate,tokentemplate,alt,speed,freq,tacan,tacanband,invisible,immortal,airframes,groundstart,respawnair
+          local template,notemplate,tokentemplate,alt,speed,freq,tacan,tacanband,invisible,immortal,airframes,groundstart,respawnair,pushtime
 
           if param then
             for token in string.gmatch(param, "[^-]+") do
@@ -1519,6 +1675,12 @@ function InitSupportBases()
                   end
                 end
                 SUPPORTUNITS[trackname][ FullCallsign ][ ENUMS.SupportUnitFields.CALLSIGN_NUM ] = num
+              end
+
+              if IsRed then
+                SUPPORTUNITS["_"][ FullCallsign ].IsRed = true
+              else
+                SUPPORTUNITS["_"][ FullCallsign ].IsBlue = true
               end
               
               local op,parsealt = string.match(token, "FL([mp]?)(%d+)")
@@ -1644,6 +1806,7 @@ function InitSupportBases()
 
               local pushtimeprop
               pushtimeprop = P1ZoneObj:GetProperty(ENUMS.MapsopZoneProperties.PUSHTIME)
+              pushtime=nil
               if pushtimeprop and string.lower(pushtimeprop) ~= 'sop' then
                 pushtime = pushtime or time2sec(pushtimeprop)
               end
@@ -1666,9 +1829,9 @@ function InitSupportBases()
             end
           end
 
-          if airframes and tonumber(airframes) and tonumber(airframes) > 0 then
+          if airframes and tonumber(airframes) and tonumber(airframes) > 0 and trackname == "_" then
             BASE:I(FullCallsign .. " SOP override to " .. airframes .. " airframes.")
-            SUPPORTUNITS[trackname][ FullCallsign ].airframes = airframes
+            SUPPORTUNITS["_"][ FullCallsign ].airframes = airframes
           end
 
           SUPPORTUNITS[trackname][ FullCallsign ][ ENUMS.SupportUnitFields.CALLSIGN_NUM ] = num
@@ -1712,11 +1875,17 @@ function InitSupportBases()
           end
 
           if pushtime and pushtime > 0 then
-            BASE:I(FullCallsign .. " SOP override track " .. trackname .. " push time to " .. sec2time(pushtime) .. ".")
+            local trackstring = "track " .. trackname
+            if trackname == '_' then
+              trackstring = "initial track"
+            end
+            BASE:I(FullCallsign .. " SOP override " .. trackstring .. " push time to " .. sec2time(pushtime) .. ".")
             SUPPORTUNITS[trackname][ FullCallsign ][ ENUMS.SupportUnitFields.PUSHTIME ] = pushtime
             SUPPORTUNITS[trackname][ FullCallsign ].PushSchedule =
               SCHEDULER:New( nil,
               ManageFlights, {nil, FullCallsign, trackname}, pushtime)
+          else
+            SUPPORTUNITS[trackname][ FullCallsign ][ ENUMS.SupportUnitFields.PUSHTIME ] = nil
           end
 
           if SUPPORTUNITS[trackname][ FullCallsign ][ ENUMS.SupportUnitFields.TACANCHAN ] then
@@ -1854,22 +2023,52 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
     if trackname == "_" then
       trackname = "Default"
     end
-    BASE:I(SupportUnit .. " pushing to track " .. trackname .. ".")
+
+    if MAPSOPSETTINGS.UseSRS and VFW51ST_TACCOMMON_msrsQ and SUPPORTUNITS["_"][SupportUnit].IsBlue 
+        and CURRENTUNITTRACK[SupportUnit] ~= NewTrack and SUPPORTUNITS[NewTrack][SupportUnit].zoneP2exists
+        and (SUPPORTUNITS["_"][SupportUnit].UnlimitedAirframes or 
+              ( SUPPORTUNITS["_"][SupportUnit].airframes and SUPPORTUNITS["_"][SupportUnit].airframes > 0)) then
+
+      local SRStext = ''
+      if trackname == "Default" then
+        SRStext = "All players, " .. SupportUnit .. ": pushing Default track."
+      else
+        SRStext = "All players, " .. SupportUnit .. ": pushing track " .. trackname .. "."
+      end
+
+      if not SUPPORTUNITS["_"][SupportUnit].Voice then
+        if SpeechVoices == {} then
+          SpeechVoices = Utils.DeepCopy(AllSpeechVoices)
+        end
+        SUPPORTUNITS["_"][SupportUnit].Voice = table.remove(SpeechVoices,math.random(#SpeechVoices))
+      end
+
+      local duration = STTS.getSpeechTime(SRStext,0.95)
+      VFW51ST_TACCOMMON_msrs:SetLabel(SupportUnit)
+      VFW51ST_TACCOMMON_msrs:SetVoice(SUPPORTUNITS["_"][SupportUnit].Voice)
+
+      BASE:I(SupportUnit .. " broadcasting \"" .. SRStext .. "\" on " .. tostring(MAPSOPSETTINGS.TacCommon) .. "." )
+      VFW51ST_TACCOMMON_msrsQ:NewTransmission(SRStext,duration,VFW51ST_TACCOMMON_msrs,math.random(2,6),2)
+      VFW51ST_TACCOMMON_msrs:SetLabel("MapSOP")
+    end
   end
 
   if SpawnGroup == nil then
     if SUPPORTUNITS["_"][SupportUnit].PreviousMission
-    and SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup 
-    and SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:IsAlive() then
-      SpawnGroup = SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:GetGroup()
+      and SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup 
+      and SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:IsAlive() then
+        SpawnGroup = SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:GetGroup()
     else
       if NewTrack then
         local old = CURRENTUNITTRACK[SupportUnit]
         CURRENTUNITTRACK[SupportUnit] = NewTrack
         UpdateFlightMenu(SupportUnit, NewTrack, old)
-        SUPPORTUNITS["_"][SupportUnit].Scheduler:Start()
+        if SUPPORTUNITS["_"][SupportUnit].Scheduler then
+          SUPPORTUNITS["_"][SupportUnit].Scheduler:Start()
+        end
+        return
       end
-      return
+      --return 
     end
   end
 
@@ -1969,6 +2168,40 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
     Mission:SetMissionAltitude(supportunitfields[ENUMS.SupportUnitFields.ALTITUDE])
 
     function Mission:OnAfterExecuting(From, Event, To)
+
+      local aliveOpsGroups = false
+      for _,og in pairs(self:GetOpsGroups()) do
+        if og:IsAlive() then
+          aliveOpsGroups = true
+        end
+      end
+
+      if MAPSOPSETTINGS.UseSRS and VFW51ST_TACCOMMON_msrsQ and SUPPORTUNITS["_"][SupportUnit].IsBlue and aliveOpsGroups then
+
+        local tracktext
+        if CURRENTUNITTRACK[SupportUnit] == "_" then
+          tracktext = ", Default track."
+        else
+          tracktext = ", track " ..  CURRENTUNITTRACK[SupportUnit] .. "."
+        end
+
+        if not SUPPORTUNITS["_"][SupportUnit].Voice then
+          if SpeechVoices == {} then
+            SpeechVoices = Utils.DeepCopy(AllSpeechVoices)
+          end
+          SUPPORTUNITS["_"][SupportUnit].Voice = table.remove(SpeechVoices,math.random(#SpeechVoices))
+        end
+
+        local SRStext = "All players, "  .. SupportUnit .. ": On station" .. tracktext
+        local duration = STTS.getSpeechTime(SRStext,0.95)
+        VFW51ST_TACCOMMON_msrs:SetLabel(SupportUnit)
+        VFW51ST_TACCOMMON_msrs:SetVoice(SUPPORTUNITS["_"][SupportUnit].Voice)
+
+        BASE:I(SupportUnit .. " broadcasting \"" .. SRStext .. "\" on " .. tostring(MAPSOPSETTINGS.TacCommon) .. "." )
+        VFW51ST_TACCOMMON_msrsQ:NewTransmission(SRStext,duration,VFW51ST_TACCOMMON_msrs,math.random(2,6),2)
+        VFW51ST_TACCOMMON_msrs:SetLabel("MapSOP")
+      end
+
       if FlightGroup ~= SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup then 
         if SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission then --and SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup then
           SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission:I("Relief flight on station " .. SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:GetName() .. " is RTB.")
@@ -2147,6 +2380,7 @@ function InitSupport( SupportBaseParam, RedSupportBase)
       SUPPORTUNITS["_"][SupportUnit].PreviousMission = {}
       SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup = nil
       SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission = nil
+      SUPPORTUNITS["_"][SupportUnit].PreviousMission.voice = nil
     end
     
     local SupportUnitInfo = SupportUnitFields[ENUMS.SupportUnitFields.TEMPLATE] 
@@ -2165,6 +2399,7 @@ function InitSupport( SupportBaseParam, RedSupportBase)
 
     if SupportUnitType == ENUMS.SupportUnitTemplate.BOOMTANKER[ ENUMS.SupportUnitTemplateFields.UNITTYPE ] or
        SupportUnitType == ENUMS.SupportUnitTemplate.PROBETANKER[ ENUMS.SupportUnitTemplateFields.UNITTYPE ] or
+       SupportUnitType == ENUMS.SupportUnitTemplate.KC130TANKER[ ENUMS.SupportUnitTemplateFields.UNITTYPE ] or
        SupportUnitType == ENUMS.SupportUnitTemplate.AWACS[ ENUMS.SupportUnitTemplateFields.UNITTYPE ] or
        ( ( CallsignNum > 1 ) and
        ( SupportUnitType == ENUMS.SupportUnitTemplate.NAVYTANKER[ ENUMS.SupportUnitTemplateFields.UNITTYPE ] or
@@ -2310,10 +2545,7 @@ function InitNavySupport( AircraftCarriers, CarrierMenu)
                   else
                       tanker:SetTakeoffCold()
                   end
-                  tanker:SetSpeed(
-                    UTILS.KnotsToAltKIAS(SupportUnitFields[ENUMS.SupportUnitFields.SPEED], 
-                      SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE])
-                  )
+                  tanker:SetSpeed(SupportUnitFields[ENUMS.SupportUnitFields.SPEED])
                   tanker:SetRadio(SupportUnitFields[ENUMS.SupportUnitFields.RADIOFREQ])
                   tanker:SetModex(SupportUnitFields[ENUMS.SupportUnitFields.MODEX])
                   tanker:SetAltitude(SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE])
@@ -2352,6 +2584,8 @@ function InitNavySupport( AircraftCarriers, CarrierMenu)
             elseif SupportUnitFields[ENUMS.SupportUnitFields.TYPE] == ENUMS.UnitType.SHIP then
               if SupportUnit == AircraftCarrier then 
                 local carrier = CARRIER:New(AircraftCarrier)
+                carrier.CallsignTTS = SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN]
+                carrier.FreqTTS = SupportUnitFields[ENUMS.SupportUnitFields.RADIOFREQ]
                 
                 carrier:SetTACAN(SupportUnitFields[ENUMS.SupportUnitFields.TACANCHAN], 
                                 SupportUnitFields[ENUMS.SupportUnitFields.TACANBAND], 
@@ -2393,7 +2627,7 @@ function InitNavySupport( AircraftCarriers, CarrierMenu)
                 Carriers[SupportUnit]:__Start(math.random(2,10))
 
                 if CarrierMenu == nil then
-                  CarrierMenu = MENU_COALITION:New(coalition.side.BLUE, "Carrier Control")
+                  CarrierMenu = MENU_COALITION:New(coalition.side.BLUE, "Carrier Control", BlueParentMenu)
                 end
                 local CarrierString = string.format("%s\n    -   ATC: %.2f MHz\n    - TACAN: %i%s %s \n    -  ICLS: %i \n    - LINK4: %.2f MHz", 
                                                     SupportUnit, SupportUnitFields[ENUMS.SupportUnitFields.RADIOFREQ], 
@@ -2458,7 +2692,44 @@ function CarrierTurnIntoWind( Carrier )
     MESSAGE:New( Message ):ToBlue()
     BASE:I( Message )
 
-    Carrier:CarrierTurnIntoWind(1800, 20, true)
+    if MAPSOPSETTINGS.UseSRS and VFW51ST_TACCOMMON_msrsQ and Carrier.CallsignTTS then
+        if not Carrier.msrs then
+          Carrier.msrs = MSRS:New('', Carrier.FreqTTS)
+          Carrier.msrs:SetLabel(Carrier.CallsignTTS)
+          if MAPSOPSETTINGS.UseSRS == 'gcloud' or MAPSOPSETTINGS.UseSRS == 'google' then
+            Carrier.msrs:SetGoogle()
+            Carrier.Voice = ENUMS.GoogleVoices[math.random(1,#ENUMS.GoogleVoices)]
+          else
+            Carrier.msrs:SetWin()
+            Carrier.Voice = ENUMS.WinVoices[math.random(1,#ENUMS.WinVoices)]
+          end
+          Carrier.msrs:SetVoice(Carrier.Voice)
+      end
+
+      local SRStext = "All aircraft, "  .. Carrier.CallsignTTS .. ": Turning into wind for 30 minutes." 
+      local duration = STTS.getSpeechTime(SRStext,0.95)
+
+      VFW51ST_TACCOMMON_msrsQ:NewTransmission(SRStext,duration,Carrier.msrs,1,2)
+
+      if Carrier.ResumeRadioCall then
+        Carrier.ResumeRadioCall:Stop()
+      end
+      Carrier.ResumeRadioCall = SCHEDULER:New( nil, 
+        function()
+          local SRStext = "All aircraft, "  .. Carrier.CallsignTTS .. ": Warning, preparing to resume course." 
+          local duration = STTS.getSpeechTime(SRStext,0.95)
+    
+          VFW51ST_TACCOMMON_msrsQ:NewTransmission(SRStext,duration,Carrier.msrs,1,2)
+        end, { }, 1730
+      )
+    end
+    
+    SCHEDULER:New( nil, 
+      function()
+        Carrier:CarrierTurnIntoWind(1800, 20, true)
+      end, { }, math.random(3,6)
+    )
+
 end
 
 function EmergencyTacanReset( BeaconTable )
@@ -2484,16 +2755,15 @@ function EmergencyTacanReset( BeaconTable )
 
 end
 
-function SetupMANTIS()
-    local RedAwacs = SET_GROUP:New():FilterPrefixes('Red EWR AWACS'):FilterOnce():GetSetNames()
-    SET_GROUP:New():FilterPrefixes('Red SAM'):FilterOnce():GetSetNames()
+function SetupMANTIS(PrefixRedSAM,PrefixRedEWR,PrefixRedAWACS)
+    local NumRedAwacs = SET_GROUP:New():FilterPrefixes(PrefixRedAWACS):FilterOnce():Count()
     local RedIADS = nil
 
     -- Create the IADS network with wor without AWACS
-    if RedAwacs ~= {} then
-        RedIADS = MANTIS:New("RedIADS","Red SAM","Red EWR",nil,"red",false,"Red EWR AWACS")
+    if NumRedAwacs > 0 then
+        RedIADS = MANTIS:New("RedIADS",PrefixRedSAM,PrefixRedEWR,nil,"red",false,PrefixRedAWACS)
     else
-        RedIADS = MANTIS:New("RedIADS","Red SAM","Red EWR",nil,"red",false)
+        RedIADS = MANTIS:New("RedIADS",PrefixRedSAM,PrefixRedEWR,nil,"red",false)
     end
 
     -- Optional Zones for MANTIS IADS
@@ -2507,17 +2777,20 @@ function SetupMANTIS()
     return RedIADS
 end
 
-function SetupSKYNET()
+function SetupSKYNET(PrefixRedSAM,PrefixRedEWR,PrefixRedAWACS)
   local redIADS = nil
 
   --create an instance of the IADS
   redIADS = SkynetIADS:create('Red IADS')
 
-  --add all groups begining with group name 'SAM' to the IADS:
-  redIADS:addSAMSitesByPrefix('Red SAM')
+  --add all groups begining with SAM prefix to the IADS:
+  redIADS:addSAMSitesByPrefix(PrefixRedSAM)
 
-  --add all units with unit name beginning with 'EW' to the IADS:
-  redIADS:addEarlyWarningRadarsByPrefix('Red EWR')
+  --add all units with unit name beginning with EWR prefix to the IADS:
+  redIADS:addEarlyWarningRadarsByPrefix(PrefixRedEWR)
+
+  --add all units with unit name beginning with AWACS prefix to the IADS:
+  redIADS:addEarlyWarningRadarsByPrefix(PrefixRedAWACS)
 
   -- Debug messages to log only
   local iadsDebug = redIADS:getDebugSettings()
@@ -2533,20 +2806,47 @@ function SetupSKYNET()
   return redIADS
 end
 
+-- =============================================================
 -- Init MapSOP
-
-local MapSopSettingsZone = ZONE:FindByName("MapSOP Settings")
-local MapSopSettings = {}
-if MapSopSettingsZone then
-  MapSopSettings = MapSopSettingsZone:GetAllProperties()
-end
+-- =============================================================
 
 SpawnTemplateKeepCallsign = true -- Use MapSOP SPAWN:_Prepare() callsign hack
 
 local SupportBase = nil
 local RedSupportBase = nil
 local AircraftCarriers = nil
-local CarrierMenu = nil
+
+local UseSubMenuText = 'false'
+local DisableATCtext = 'false'
+local UseSRStext
+
+if MAPSOPSETTINGS.UseSubMenu then
+  UseSubMenuText = 'true'
+end
+
+if MAPSOPSETTINGS.DisableATC then
+  DisableATCtext = 'true'
+end
+
+if MAPSOPSETTINGS.UseSRS == nil then
+  UseSRStext = 'win'
+elseif MAPSOPSETTINGS.UseSRS == false then
+  UseSRStext = 'false'
+else
+  UseSRStext = MAPSOPSETTINGS.UseSRS
+end
+
+env.info("")
+env.info("== MapSOP Settings ==")
+env.info("  PauseTime      : " .. MAPSOPSETTINGS.PauseTime)
+env.info("  UseSubMenu     : " .. UseSubMenuText)
+env.info("  DisableATC     : " .. DisableATCtext)
+env.info("  UseSRS         : " .. UseSRStext)
+env.info("  TacCommon      : " .. MAPSOPSETTINGS.TacCommon)
+env.info("  PrefixRedSAM   : " .. MAPSOPSETTINGS.PrefixRedSAM)
+env.info("  PrefixRedEWR   : " .. MAPSOPSETTINGS.PrefixRedEWR)
+env.info("  PrefixRedAWACS : " .. MAPSOPSETTINGS.PrefixRedAWACS)
+env.info("")
 
 -- Initialize Airbase & Carriers
 SupportBase, RedSupportBase, AircraftCarriers = InitSupportBases()
@@ -2558,21 +2858,21 @@ InitSupport(SupportBase, RedSupportBase)
 local Carriers = InitNavySupport(AircraftCarriers, CarrierMenu)
 
 -- Base Tacan reset menu
-local TacanMenu = MENU_MISSION:New("TACAN Control")
-local TacanMenu1 = MENU_MISSION_COMMAND:New("Emergency TACAN reset", TacanMenu, EmergencyTacanReset, { SupportBeacons, Carriers } )
+local BlueTacanMenu = MENU_COALITION:New(coalition.side.BLUE, "TACAN Control", BlueParentMenu)
+local TacanMenu1 = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Emergency TACAN reset", BlueTacanMenu, EmergencyTacanReset, { SupportBeacons, Carriers } )
 
 -- Setup either MANTIS or SKYNET IADS
 RedIADS = nil
-local RedSAMs = SET_GROUP:New():FilterPrefixes('Red SAM'):FilterOnce():GetSetNames()
+local NumRedSAMs = SET_GROUP:New():FilterPrefixes(MAPSOPSETTINGS.PrefixRedSAM):FilterOnce():Count()
 
-if table.getn(RedSAMs) > 0 then
+if NumRedSAMs > 0 then
   BASE:I("Initializing IADS...")
   if samTypesDB == nil then
     BASE:I("Initializing MANTIS IADS.")
-    RedIADS = SetupMANTIS()
+    RedIADS = SetupMANTIS(MAPSOPSETTINGS.PrefixRedSAM, MAPSOPSETTINGS.PrefixRedEWR, MAPSOPSETTINGS.PrefixRedAWACS)
   else 
     BASE:I("Initializing SKYNET IADS.")
-    RedIADS = SetupSKYNET()
+    RedIADS = SetupSKYNET(MAPSOPSETTINGS.PrefixRedSAM, MAPSOPSETTINGS.PrefixRedEWR, MAPSOPSETTINGS.PrefixRedAWACS)
   end
 else
   BASE:E("No group names with 'Red SAM' found, skipping IADS initialization.")
@@ -2581,7 +2881,6 @@ end
 -- Server Pause/Resume behavior
 local UnpauseZoneSet = SET_ZONE:New():FilterPrefixes("Unpause Client"):FilterOnce()
 local UnpauseUnitNames = {}
-local PauseTime = tonumber(MapSopSettings['PauseTime'] or MapSopSettings['pausetime'] or MapSopSettings['PAUSETIME'] or 30)
 
 local ClientSet = SET_CLIENT:New():FilterActive()
 
@@ -2596,20 +2895,19 @@ UnpauseZoneSet:ForEachZone(
     end
   end, {}
  )
-BASE:I("Mission auto-pause time: " .. PauseTime)
+BASE:I("Mission auto-pause time: " .. MAPSOPSETTINGS.PauseTime)
 
 local PauseScheduler = nil 
 local ConsecutiveNoAlive = nil
 local UnpauseClientsSlotted = nil
 
-if PauseTime > 0 then
-
+if MAPSOPSETTINGS.PauseTime and MAPSOPSETTINGS.PauseTime > 0 then
   SCHEDULER:New( nil, 
   function()
     if not UnpauseClientsSlotted then
       ServerPause()
     end
-  end, { }, PauseTime
+  end, { }, MAPSOPSETTINGS.PauseTime
   )
   PauseScheduler = SCHEDULER:New( nil, 
   function()

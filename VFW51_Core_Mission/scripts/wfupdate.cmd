@@ -189,8 +189,8 @@ echo.
 echo Usage: wfupdate [--help] [--dryrun] [--force] [--frame] [--script] [--settings] [--verbose]
 echo                 {targ_mdir}
 echo.
-echo Unpack a DCS .miz file, normalizing and sanitizing it before using the unpacked mission
-echo to update the mission directory.
+echo Update the scripting, settings, or framework components in a target mission directory to match
+echo the versions in the current mission directory.
 echo.
 echo This script must be run from the root of a mission directory.
 echo.

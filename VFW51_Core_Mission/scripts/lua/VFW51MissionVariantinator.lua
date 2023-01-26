@@ -57,6 +57,34 @@ function VFW51MissionVariantinator:parseMoment(moment)
     return (h * 60 * 60) + (m * 60)
 end
 
+function VFW51MissionVariantinator:isRedacted(name, patterns)
+    local is_redacted = false
+    for i = 1,#patterns,1 do
+        local pattern = patterns[i]:lower()
+        local is_black = true
+        if string.sub(pattern, 1, 1) == "+" then
+            is_black = false
+            pattern = string.sub(pattern, 2)
+        elseif string.sub(pattern, 1, 1) == "-" then
+            pattern = string.sub(pattern, 2)
+        end
+        pattern = self:sanitizePattern(pattern)
+        if is_black and string.find(name:lower(), pattern) then
+            self:logTrace(string.format("'%s' -- %s <<< **** MATCH (-) ****", pattern, name))
+            is_redacted = true
+            break
+
+        elseif not is_black and string.find(name:lower(), pattern) then
+            self:logTrace(string.format("'%s' -- %s <<< **** MATCH (+) ****", pattern, name))
+            is_redacted = false
+            break
+        else
+            self:logTrace(string.format("'%s' (%s) -- %s", pattern, tostring(is_black), name))
+        end
+    end
+    return is_redacted
+end
+
 -- edit function for veafMissionEditor.editMission, since that is not OO, we define this with . and
 -- pass self explicitly as the arg
 function VFW51MissionVariantinator.processMission(mission_t, args)
@@ -83,6 +111,124 @@ function VFW51MissionVariantinator.processMission(mission_t, args)
     if (opt ~= nil) and (opt:lower() ~= "base") then
         self:logTrace(string.format("Setting mission options for %s", opt))
         mission_t["forcedOptions"] = self:deepCopy(optVersions[opt])
+    end
+
+    -- redact objects and scripting from the mission
+    local redact = targInfo["redact"]
+    if redact ~= nil then
+
+        local rd_objs = redact["objects"] or { }
+        local rd_zone = redact["zones"] or { }
+        local rd_unct = redact["uncertain"] or { }
+
+        local zn_tmplt = {
+            ["color"] = { [1] = 1, [2] = 1, [3] = 1, [4] = 1 },    -- filled in
+            ["heading"] = 0,
+            ["hidden"] = false,
+            ["name"] = "template",                                 -- filled in
+            ["properties"] = { },
+            ["radius"] = 1,                                        -- filled in
+            ["type"] = 0,
+            ["x"] = 0.0,                                           -- filled in
+            ["y"] = 0.0,                                           -- filled in
+            ["zoneId"] = 0                                         -- filled in
+        }
+
+        local zn_unct_idx = 1
+        local zn_unct = { }
+
+        self:logTrace(string.format("Redacting mission objects"))
+
+        for _, cltn in pairs({ "blue", "red", "neutrals" }) do
+            if mission_t["coalition"][cltn] ~= nil then
+                for i = 1,#mission_t["coalition"][cltn]["country"],1 do
+                    for _, type in pairs({ "helicopter", "plane", "ship", "static", "vehicle" }) do
+                        if mission_t["coalition"][cltn]["country"][i][type] ~= nil then
+                            local group = { }
+                            local index = 1
+                            for j = 1,#mission_t["coalition"][cltn]["country"][i][type]["group"],1 do
+                                local name = mission_t["coalition"][cltn]["country"][i][type]["group"][j]["name"]
+                                if rd_unct[name] then
+
+                                    -- object is uncertain. we will replace it with a zone that is randomly offset
+                                    -- by the uncertainity radius for the object. this removes the object and adds
+                                    -- a zone.
+
+                                    self:logTrace(string.format("Redact object " .. name .. ", now uncertain"))
+
+                                    local x = mission_t["coalition"][cltn]["country"][i][type]["group"][j]["x"]
+                                    local y = mission_t["coalition"][cltn]["country"][i][type]["group"][j]["y"]
+
+                                    local r = math.random() * rd_unct[name] * (10000.0 / 5.4)   -- 10k x/y = 5.4nm
+                                    local t = math.random() * 2.0 * 3.14159265
+
+                                    local zone = self:deepCopy(zn_tmplt)
+                                    if cltn == "blue" then
+                                        zone["color"] = { [1] = 0, [2] = 0, [3] = 1, [4] = 0.125 }
+                                    elseif cltn == "red" then
+                                        zone["color"] = { [1] = 1, [2] = 0, [3] = 0, [4] = 0.125 }
+                                    end
+                                    zone["name"] = name .. " (Uncertain)"
+                                    zone["radius"] = rd_unct[name] * 1852.0     -- convert nm to m
+                                    zone["x"] = x + (r * math.cos(t))
+                                    zone["y"] = y + (r * math.sin(t))
+
+                                    zn_unct[zn_unct_idx] = zone
+                                    zn_unct_idx = zn_unct_idx + 1
+
+                                elseif not self:isRedacted(name, rd_objs) then
+
+                                    -- object is not redacted. add the object to the new group array we are
+                                    -- building to replace the array in the .miz file.
+
+                                    group[index] = mission_t["coalition"][cltn]["country"][i][type]["group"][j]
+                                    index = index + 1
+                                else
+                                    self:logTrace(string.format("Redact object " .. name))
+                                end
+                            end
+                            mission_t["coalition"][cltn]["country"][i][type]["group"] = self:deepCopy(group)
+                        end
+                    end
+                end
+            end
+        end
+
+        self:logTrace(string.format("Redacting mission zones"))
+
+        local triggers = {
+            ["zones"] = { }
+        }
+        local triggers_zn_idx = 1
+        local max_zn_id = 0
+
+        if mission_t["triggers"]["zones"] ~= nil then
+            for i = 1,#mission_t["triggers"]["zones"],1 do
+                local name = mission_t["triggers"]["zones"][i]["name"]
+                if not self:isRedacted(name, rd_zone) then
+                    triggers["zones"][triggers_zn_idx] = mission_t["triggers"]["zones"][i]
+                    triggers_zn_idx = triggers_zn_idx + 1
+
+                    if max_zn_id < mission_t["triggers"]["zones"][i]["zoneId"] then
+                        max_zn_id = mission_t["triggers"]["zones"][i]["zoneId"]
+                    end
+                else
+                    self:logTrace(string.format("Redact zone " .. name))
+                end
+            end
+        end
+
+        for i = 1,#zn_unct,1 do
+            zn_unct[i]["zoneId"] = max_zn_id + i
+
+            triggers["zones"][triggers_zn_idx] = zn_unct[i]
+            triggers_zn_idx = triggers_zn_idx + 1
+        end
+
+        -- remove all scripting content with the exception of non-redacted trigger zones.
+        mission_t["trig"] = self:deepCopy({ })
+        mission_t["trigrules"] = self:deepCopy({ })
+        mission_t["triggers"] = self:deepCopy(triggers)
     end
 
     return mission_t

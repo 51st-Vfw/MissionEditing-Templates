@@ -15,12 +15,13 @@
 
 ScriptSettings = {
     ["framework"] = {
-        [1] = "Moose_.lua",
-        [2] = "mist_4_5_107.lua",
-        [3] = "skynet-iads-compiled.lua",
-        [4] = "51stMapSOP.lua"
+        [1] = "globals_frameworks.lua",
+        [2] = "Moose_.lua",
+        [3] = "mist_4_5_107.lua",
+        [4] = "skynet-iads-compiled.lua",
+        [5] = "51stMapSOP.lua"
     },
     ["mission"] = {
-        [1] = "mission_globals.lua",
+        [1] = "globals_mission.lua",
     }
 }

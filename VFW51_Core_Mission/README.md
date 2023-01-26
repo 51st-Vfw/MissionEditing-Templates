@@ -1,53 +1,28 @@
 # 51st VFW Core Mission Template
 
-> This is the base 51st VFW mission template supporting the Caucusas, Marianas, NTTR, Persian
-> Gulf, and Syria maps using the
-> [51st VFW workflow](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/me_workflow.md). The template includes default setup for all 51st VFW airframes and
-> flights, support flights, and carrier groups per 
-> [51st VFW SOPs](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/missionsEditingSOPs.md).
-> These units will need to be positioned (or deleted) according to the needs of the mission. The
-> template sets up the scripting environment by loading the following frameworks at mission
-> start,
-> [MOOSE](https://github.com/FlightControl-Master/MOOSE/),
-> [Skynet](https://github.com/walder/Skynet-IADS),
-> [mist](https://github.com/mrSkortch/MissionScriptingTools),
-> [51st VFW MapSOP](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/51stMapSOP/readme.md).
+This is the base 51st VFW mission template supporting the Caucusas, Marianas, NTTR, Persian
+Gulf, South Atlantic, and Syria maps using the
+[51st VFW workflow](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/me_workflow.md).
+The template includes default setups for all 51st VFW airframes and flights, support
+flights, and carrier groups per 
+[51st VFW SOPs](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/missionsEditingSOPs.md).
+These units will need to be positioned (or deleted) and other units added according to the
+needs of the mission. The template sets up the scripting environment by loading the
+[MOOSE](https://github.com/FlightControl-Master/MOOSE/),
+[Skynet](https://github.com/walder/Skynet-IADS),
+[mist](https://github.com/mrSkortch/MissionScriptingTools),
+and
+[51st VFW MapSOP](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/51stMapSOP/readme.md)
+frameworks at mission start.
 
-> Missions are encouraged to include a readme with similar structure to the outline below. This
-> content will change based on the specifics of the mission.
+Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
+where each corresponds to the version of the corresponding component.
 
-# Mission Name
-
-Capsule summary of mission here.
-
-|What|Notes|
-|---|---|
-|Pitch|Brief description of mission would go here.|
-|Blue Slots|<ul><li>Airplanes slots go here</li><li>Helo slots go here</li><li>JTAC/observer, etc. slots go here</li></ul>|
-|Red Slots|<ul><li>Airplanes slots go here</li><li>Helo slots go here</li><li>JTAC/observer, etc. slots go here</li></ul>|
-
-## Overview
-
-Overview of the mission would go here
-
-## Building from this Package
-
-> This mission uss the 51st VFW workflow. To rebuild the mission from the source, make sure you have the
-> support tools installed to enable 51st VFW workflow (see the
-> [51st VFW workflow](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/me_workflow.md) documentation),
-> then run `scripts\build.cmd` from a command shell.
-
-## Required Modules
-
-- List of required modules would go here
-
-## Versions
-
-Details on the mission variants if there are multiple `.miz` files in the mission directory
-with variations of the base mission.
-
-## Revision History
-
+- **v20230125**, Workflow 2-7-2
+    - Adopt MapSOP Version 20230125.1 with matching MOOSE version
+    - Variantinator script adds support for mission redaction, updates to variant Lua settings to
+      support redaction
+    - Updated base templates
 - **v20221211**, Workflow 1-6-1
     - Adopt MapSOP Version 20221211.1
     - Added template for South Atlantic (SAT) map
@@ -73,3 +48,47 @@ with variations of the base mission.
     - Updated scripting version to 2.
 - **v20220921**, Workflow 1-1-1
     - Initial release
+
+> Missions are encouraged to replace this README with a mission README with a structure similar
+> to the following outline.
+
+___
+___
+
+# Mission Name
+
+> Capsule summary of the mission, for example
+> |What|Notes|
+> |---|---|
+> |Pitch| PvP contested deep strike against fixed targets with PGMs |
+> |Blue Slots|<ul><li>F-16C</li><li>Game master, Tactical Commander</li></ul>|
+> |Red Slots|<ul><li>JF-17</li><li>AI</li><li>Game master, Tactical Commander</li></ul>|
+
+## Overview
+
+> More detailed overview of the mission
+
+## Building from this Package
+
+This mission uss the 51st VFW workflow. To rebuild the mission from the source, make sure you
+have the support tools installed to enable 51st VFW workflow (see the
+[51st VFW workflow](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/me_workflow.md) documentation),
+then run `scripts\build.cmd` from a command shell.
+
+> Additional build instructions or information
+
+## Required Modules
+
+> List of required modules
+
+## Documentation
+
+> List of documentation in the `docs\` directory
+
+## Versions
+
+> Details on the mission variants for missions that include variations of the base mission
+
+## Revision History
+
+> Mission revision history

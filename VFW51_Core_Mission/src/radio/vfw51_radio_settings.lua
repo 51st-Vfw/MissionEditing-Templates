@@ -29,7 +29,7 @@
 --
 -- the "p" string is of the form "<a>:<n>:<c>" (e.g., "F-16C_50:*:Uzi"), where
 --
---     <a>      unit airframe name (may not contain ":"), "*" matches any airfram
+--     <a>      unit airframe name (may not contain ":"), "*" matches any airframe
 --     <n>      unit name pattern (may not contain ":"), "*" matches any name
 --     <c>      unit callsign pattern (may not contain ":"), "*" matches any callsign
 --
