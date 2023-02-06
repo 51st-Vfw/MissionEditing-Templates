@@ -334,6 +334,12 @@ for setting,value in pairs(MAPSOPSETTINGS) do
   end
 end
 
+for setting,value in pairs(MAPSOPSETTINGS.Defaults) do
+  if not MAPSOPSETTINGS[setting] then
+    MAPSOPSETTINGS[setting] = value
+  end
+end
+
 -- Initialize Menus
 local BlueParentMenu
 local RedParentMenu
@@ -2839,14 +2845,15 @@ end
 
 env.info("")
 env.info("== MapSOP Settings ==")
-env.info("  PauseTime      : " .. MAPSOPSETTINGS.PauseTime or MAPSOPSETTINGS.Defaults.PauseTime or "")
+env.info("  PauseTime      : " .. (MAPSOPSETTINGS.PauseTime or MAPSOPSETTINGS.Defaults.PauseTime or ""))
 env.info("  UseSubMenu     : " .. UseSubMenuText)
 env.info("  DisableATC     : " .. DisableATCtext)
 env.info("  UseSRS         : " .. UseSRStext)
-env.info("  TacCommon      : " .. MAPSOPSETTINGS.TacCommon or MAPSOPSETTINGS.Defaults.TacCommon or "")
-env.info("  PrefixRedSAM   : " .. MAPSOPSETTINGS.PrefixRedSAM or MAPSOPSETTINGS.Defaults.PrefixRedSAM or "")
-env.info("  PrefixRedEWR   : " .. MAPSOPSETTINGS.PrefixRedEWR or MAPSOPSETTINGS.Defaults.PrefixRedEWR or "")
-env.info("  PrefixRedAWACS : " .. MAPSOPSETTINGS.PrefixRedAWACS or MAPSOPSETTINGS.Defaults.PrefixRedAWACS or "")
+env.info("  TacCommon      : " .. (MAPSOPSETTINGS.TacCommon or MAPSOPSETTINGS.Defaults.TacCommon or ""))
+env.info("  PrefixRedSAM   : " .. (MAPSOPSETTINGS.PrefixRedSAM or MAPSOPSETTINGS.Defaults.PrefixRedSAM or ""))
+env.info("  PrefixRedEWR   : " .. (MAPSOPSETTINGS.PrefixRedEWR or MAPSOPSETTINGS.Defaults.PrefixRedEWR or ""))
+env.info("  PrefixRedAWACS : " .. (MAPSOPSETTINGS.PrefixRedAWACS or MAPSOPSETTINGS.Defaults.PrefixRedAWACS or ""))
+
 env.info("")
 
 -- Initialize Airbase & Carriers
