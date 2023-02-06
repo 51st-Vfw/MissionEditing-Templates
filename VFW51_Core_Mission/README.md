@@ -18,6 +18,8 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20230205**, Workflow 3-7-2
+    - Adopt MapSOP Version 20230205.1 with matching MOOSE version
 - **v20230125**, Workflow 2-7-2
     - Adopt MapSOP Version 20230125.1 with matching MOOSE version
     - Variantinator script adds support for mission redaction, updates to variant Lua settings to

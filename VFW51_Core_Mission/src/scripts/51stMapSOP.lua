@@ -1,9 +1,9 @@
 -- 51st MapSOP
-MAPSOP_VERSION = "20230125.1"
+MAPSOP_VERSION = "20230205.1"
 -- Initial version by Blackdog Jan 2022
 --
 -- Tested against MOOSE GITHUB Commit Hash ID:
--- 2023-01-22T12:11:13.0000000Z-24d47ef353558883bfa24fe43d0e17698b9025f4
+-- 2023-02-04T22:34:14.0000000Z-57079e5104a7f43085a90a0887de1546132ae350
 --
 -- Version 20220101.1 - Blackdog initial version
 -- Version 20220115.1 - Fix: Tanker speeds adjusted to be close KIAS from SOP + better starting altitudes.
@@ -84,6 +84,7 @@ MAPSOP_VERSION = "20230125.1"
 --                    - Fixed a potential 'PauseTime' related Lua error.
 --                    - Fixed a potential 'Support Base' / 'Red Support Base' related Lua error.
 --                    - Improved documentation (readme.md)
+-- Version 20230205.1 - Fixed PauseTime related 'nil' error.
 
 --                    
 -- Known issues/limitations:
@@ -320,7 +321,7 @@ end
 
 for setting,value in pairs(MAPSOPSETTINGS) do
   if type(value) == 'string' and string.lower(value) == 'sop' then
-    MAPSOPSETTINGS[setting] = nil
+    MAPSOPSETTINGS[setting] = MAPSOPSETTINGS.Defaults[setting]
   end
   if setting == "UseSRS" then
     MAPSOPSETTINGS.UseSRS = string.lower(value)
@@ -2838,14 +2839,14 @@ end
 
 env.info("")
 env.info("== MapSOP Settings ==")
-env.info("  PauseTime      : " .. MAPSOPSETTINGS.PauseTime)
+env.info("  PauseTime      : " .. MAPSOPSETTINGS.PauseTime or MAPSOPSETTINGS.Defaults.PauseTime or "")
 env.info("  UseSubMenu     : " .. UseSubMenuText)
 env.info("  DisableATC     : " .. DisableATCtext)
 env.info("  UseSRS         : " .. UseSRStext)
-env.info("  TacCommon      : " .. MAPSOPSETTINGS.TacCommon)
-env.info("  PrefixRedSAM   : " .. MAPSOPSETTINGS.PrefixRedSAM)
-env.info("  PrefixRedEWR   : " .. MAPSOPSETTINGS.PrefixRedEWR)
-env.info("  PrefixRedAWACS : " .. MAPSOPSETTINGS.PrefixRedAWACS)
+env.info("  TacCommon      : " .. MAPSOPSETTINGS.TacCommon or MAPSOPSETTINGS.Defaults.TacCommon or "")
+env.info("  PrefixRedSAM   : " .. MAPSOPSETTINGS.PrefixRedSAM or MAPSOPSETTINGS.Defaults.PrefixRedSAM or "")
+env.info("  PrefixRedEWR   : " .. MAPSOPSETTINGS.PrefixRedEWR or MAPSOPSETTINGS.Defaults.PrefixRedEWR or "")
+env.info("  PrefixRedAWACS : " .. MAPSOPSETTINGS.PrefixRedAWACS or MAPSOPSETTINGS.Defaults.PrefixRedAWACS or "")
 env.info("")
 
 -- Initialize Airbase & Carriers
