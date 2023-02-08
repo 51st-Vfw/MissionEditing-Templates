@@ -53,6 +53,8 @@
 --                              <table> is keyed by a <string> that holds the name of a group with a value
 --                              <integer> that specifies the radius of the uncertainity region in nautical
 --                              miles.
+--   "drawings" : <names>       Redacts drawings on any layer (Red, Blue, Neutral, Common, or Author) that
+--                              appears in the comma-separated list <names>. <names> is case-insensitive.
 --
 -- patterns in the "objects" and "zones" arrays are formatted as follows: "[type]<pattern>". where [type] is
 -- an optional pattern type:
@@ -60,10 +62,12 @@
 --   "+"                        Whitelist pattern: items matching the pattern are not redacted
 --   "-"                        Blacklist pattern: items matching the pattern are redacted
 --
--- and <pattern> is the pattern to look for in the item name (note that a pattern that [type] is not optional
--- if <pattern> itself begins with either "+" or "-"). a pattern matches a name if the name contains the
--- pattern (case is ignored). patterns in the array are checked in order until the first matching pattern is
--- found.
+-- and <pattern> is the non-regex pattern to look for in the item name. the special <pattern> "*" is treated
+-- as matching any name. Note that [type] is not optional if the <pattern> itself begins with either "+" or
+-- "-". a <pattern> matches a name if the name contains the pattern string (case is ignored).
+--
+-- patterns in the array are checked in order, stopping when the first matching pattern is found. typically,
+-- "-*" and "+*" are used as the last pattern to supress or force a match.
 --
 -- the extract script may be used to extract options and weather in the proper format using the --wx and --opt
 -- arguments.
@@ -89,7 +93,8 @@ VariantSettings = {
                 },
                 ["uncertain"] = {
                     ["Roosevelt Carrier Group"] = 10
-                }
+                },
+                ["drawings"] = "red,blue,neutral,common,author"
             }
         },
         ["dawn"] = {

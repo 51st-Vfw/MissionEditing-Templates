@@ -68,18 +68,26 @@ function VFW51MissionVariantinator:isRedacted(name, patterns)
         elseif string.sub(pattern, 1, 1) == "-" then
             pattern = string.sub(pattern, 2)
         end
-        pattern = self:sanitizePattern(pattern)
-        if is_black and string.find(name:lower(), pattern) then
+        if pattern == "*" and is_black then
             self:logTrace(string.format("'%s' -- %s <<< **** MATCH (-) ****", pattern, name))
             is_redacted = true
-            break
-
-        elseif not is_black and string.find(name:lower(), pattern) then
+        elseif pattern == "*" then
             self:logTrace(string.format("'%s' -- %s <<< **** MATCH (+) ****", pattern, name))
             is_redacted = false
-            break
         else
-            self:logTrace(string.format("'%s' (%s) -- %s", pattern, tostring(is_black), name))
+            pattern = self:sanitizePattern(pattern)
+            if is_black and string.find(name:lower(), pattern) then
+                self:logTrace(string.format("'%s' -- %s <<< **** MATCH (-) ****", pattern, name))
+                is_redacted = true
+                break
+
+            elseif not is_black and string.find(name:lower(), pattern) then
+                self:logTrace(string.format("'%s' -- %s <<< **** MATCH (+) ****", pattern, name))
+                is_redacted = false
+                break
+            else
+                self:logTrace(string.format("'%s' (%s) -- %s", pattern, tostring(is_black), name))
+            end
         end
     end
     return is_redacted
@@ -120,6 +128,7 @@ function VFW51MissionVariantinator.processMission(mission_t, args)
         local rd_objs = redact["objects"] or { }
         local rd_zone = redact["zones"] or { }
         local rd_unct = redact["uncertain"] or { }
+        local rd_dwgs = redact["drawings"] or nil
 
         local zn_tmplt = {
             ["color"] = { [1] = 1, [2] = 1, [3] = 1, [4] = 1 },    -- filled in
@@ -223,6 +232,18 @@ function VFW51MissionVariantinator.processMission(mission_t, args)
 
             triggers["zones"][triggers_zn_idx] = zn_unct[i]
             triggers_zn_idx = triggers_zn_idx + 1
+        end
+
+        self:logTrace(string.format("Redacting drawings"))
+
+        if rd_dwgs and mission_t["drawings"]["layers"] ~= nil then
+            for i = 1,#mission_t["drawings"]["layers"] do
+                local layer = mission_t["drawings"]["layers"][i]["name"]
+                if string.find(rd_dwgs:lower(), layer:lower()) then
+                    self:logTrace(string.format("Redact drawing " .. layer))
+                    mission_t["drawings"]["layers"][i]["objects"] = self:deepCopy({ })
+                end
+            end
         end
 
         -- remove all scripting content with the exception of non-redacted trigger zones.
