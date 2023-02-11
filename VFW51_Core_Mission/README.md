@@ -18,6 +18,8 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20230210**, Workflow 4-8-3
+    - Adopt Skynet 3.1.0
 - **v20230207**, Workflow 3-8-3
     - Variantinator script adds support for drawing redaction, limited "all" wildcards
 - **v20230205**, Workflow 3-7-2
