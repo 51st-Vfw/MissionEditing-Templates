@@ -172,11 +172,23 @@ set SET_PATH=kneeboards\vfw51_kneeboard_settings.lua
 if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW%
 if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW% >nul 2>&1
 
+set SET_PATH=loadouts\vfw51_loadout_settings.lua
+if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW%
+if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW% >nul 2>&1
+
 set SET_PATH=radio\vfw51_radio_settings.lua
 if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW%
 if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW% >nul 2>&1
 
 set SET_PATH=scripts\vfw51_script_settings.lua
+if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW%
+if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW% >nul 2>&1
+
+set SET_PATH=variants\vfw51_variant_settings.lua
+if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW%
+if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW% >nul 2>&1
+
+set SET_PATH=wayhpoints\vfw51_waypoint_settings.lua
 if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW%
 if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW% >nul 2>&1
 

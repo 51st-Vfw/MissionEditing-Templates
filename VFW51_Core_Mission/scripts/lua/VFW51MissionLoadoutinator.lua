@@ -1,19 +1,19 @@
 -- ************************************************************************************************************
 -- 
--- VFW51MissionWaypointinator: Waypoint processing tool for 51st VFW workflow
+-- VFW51MissionLoadoutinator: Loadout processing tool for 51st VFW workflow
 --
 -- NOTE: this script makes changes to the .miz mission file
 --
--- Usage: Usage: VFW51MissionWaypointinator <src_path> <dst_path> [--debug|--trace]
+-- Usage: Usage: VFW51MissionLoadoutinator <src_path> <dst_path> [--debug|--trace]
 --
 --   <src_path>     path to src/ directory in mission directory
 --   <dst_path>     path to directory where mission is assembled (build/miz_image, typically)
 --   --debug        enable debug log output
 --   --trace        enable trace log output
 --
--- walk the map defined in src/waypoints/vfw51_waypoint_settings.lua file to update group steerpoints in the
--- mission file. the map is keyed by group name with a value of a file name in src/waypoints that provides
--- the waypoints to inject.
+-- walk the map defined in src/loadouts/vfw51_loadout_settings.lua file to update group loadouts in the
+-- mission file. the map is keyed by group name with a value of a file name in src/loadouts that provides
+-- the loadout to inject.
 --
 -- the .miz must be unpacked at the usual place (src/miz_core) prior to using this tool.
 --
@@ -27,40 +27,48 @@
 require("veafMissionEditor")
 require("VFW51WorkflowUtil")
 
-VFW51MissionWaypointinator = VFW51WorkflowUtil:new()
+VFW51MissionLoadoutinator = VFW51WorkflowUtil:new()
 
 ---------------------------------------------------------------------------------------------------------------
 -- Core Methods
 ---------------------------------------------------------------------------------------------------------------
 
+function VFW51MissionLoadoutinator:processSmokePods(coalition, loadout)
+    if loadout["pylons"] then
+        if coalition:lower() == "neutrals" then
+            coalition = "white"
+        end
+        for _, pylonData in pairs(loadout["pylons"]) do
+            if pylonData["CLSID"] == "{INV-SMOKE-COALITION}" then
+                pylonData["CLSID"] = "{INV-SMOKE-" .. coalition:upper() .. "}"
+            end
+        end
+    end
+    return loadout
+end
+
 -- edit function for veafMissionEditor.editMission, since that is not OO, we define this with . and
 -- pass self explicitly as the arg
-function VFW51MissionWaypointinator.processMission(mission_t, self)
+function VFW51MissionLoadoutinator.processMission(mission_t, self)
     local coalitions = { "blue", "red", "neutrals" }
 
     for _, coa in pairs(coalitions) do
         for _, country in pairs(mission_t["coalition"][coa]["country"]) do
             if country["plane"] then
                 for groupIdx, group in ipairs(country["plane"]["group"]) do
-                    for groupPattern, groupFile in pairs(WaypointSettings) do
+---@diagnostic disable-next-line: undefined-global
+                    for groupPattern, groupFile in pairs(LoadoutSettings) do
                         local gsubPattern = self:sanitizePattern(groupPattern)
                         if string.match(group["name"], gsubPattern) then
                             self:logInfo(string.format("Updating group '%s', matches key '%s'", group["name"], groupPattern))
-                            if self:loadLuaFile(self.srcPath, "waypoints", groupFile) then
+                            if self:loadLuaFile(self.srcPath, "loadouts", groupFile) then
+                                for unitIdx, table in pairs(group["units"]) do
 ---@diagnostic disable-next-line: undefined-global
-                                for routeIdx, table in ipairs(RouteData) do
-                                    if routeIdx > 1 then
-                                        if not country["plane"]["group"][groupIdx]["route"]["points"][routeIdx] then
-                                            country["plane"]["group"][groupIdx]["route"]["points"][routeIdx] = { }
-                                        end
-                                        for key, value in pairs(table) do
-                                            country["plane"]["group"][groupIdx]["route"]["points"][routeIdx][key] = self:deepCopy(value)
-                                        end
-                                    end
+                                    local loadoutData = self:processSmokePods(coa, self:deepCopy(LoadoutData))
+                                    country["plane"]["group"][groupIdx]["units"][unitIdx]["payload"] = loadoutData
                                 end
                             else
-                                self:logInfo("Waypoint file '" .. groupFile .. "' not found, skipping")
-                                WaypointSettings[groupPattern] = nil
+                                self:logInfo("Loadout file '" .. groupFile .. "' not found, skipping")
                             end
                             self.unitEditCount = self.unitEditCount + 1
                         end
@@ -69,25 +77,19 @@ function VFW51MissionWaypointinator.processMission(mission_t, self)
             end
             if country["helicopter"] then
                 for groupIdx, group in ipairs(country["helicopter"]["group"]) do
-                    for groupPattern, groupFile in pairs(WaypointSettings) do
+---@diagnostic disable-next-line: undefined-global
+                    for groupPattern, groupFile in pairs(LoadoutSettings) do
                         local gsubPattern = self:sanitizePattern(groupPattern)
                         if string.match(group["name"], gsubPattern) then
                             self:logInfo(string.format("Updating group '%s', matches key '%s'", group["name"], groupPattern))
-                            if self:loadLuaFile(self.srcPath, "waypoints", groupFile) then
+                            if self:loadLuaFile(self.srcPath, "loadouts", groupFile) then
+                                for unitIdx, table in pairs(group["units"]) do
 ---@diagnostic disable-next-line: undefined-global
-                                for routeIdx, table in ipairs(RouteData) do
-                                    if routeIdx > 1 then
-                                        if not country["helicopter"]["group"][groupIdx]["route"]["points"][routeIdx] then
-                                            country["helicopter"]["group"][groupIdx]["route"]["points"][routeIdx] = { }
-                                        end
-                                        for key, value in pairs(table) do
-                                            country["helicopter"]["group"][groupIdx]["route"]["points"][routeIdx][key] = self:deepCopy(value)
-                                        end
-                                    end
+                                    local loadoutData = self:processSmokePods(coa, self:deepCopy(LoadoutData))
+                                    country["helicopter"]["group"][groupIdx]["units"][unitIdx]["payload"] = loadoutData
                                 end
                             else
-                                self:logInfo("Waypoint file '" .. groupFile .. "' not found, skipping")
-                                WaypointSettings[groupPattern] = nil
+                                self:logInfo("Loadout file '" .. groupFile .. "' not found, skipping")
                             end
                             self.unitEditCount = self.unitEditCount + 1
                         end
@@ -99,10 +101,10 @@ function VFW51MissionWaypointinator.processMission(mission_t, self)
     return mission_t
 end
 
-function VFW51MissionWaypointinator:process()
-    local settingsPath = self:loadLuaFile(self.srcPath, "waypoints", "vfw51_waypoint_settings.lua")
+function VFW51MissionLoadoutinator:process()
+    local settingsPath = self:loadLuaFile(self.srcPath, "loadouts", "vfw51_loadout_settings.lua")
     if settingsPath ~= nil then
-        self:logInfo(string.format("Using waypoint settings [%s]", settingsPath))
+        self:logInfo(string.format("Using loadout settings [%s]", settingsPath))
 
         self.unitEditCount = 0
 
@@ -111,18 +113,18 @@ function VFW51MissionWaypointinator:process()
         local editFn = self.processMission
         self:logDebug(string.format("Processing [%s]", mizMissionPath))
         veafMissionEditor.editMission(mizMissionPath, mizMissionPath, "mission", editFn, self)
-        self:logInfo(string.format("mission updated, injected waypoints for %d units", self.unitEditCount))
+        self:logInfo(string.format("mission updated, injected loadouts for %d units", self.unitEditCount))
     else
-        self:logInfo("Waypoint settings not found, skipping")
+        self:logInfo("Loadout settings not found, skipping")
     end
 end
 
-function VFW51MissionWaypointinator:new(o, arg)
+function VFW51MissionLoadoutinator:new(o, arg)
     o = o or VFW51WorkflowUtil:new(o, arg)
     setmetatable(o, self)
     self.__index = self
 
-    self.id = "Waypointinator"
+    self.id = "Loadoutinator"
     self.version = "1.0.0"
 
     local isArgBad = false
@@ -136,7 +138,7 @@ function VFW51MissionWaypointinator:new(o, arg)
         end
     end
     if isArgBad or not self.srcPath or not self.dstPath then
-        print("Usage: VFW51MissionWaypointinator <src_path> <dst_path> [--debug|--trace]")
+        print("Usage: VFW51MissionLoadoutinator <src_path> <dst_path> [--debug|--trace]")
         return nil
     end
 
@@ -147,7 +149,7 @@ end
 -- Main
 ---------------------------------------------------------------------------------------------------------------
 
-local inator = VFW51MissionWaypointinator:new(nil, arg)
+local inator = VFW51MissionLoadoutinator:new(nil, arg)
 if inator then
     inator:process()
 end

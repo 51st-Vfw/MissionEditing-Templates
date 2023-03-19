@@ -20,6 +20,9 @@ set ARG_WX=0
 set ARG_OPT=0
 set ARG_WP=""
 set ARG_WP_PARAM=0
+set ARG_LOUT=""
+set ARG_LOUT_PARAM=0
+set ARG_TASKED=0
 set ARG_MIZ=""
 set ARG_LUADEBUG=1
 set ARG_LUATRACE=1
@@ -29,31 +32,42 @@ for %%x in (%*) do (
         goto Usage
     ) else if "%%~x" == "--wx" (
         if !ARG_WP_PARAM! == 1 goto Usage
-        if !ARG_OPT! == 1 goto Usage
-        if !ARG_WP! == 1 goto Usage
-        set ARG_WX=1
+        if !ARG_LOUT_PARAM! == 1 goto Usage
+        if !ARG_TASKED! == 1 goto Usage
+        set ARG_TASKED=1
         set LUA_DATA=--wx
     ) else if "%%~x" == "--opt" (
         if !ARG_WP_PARAM! == 1 goto Usage
-        if !ARG_WX! == 1 goto Usage
-        if !ARG_WP! == 1 goto Usage
-        set ARG_OPT=1
+        if !ARG_LOUT_PARAM! == 1 goto Usage
+        if !ARG_TASKED! == 1 goto Usage
+        set ARG_TASKED=1
         set LUA_DATA=--opt
     ) else if "%%~x" == "--wp" (
         if !ARG_WP_PARAM! == 1 goto Usage
-        if !ARG_WX! == 1 goto Usage
-        if !ARG_OPT! == 1 goto Usage
+        if !ARG_LOUT_PARAM! == 1 goto Usage
+        if !ARG_TASKED! == 1 goto Usage
         set ARG_WP_PARAM=1
+    ) else if "%%~x" == "--loadout" (
+        if !ARG_WP_PARAM! == 1 goto Usage
+        if !ARG_LOUT_PARAM! == 1 goto Usage
+        if !ARG_TASKED! == 1 goto Usage
+        set ARG_LOUT_PARAM=1
     ) else if "%%~x" == "--luadebug" (
         if !ARG_WP_PARAM! == 1 goto Usage
+        if !ARG_LOUT_PARAM! == 1 goto Usage
         set ARG_LUADEBUG=1
     ) else if "%%~x" == "--luatrace" (
         if !ARG_WP_PARAM! == 1 goto Usage
+        if !ARG_LOUT_PARAM! == 1 goto Usage
         set ARG_LUATRACE=1
     ) else if !ARG_WP_PARAM! == 1 (
         set ARG_WP_PARAM=0
-        set ARG_WP="%%~x"
+        set ARG_TASKED=1
         set LUA_DATA=--wp "%%~x"
+    ) else if !ARG_LOUT_PARAM! == 1 (
+        set ARG_LOUT_PARAM=0
+        set ARG_TASKED=1
+        set LUA_DATA=--loadout "%%~x"
     ) else if !ARG_MIZ! == "" (
         set ARG_MIZ="%%~x"
     ) else (
@@ -62,8 +76,9 @@ for %%x in (%*) do (
     )
 )
 
-if %ARG_WX% == 0 if %ARG_OPT% == 0 if %ARG_WP% == "" goto Usage
+if %ARG_TASKED% == 0 goto Usage
 if %ARG_WP_PARAM% == 1 goto Usage
+if %ARG_LOUT_PARAM% == 1 goto Usage
 if exist %ARG_MIZ% goto GoodMiz
 echo Unable to open .miz %ARG_MIZ% 1>&2
 goto Usage
@@ -104,7 +119,8 @@ exit /be 0
 
 :Usage
 echo.
-echo Usage: extract [--help] [--wx] [--opt] [--wp {group}] [--luadebug, --luatrace] {miz_path}
+echo Usage: extract [--help] [--wx] [--opt] [--wp {group}]  [--load {group}]
+echo                [--luadebug, --luatrace] {miz_path}
 echo.
 echo Extract Lua for a particular property from a .miz file.
 echo.
@@ -115,7 +131,8 @@ echo.
 echo   --help               Displays this usage information
 echo   --wx                 Extract weather information
 echo   --opt                Extract mission options
-echo   --wp {group}         Extract waypoints for group {group}
+echo   --wp {group}         Extract waypoints from group {group}
+echo   --loadout {group}    Extract loadout from first unit of group {group}
 echo   {miz_path}           Path to .miz to extract the information from
 echo   --luatrace           Pass "--trace" to Lua scripts to set "trace" level logging
 echo   --luadebug           Pass "--debug" to Lua scripts to set "debug" level logging

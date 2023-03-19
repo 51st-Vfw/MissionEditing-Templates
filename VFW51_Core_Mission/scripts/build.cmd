@@ -169,6 +169,10 @@ echo ---- Injecting waypoints
 if %ARG_VERBOSE% == 1 echo %VFW51_LUA_EXE% VFW51MissionWaypointinator.lua %MISSION_SRC% %MIZ_BLD_PATH% %VFW51_LUA_LOG%
 if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% VFW51MissionWaypointinator.lua %MISSION_SRC% %MIZ_BLD_PATH% %VFW51_LUA_LOG%
 
+echo ---- Injecting loadouts
+if %ARG_VERBOSE% == 1 echo %VFW51_LUA_EXE% VFW51MissionLoadoutinator.lua %MISSION_SRC% %MIZ_BLD_PATH% %VFW51_LUA_LOG%
+if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% VFW51MissionLoadoutinator.lua %MISSION_SRC% %MIZ_BLD_PATH% %VFW51_LUA_LOG%
+
 echo ---- Injecting radio presets
 if %ARG_VERBOSE% == 1 echo %VFW51_LUA_EXE% VFW51MissionRadioinator.lua %MISSION_SRC% %MIZ_BLD_PATH% %VFW51_LUA_LOG%
 if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% VFW51MissionRadioinator.lua %MISSION_SRC% %MIZ_BLD_PATH% %VFW51_LUA_LOG%

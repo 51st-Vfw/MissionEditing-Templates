@@ -116,6 +116,10 @@ echo ---- Updating waypoints
 if %ARG_VERBOSE% == 1 echo %VFW51_LUA_EXE% VFW51MissionWaypointinator.lua %MISSION_SRC% %MIZ_EXT_PATH% %VFW51_LUA_LOG%
 if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% VFW51MissionWaypointinator.lua %MISSION_SRC% %MIZ_EXT_PATH% %VFW51_LUA_LOG%
 
+echo ---- Updating loadouts
+if %ARG_VERBOSE% == 1 echo %VFW51_LUA_EXE% VFW51MissionLoadoutinator.lua %MISSION_SRC% %MIZ_EXT_PATH% %VFW51_LUA_LOG%
+if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% VFW51MissionLoadoutinator.lua %MISSION_SRC% %MIZ_EXT_PATH% %VFW51_LUA_LOG%
+
 echo ---- Updating radio presets
 if %ARG_VERBOSE% == 1 echo %VFW51_LUA_EXE% VFW51MissionRadioinator.lua %MISSION_SRC% %MIZ_EXT_PATH% %VFW51_LUA_LOG%
 if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% VFW51MissionRadioinator.lua %MISSION_SRC% %MIZ_EXT_PATH% %VFW51_LUA_LOG%

@@ -18,6 +18,12 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20230318**, Workflow 4-9-4
+    - Loadoutinator script adds support for duplicating loadouts across multiple groups
+    - extract script adds support for extracing loadouts from missions
+    - Added src/loadouts directory to support loadout functionality
+    - Added 51st SOP loadouts for wing aircraft for use in A2A arenas for BFM, WVR, BVR
+    - wfupdate script now copies variant and waypoint settings when updating settings
 - **v20230210**, Workflow 4-8-3
     - Adopt Skynet 3.1.0
 - **v20230207**, Workflow 3-8-3
