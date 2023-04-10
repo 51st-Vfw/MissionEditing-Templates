@@ -25,6 +25,7 @@ FLIGHTGROUP = { }
 Group = { }
 GRPC = { }
 Object = { }
+Spot = { }
 StaticObject = { }
 Unit = { }
 Weapon = { }

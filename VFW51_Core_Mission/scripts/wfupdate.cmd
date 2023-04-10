@@ -22,6 +22,7 @@ set ARG_NO_SCRIPTS=1
 set ARG_NO_WFLOW=1
 set ARG_DRY_RUN=0
 set ARG_VERBOSE=0
+set ARG_VERSION=0
 set ARG_TARG_MDIR=""
 
 for %%x in (%*) do (
@@ -40,12 +41,16 @@ for %%x in (%*) do (
         set ARG_NO_WFLOW=0
     ) else if "%%~x" == "--verbose" (
         set ARG_VERBOSE=1
+    ) else if "%%~x" == "--version" (
+        set ARG_VERSION=1
     ) else if !ARG_TARG_MDIR! == "" (
         set ARG_TARG_MDIR=%%~x
     ) else (
         goto Usage
     )
 )
+
+if %ARG_VERSION% == 1 goto GetThisVersions
 
 if exist %ARG_TARG_MDIR% goto ValidTarget
 echo Target mission directory %ARG_TARG_MDIR% not found
@@ -66,17 +71,17 @@ set ARG_NO_WFLOW=0
 
 rem ======== set up variables
 
-set THIS_VERS=%cd%\scripts\versions
-set TARG_VERS=%ARG_TARG_MDIR%\scripts\versions
-
 rem extracts versions from the versions files
-for /f %%i in (%THIS_VERS%\frameworks.txt) do set THIS_VERS_FWORKS=%%i
-for /f %%i in (%THIS_VERS%\scripts.txt) do set THIS_VERS_SCRIPTS=%%i
-for /f %%i in (%THIS_VERS%\settings.txt) do set THIS_VERS_WKFLOW=%%i
-
+set TARG_VERS=%ARG_TARG_MDIR%\scripts\versions
 for /f %%i in (%TARG_VERS%\frameworks.txt) do set TARG_VERS_FWORKS=%%i
 for /f %%i in (%TARG_VERS%\scripts.txt) do set TARG_VERS_SCRIPTS=%%i
 for /f %%i in (%TARG_VERS%\settings.txt) do set TARG_VERS_WKFLOW=%%i
+
+:GetThisVersions
+set THIS_VERS=%cd%\scripts\versions
+for /f %%i in (%THIS_VERS%\frameworks.txt) do set THIS_VERS_FWORKS=%%i
+for /f %%i in (%THIS_VERS%\scripts.txt) do set THIS_VERS_SCRIPTS=%%i
+for /f %%i in (%THIS_VERS%\settings.txt) do set THIS_VERS_WKFLOW=%%i
 
 set THIS_MDIR=%cd%
 set THIS_MDIR_SRC=%THIS_MDIR%\src
@@ -86,7 +91,19 @@ set TARG_MDIR=%ARG_TARG_MDIR%
 set TARG_MDIR_SRC=%TARG_MDIR%\src
 set TARG_MDIR_SCRIPT=%TARG_MDIR%\scripts
 
+rem ======== version
+
+if %ARG_VERSION% == 0 goto StartUpdate
+
+echo Workflow Element Versions for Mission Directory %cd%:
+echo   Scripts    : v%THIS_VERS_SCRIPTS%
+echo   Frameworks : v%THIS_VERS_FWORKS%
+echo   Workflow   : v%THIS_VERS_WKFLOW%
+goto SettingsDone
+
 rem ======== update
+
+:StartUpdate
 
 echo.
 echo ========================================================
@@ -142,6 +159,9 @@ if %ARG_DRY_RUN% == 0 del %TARG_MDIR_SRC%\scripts\mist_*_*_*.lua >nul 2>&1
 if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SRC%\scripts\mist_*_*_*.lua %TARG_MDIR_SRC%\scripts\
 if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\scripts\mist_*_*_*.lua %TARG_MDIR_SRC%\scripts\ >nul 2>&1
 
+if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SRC%\scripts\vfw51_mission_util.lua %TARG_MDIR_SRC%\scripts\
+if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\scripts\vfw51_mission_util.lua %TARG_MDIR_SRC%\scripts\ >nul 2>&1
+
 :FrameDone
 
 if %ARG_NO_WFLOW% == 1 goto SettingsDone
@@ -188,7 +208,7 @@ set SET_PATH=variants\vfw51_variant_settings.lua
 if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW%
 if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW% >nul 2>&1
 
-set SET_PATH=wayhpoints\vfw51_waypoint_settings.lua
+set SET_PATH=waypoints\vfw51_waypoint_settings.lua
 if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW%
 if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SRC%\%SET_PATH% %TARG_MDIR_SRC%\%SET_PATH%_v%THIS_VERS_WKFLOW% >nul 2>&1
 
@@ -198,8 +218,8 @@ exit /be 0
 
 :Usage
 echo.
-echo Usage: wfupdate [--help] [--dryrun] [--force] [--frame] [--script] [--settings] [--verbose]
-echo                 {targ_mdir}
+echo Usage: wfupdate [--help] [--dryrun] [--force] [--frame] [--script] [--settings] [--version]
+echo                 [-verbose] {targ_mdir}
 echo.
 echo Update the scripting, settings, or framework components in a target mission directory to match
 echo the versions in the current mission directory.
@@ -214,6 +234,7 @@ echo   --force              Force updates regardless of version
 echo   --frame              Update mission framework scripts component
 echo   --script             Update workflow scripting component
 echo   --settings           Update workflow settings component
+echo   --version            Display current workflow versions without making changes
 echo   --verbose            Verbose logging output
 echo   {targ_mdir}          Target mission directory to update
 echo.

@@ -345,11 +345,15 @@ function VFW51MissionTriginator.processMission(mission_t, self)
         local rules = { [1] = trigRules[1] }
         for key, val in ipairs(files) do
             local resKey = self.mapRsrcToKey[val]
-            action = action .. tmplt:gsub("$SCRIPT_RESKEY", resKey)
-            rules[key+1] = {
-                ["file"] = resKey,
-                ["predicate"] = "a_do_script_file",
-            }
+            if resKey == nil then
+                self:logInfo("Skipping unknown resource " .. val)
+            else
+                action = action .. tmplt:gsub("$SCRIPT_RESKEY", resKey)
+                rules[key+1] = {
+                    ["file"] = resKey,
+                    ["predicate"] = "a_do_script_file",
+                }
+            end
         end
         mission["trig"]["actions"][num] = self:deepCopy(action)
         mission["trigrules"][num]["actions"] = self:deepCopy(rules)
@@ -361,12 +365,16 @@ function VFW51MissionTriginator.processMission(mission_t, self)
         local rules = { [1] = trigRules[1] }
         for key, val in ipairs(files) do
             local resKey = self.mapRsrcToKey[val]
-            action = action .. tmplt:gsub("$AUDIO_RESKEY", resKey)
-            rules[key+1] = {
-                ["file"] = resKey,
-                ["predicate"] = "a_out_sound",
-                ["start_delay"] = 0,
-            }
+            if resKey == nil then
+                self:logInfo("Skipping unknown resource " .. val)
+            else
+                action = action .. tmplt:gsub("$AUDIO_RESKEY", resKey)
+                rules[key+1] = {
+                    ["file"] = resKey,
+                    ["predicate"] = "a_out_sound",
+                    ["start_delay"] = 0,
+                }
+            end
         end
         mission["trig"]["actions"][num] = self:deepCopy(action)
         mission["trigrules"][num]["actions"] = self:deepCopy(rules)

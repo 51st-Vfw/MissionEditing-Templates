@@ -18,6 +18,14 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20230323**, Workflow 5-10-5
+    - Triginator handles missing script files a little more gracefully (no longer asserting out)
+    - Radioinator handles presets in new A-10C ARC-211 radio
+    - Radioinator supports for non-preset-1 defaults
+    - Radioinator deprecates support for legacy A-10C preset model
+    - wfupdate script now has --version argument to print versions of workflow components
+    - Significant update to 51st VFW mission utilities included in mission scripts by default
+    - Updated default radio presets based on latest SOPs
 - **v20230318**, Workflow 4-9-4
     - Loadoutinator script adds support for duplicating loadouts across multiple groups
     - extract script adds support for extracing loadouts from missions

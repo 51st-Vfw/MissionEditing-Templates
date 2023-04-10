@@ -3,6 +3,14 @@
 --
 -- vfw51_radio_settings.lua: radio set up for mission
 --
+-- The RadioDefaults table defines how to set the default frequency for the primary radio on startup. This
+-- table is an array where each element of the array is a table with the following key/value pairs:
+--
+--     "c" : <string>       coalition to match, "*" matches any coalition
+--     "p" : <string>       airframe/name/callsign pattern to match (see below)
+--     "f" : <number>       default frequency (MHz)
+--     "d" : <string>       default modulation (0 AM, 1 FM)
+-- 
 -- The RadioPresets[Warbird]<Blue|Red> tables define how to set the frequency for a preset on one of the
 -- three radios for a warbird or non-warbird unit in blue or read coalitions. the assigned frequency value
 -- may depend on the airframe, unit name, and callsign of the aircraft being set up. the tables contain the
@@ -41,6 +49,9 @@
 --
 -- ************************************************************************************************************
 
+RadioDefaults = {
+    [1] = { ["c"] = "*", ["p"] = "*:*:*", ["f"] = 270.00, ["m"] = 0 }
+}
 -- NOTE: the tables are set up to align with 51st VFW comms SOPs and should need minimal edits for use in
 -- NOTE: a mission that follows SOPs. The primary changes may be around the carrier setups for F-14 and
 -- NOTE: FA-18C airframes and the depature ATIS/tower for all airframes. generally, only the RadioPresets
@@ -56,12 +67,14 @@ RadioPresetsBlue = {
         [1] = { ["p"] = "*:*:*",             ["f"] = 270.00, ["d"] = "Tac Common" },
     },
     ["$RADIO_1_02"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00, ["d"] = "Departure ATIS (UHF)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 275.00, ["d"] = "Strike Common" }
     },
     ["$RADIO_1_03"] = {
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00, ["d"] = "Departure ATIS (UHF)" }
+    },
+    ["$RADIO_1_04"] = {
         [1] = { ["p"] = "*:*:*",             ["f"] =   0.00, ["d"] = "Departure Tower (UHF)" }
     },
-    ["$RADIO_1_04"] = { },
     ["$RADIO_1_05"] = {
         [1] = { ["p"] = "*:*:*",             ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" }
      },
@@ -124,9 +137,9 @@ RadioPresetsBlue = {
 
     ["$RADIO_2_01"] = {
         [ 1] = { ["p"] = "*:*:*",                        ["f"] =   0.00, ["d"] = "Intraflight" },
-        [ 2] = { ["p"] = "A-10C_2:*:*",                    ["f"] = 141.25 },
-        [ 3] = { ["p"] = "A-10C_2:*:Hawg",                 ["f"] = 141.25 },
-        [ 4] = { ["p"] = "A-10C_2:*:Pig",                  ["f"] = 141.75 },
+        [ 2] = { ["p"] = "A-10C_2:*:*",                  ["f"] = 241.25 },
+        [ 3] = { ["p"] = "A-10C_2:*:Hawg",               ["f"] = 241.25 },
+        [ 4] = { ["p"] = "A-10C_2:*:Pig",                ["f"] = 241.75 },
         [ 5] = { ["p"] = "F-16C_50:*:Cowboy",            ["f"] = 138.25 },
         [ 6] = { ["p"] = "F-16C_50:*:Lobo",              ["f"] = 138.75 },
         [ 7] = { ["p"] = "F-14B:*:Dodge1",               ["f"] = 140.25 },
@@ -134,13 +147,13 @@ RadioPresetsBlue = {
         [ 9] = { ["p"] = "FA-18C_hornet:*:Enfield",      ["f"] = 254.00 },
         [10] = { ["p"] = "FA-18C_hornet:*:Springfield",  ["f"] = 254.00 }
     },
-    ["$RADIO_2_02"] = {
+    ["$RADIO_2_02"] = { },
+    ["$RADIO_2_03"] = {
         [1] = { ["p"] = "*:*:*",                         ["f"] =   0.00, ["d"] = "Departure ATIS (VHF)" }
     },
-    ["$RADIO_2_03"] = {
+    ["$RADIO_2_04"] = {
         [1] = { ["p"] = "*:*:*",                         ["f"] =   0.00, ["d"] = "Departure Tower (VHF)" }
     },
-    ["$RADIO_2_04"] = { },
     ["$RADIO_2_05"] = {
         [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" },
         [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 240.00, ["d"] = "AWACS Overlord 1-1 (AI)" }
@@ -154,10 +167,12 @@ RadioPresetsBlue = {
         [2] = { ["p"] = "FA-18C_hornet:*:*",             ["f"] = 254.00, ["d"] = "AAR Arco 2-1 (54Y)" }
     },
     ["$RADIO_2_08"] = {
-        [1] = { ["p"] = "*:*:*",                         ["f"] = 138.00, ["d"] = "JTAC/AFAC Darknight 1-1 (VHF, AI)" }
+        [1] = { ["p"] = "*:*:*",                         ["f"] = 138.00, ["d"] = "JTAC/AFAC Darknight 1-1 (VHF, AI)" },
+        [2] = { ["p"] = "A-10C_2:*:*",                   ["f"] = 238.00, ["d"] = "JTAC/AFAC Darknight 1-1 (UHF, AI)" }
     },
     ["$RADIO_2_09"] = {
         [1] = { ["p"] = "*:*:*",                         ["f"] = 138.10, ["d"] = "JTAC/AFAC (VHF, Human)" },
+        [2] = { ["p"] = "A-10C_2:*:*",                   ["f"] = 238.10, ["d"] = "JTAC/AFAC (UHF, Human)" }
     },
     ["$RADIO_2_10"] = {
         [1] = { ["p"] = "F-14B:*:*",                     ["f"] = 271.40, ["d"] = "CVN-71 ATC" },
@@ -188,7 +203,8 @@ RadioPresetsBlue = {
     ["$RADIO_2_18"] = { },
     ["$RADIO_2_19"] = { },
     ["$RADIO_2_20"] = {
-        [1] = { ["p"] = "*:*:*",                         ["f"] = 121.50, ["d"] = "Guard (VHF)" }
+        [1] = { ["p"] = "*:*:*",                         ["f"] = 121.50, ["d"] = "Guard (VHF)" },
+        [2] = { ["p"] = "A-10C_2:*:*",                   ["f"] = 243.00, ["d"] = "Guard (UHF)" }
     },
 
 
@@ -2321,33 +2337,54 @@ RadioSettings =
 
     --["red A-10C"] = {}, --no presets
 
-    --["blue A-10CII"] = {}, --no presets
-
-    --["red A-10CII"] = {}, --no presets
-
-    ["blue A-10C"] = {
-        type = "A-10C",     -- match A-10C (A-10C) and A-10C II (A-10C_2) types
+    ["blue A-10C_2"] = {
+        type = "A-10C_2",
         coalition = "blue",
         country = nil,
 
-        ["files"] = {
-            ["UHF_RADIO"] = {
-                ["dials"] = {
-                    ["mode_dial"] = 0,
-                    ["manual_frequency"] = RadioPresetsBlue["$RADIO_1_01"],
-                    ["selection_dial"] = 0,
-                    ["channel_dial"] = 0
-                },
-                ["presets"] = {
-                    [1] =  RadioPresetsBlue["$RADIO_1_01"],
-                    [2] =  RadioPresetsBlue["$RADIO_1_02"],
-                    [3] =  RadioPresetsBlue["$RADIO_1_03"],
-                    [4] =  RadioPresetsBlue["$RADIO_1_04"],
-                    [5] =  RadioPresetsBlue["$RADIO_1_05"],
-                    [6] =  RadioPresetsBlue["$RADIO_1_06"],
-                    [7] =  RadioPresetsBlue["$RADIO_1_07"],
-                    [8] =  RadioPresetsBlue["$RADIO_1_08"],
-                    [9] =  RadioPresetsBlue["$RADIO_1_09"],
+        ["Radio"] = 
+        {
+            [1] = 
+            {
+                ["modulations"] = 
+                {
+                    [1] = 0,
+                    [2] = 0,
+                    [3] = 0,
+                    [4] = 0,
+                    [5] = 0,
+                    [6] = 0,
+                    [7] = 0,
+                    [8] = 0,
+                    [9] = 0,
+                    [10] = 0,
+                    [11] = 0,
+                    [12] = 0,
+                    [13] = 0,
+                    [14] = 0,
+                    [15] = 0,
+                    [16] = 0,
+                    [17] = 0,
+                    [18] = 0,
+                    [19] = 0,
+                    [20] = 0,
+                    [21] = 1,
+                    [22] = 1,
+                    [23] = 1,
+                    [24] = 1,
+                    [25] = 1,
+                }, -- end of ["modulations"]
+                ["channels"] = 
+                {
+                    [1]  = RadioPresetsBlue["$RADIO_1_01"],
+                    [2]  = RadioPresetsBlue["$RADIO_1_02"],
+                    [3]  = RadioPresetsBlue["$RADIO_1_03"],
+                    [4]  = RadioPresetsBlue["$RADIO_1_04"],
+                    [5]  = RadioPresetsBlue["$RADIO_1_05"],
+                    [6]  = RadioPresetsBlue["$RADIO_1_06"],
+                    [7]  = RadioPresetsBlue["$RADIO_1_07"],
+                    [8]  = RadioPresetsBlue["$RADIO_1_08"],
+                    [9]  = RadioPresetsBlue["$RADIO_1_09"],
                     [10] = RadioPresetsBlue["$RADIO_1_10"],
                     [11] = RadioPresetsBlue["$RADIO_1_11"],
                     [12] = RadioPresetsBlue["$RADIO_1_12"],
@@ -2359,25 +2396,29 @@ RadioSettings =
                     [18] = RadioPresetsBlue["$RADIO_1_18"],
                     [19] = RadioPresetsBlue["$RADIO_1_19"],
                     [20] = RadioPresetsBlue["$RADIO_1_20"],
-                }
-            },
-            ["VHF_AM_RADIO"] = {
-                ["dials"] = {
-                    ["mode_dial"] = 0,
-                    ["manual_frequency"] = RadioPresetsBlue["$RADIO_2_01"],
-                    ["selection_dial"] = 2,
-                    ["channel_dial"] = 0
-                },
-                ["presets"] = {
-                    [1] =  RadioPresetsBlue["$RADIO_2_01"],
-                    [2] =  RadioPresetsBlue["$RADIO_2_02"],
-                    [3] =  RadioPresetsBlue["$RADIO_2_03"],
-                    [4] =  RadioPresetsBlue["$RADIO_2_04"],
-                    [5] =  RadioPresetsBlue["$RADIO_2_05"],
-                    [6] =  RadioPresetsBlue["$RADIO_2_06"],
-                    [7] =  RadioPresetsBlue["$RADIO_2_07"],
-                    [8] =  RadioPresetsBlue["$RADIO_2_08"],
-                    [9] =  RadioPresetsBlue["$RADIO_2_09"],
+                    [21] = 54,
+                    [22] = 32.5,
+                    [23] = 42,
+                    [24] = 37.5,
+                    [25] = 54,
+                }, -- end of ["channels"]
+            }, -- end of [1]
+            [2] = 
+            {
+                ["modulations"] = 
+                {
+                }, -- end of ["modulations"]
+                ["channels"] = 
+                {
+                    [1]  = RadioPresetsBlue["$RADIO_2_01"],
+                    [2]  = RadioPresetsBlue["$RADIO_2_02"],
+                    [3]  = RadioPresetsBlue["$RADIO_2_03"],
+                    [4]  = RadioPresetsBlue["$RADIO_2_04"],
+                    [5]  = RadioPresetsBlue["$RADIO_2_05"],
+                    [6]  = RadioPresetsBlue["$RADIO_2_06"],
+                    [7]  = RadioPresetsBlue["$RADIO_2_07"],
+                    [8]  = RadioPresetsBlue["$RADIO_2_08"],
+                    [9]  = RadioPresetsBlue["$RADIO_2_09"],
                     [10] = RadioPresetsBlue["$RADIO_2_10"],
                     [11] = RadioPresetsBlue["$RADIO_2_11"],
                     [12] = RadioPresetsBlue["$RADIO_2_12"],
@@ -2389,25 +2430,24 @@ RadioSettings =
                     [18] = RadioPresetsBlue["$RADIO_2_18"],
                     [19] = RadioPresetsBlue["$RADIO_2_19"],
                     [20] = RadioPresetsBlue["$RADIO_2_20"],
-                }
-            },
-            ["VHF_FM_RADIO"] = {
-                ["dials"] = {
-                    ["mode_dial"] = 0,
-                    ["manual_frequency"] = RadioPresetsBlue["$RADIO_3_01"],
-                    ["selection_dial"] = 2,
-                    ["channel_dial"] = 0
-                },
-                ["presets"] = {
-                    [1] =  RadioPresetsBlue["$RADIO_3_01"],
-                    [2] =  RadioPresetsBlue["$RADIO_3_02"],
-                    [3] =  RadioPresetsBlue["$RADIO_3_03"],
-                    [4] =  RadioPresetsBlue["$RADIO_3_04"],
-                    [5] =  RadioPresetsBlue["$RADIO_3_05"],
-                    [6] =  RadioPresetsBlue["$RADIO_3_06"],
-                    [7] =  RadioPresetsBlue["$RADIO_3_07"],
-                    [8] =  RadioPresetsBlue["$RADIO_3_08"],
-                    [9] =  RadioPresetsBlue["$RADIO_3_09"],
+                }, -- end of ["channels"]
+            }, -- end of [2]
+            [3] = 
+            {
+                ["modulations"] = 
+                {
+                }, -- end of ["modulations"]
+                ["channels"] = 
+                {
+                    [1]  = RadioPresetsBlue["$RADIO_3_01"],
+                    [2]  = RadioPresetsBlue["$RADIO_3_02"],
+                    [3]  = RadioPresetsBlue["$RADIO_3_03"],
+                    [4]  = RadioPresetsBlue["$RADIO_3_04"],
+                    [5]  = RadioPresetsBlue["$RADIO_3_05"],
+                    [6]  = RadioPresetsBlue["$RADIO_3_06"],
+                    [7]  = RadioPresetsBlue["$RADIO_3_07"],
+                    [8]  = RadioPresetsBlue["$RADIO_3_08"],
+                    [9]  = RadioPresetsBlue["$RADIO_3_09"],
                     [10] = RadioPresetsBlue["$RADIO_3_10"],
                     [11] = RadioPresetsBlue["$RADIO_3_11"],
                     [12] = RadioPresetsBlue["$RADIO_3_12"],
@@ -2418,10 +2458,137 @@ RadioSettings =
                     [17] = RadioPresetsBlue["$RADIO_3_17"],
                     [18] = RadioPresetsBlue["$RADIO_3_18"],
                     [19] = RadioPresetsBlue["$RADIO_3_19"],
-                    [20] = RadioPresetsBlue["$RADIO_3_20"]
-                }
-            }
-        }
+                    [20] = RadioPresetsBlue["$RADIO_3_20"],
+                }, -- end of ["channels"]
+            }, -- end of [3]
+        }, -- end of ["Radio"]
+    },
+
+    ["red A-10C_2"] = {
+        type = "A-10C_2",
+        coalition = "red",
+        country = nil,
+
+        ["Radio"] = 
+        {
+            [1] = 
+            {
+                ["modulations"] = 
+                {
+                    [1] = 0,
+                    [2] = 0,
+                    [3] = 0,
+                    [4] = 0,
+                    [5] = 0,
+                    [6] = 0,
+                    [7] = 0,
+                    [8] = 0,
+                    [9] = 0,
+                    [10] = 0,
+                    [11] = 0,
+                    [12] = 0,
+                    [13] = 0,
+                    [14] = 0,
+                    [15] = 0,
+                    [16] = 0,
+                    [17] = 0,
+                    [18] = 0,
+                    [19] = 0,
+                    [20] = 0,
+                    [21] = 1,
+                    [22] = 1,
+                    [23] = 1,
+                    [24] = 1,
+                    [25] = 1,
+                }, -- end of ["modulations"]
+                ["channels"] = 
+                {
+                    [1]  = RadioPresetsBlue["$RADIO_1_01"],
+                    [2]  = RadioPresetsBlue["$RADIO_1_02"],
+                    [3]  = RadioPresetsBlue["$RADIO_1_03"],
+                    [4]  = RadioPresetsBlue["$RADIO_1_04"],
+                    [5]  = RadioPresetsBlue["$RADIO_1_05"],
+                    [6]  = RadioPresetsBlue["$RADIO_1_06"],
+                    [7]  = RadioPresetsBlue["$RADIO_1_07"],
+                    [8]  = RadioPresetsBlue["$RADIO_1_08"],
+                    [9]  = RadioPresetsBlue["$RADIO_1_09"],
+                    [10] = RadioPresetsBlue["$RADIO_1_10"],
+                    [11] = RadioPresetsBlue["$RADIO_1_11"],
+                    [12] = RadioPresetsBlue["$RADIO_1_12"],
+                    [13] = RadioPresetsBlue["$RADIO_1_13"],
+                    [14] = RadioPresetsBlue["$RADIO_1_14"],
+                    [15] = RadioPresetsBlue["$RADIO_1_15"],
+                    [16] = RadioPresetsBlue["$RADIO_1_16"],
+                    [17] = RadioPresetsBlue["$RADIO_1_17"],
+                    [18] = RadioPresetsBlue["$RADIO_1_18"],
+                    [19] = RadioPresetsBlue["$RADIO_1_19"],
+                    [20] = RadioPresetsBlue["$RADIO_1_20"],
+                    [21] = 54,
+                    [22] = 32.5,
+                    [23] = 42,
+                    [24] = 37.5,
+                    [25] = 54,
+                }, -- end of ["channels"]
+            }, -- end of [1]
+            [2] = 
+            {
+                ["modulations"] = 
+                {
+                }, -- end of ["modulations"]
+                ["channels"] = 
+                {
+                    [1]  = RadioPresetsBlue["$RADIO_2_01"],
+                    [2]  = RadioPresetsBlue["$RADIO_2_02"],
+                    [3]  = RadioPresetsBlue["$RADIO_2_03"],
+                    [4]  = RadioPresetsBlue["$RADIO_2_04"],
+                    [5]  = RadioPresetsBlue["$RADIO_2_05"],
+                    [6]  = RadioPresetsBlue["$RADIO_2_06"],
+                    [7]  = RadioPresetsBlue["$RADIO_2_07"],
+                    [8]  = RadioPresetsBlue["$RADIO_2_08"],
+                    [9]  = RadioPresetsBlue["$RADIO_2_09"],
+                    [10] = RadioPresetsBlue["$RADIO_2_10"],
+                    [11] = RadioPresetsBlue["$RADIO_2_11"],
+                    [12] = RadioPresetsBlue["$RADIO_2_12"],
+                    [13] = RadioPresetsBlue["$RADIO_2_13"],
+                    [14] = RadioPresetsBlue["$RADIO_2_14"],
+                    [15] = RadioPresetsBlue["$RADIO_2_15"],
+                    [16] = RadioPresetsBlue["$RADIO_2_16"],
+                    [17] = RadioPresetsBlue["$RADIO_2_17"],
+                    [18] = RadioPresetsBlue["$RADIO_2_18"],
+                    [19] = RadioPresetsBlue["$RADIO_2_19"],
+                    [20] = RadioPresetsBlue["$RADIO_2_20"],
+                }, -- end of ["channels"]
+            }, -- end of [2]
+            [3] = 
+            {
+                ["modulations"] = 
+                {
+                }, -- end of ["modulations"]
+                ["channels"] = 
+                {
+                    [1]  = RadioPresetsBlue["$RADIO_3_01"],
+                    [2]  = RadioPresetsBlue["$RADIO_3_02"],
+                    [3]  = RadioPresetsBlue["$RADIO_3_03"],
+                    [4]  = RadioPresetsBlue["$RADIO_3_04"],
+                    [5]  = RadioPresetsBlue["$RADIO_3_05"],
+                    [6]  = RadioPresetsBlue["$RADIO_3_06"],
+                    [7]  = RadioPresetsBlue["$RADIO_3_07"],
+                    [8]  = RadioPresetsBlue["$RADIO_3_08"],
+                    [9]  = RadioPresetsBlue["$RADIO_3_09"],
+                    [10] = RadioPresetsBlue["$RADIO_3_10"],
+                    [11] = RadioPresetsBlue["$RADIO_3_11"],
+                    [12] = RadioPresetsBlue["$RADIO_3_12"],
+                    [13] = RadioPresetsBlue["$RADIO_3_13"],
+                    [14] = RadioPresetsBlue["$RADIO_3_14"],
+                    [15] = RadioPresetsBlue["$RADIO_3_15"],
+                    [16] = RadioPresetsBlue["$RADIO_3_16"],
+                    [17] = RadioPresetsBlue["$RADIO_3_17"],
+                    [18] = RadioPresetsBlue["$RADIO_3_18"],
+                    [19] = RadioPresetsBlue["$RADIO_3_19"],
+                    [20] = RadioPresetsBlue["$RADIO_3_20"],
+                }, -- end of ["channels"]
+            }, -- end of [3]
+        }, -- end of ["Radio"]
     },
 
     ["blue F-14A-135-GR"] = {

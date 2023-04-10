@@ -73,6 +73,28 @@ function VFW51MissionRadioinator:buildRadioTable(radioSetting, aframe, name, cal
     return radio_t
 end
 
+function VFW51MissionRadioinator:buildRadioDefault(coaName, aframe, name, callsign)
+    local freq = nil
+    local modu = nil
+    if RadioDefaults then
+        for _, radioDefault in ipairs(RadioDefaults) do
+            local coaPattern = radioDefault["c"]:lower()
+            local pattern = radioDefault["p"]
+            if (coaPattern == "*" or coaPattern == coaName) and
+            self:matchRadioPattern(pattern, aframe, name, callsign)
+            then
+                freq = radioDefault["f"]
+                modu = radioDefault["m"]
+                self:logTrace(string.format("default '%s' -- %s, %s, %s <<< **** MATCH **** %.2f", pattern, aframe, name, callsign, freq))
+                break
+            end
+        end
+    end
+    return freq, modu
+end
+
+-- DEPRECATED
+--[[
 function VFW51MissionRadioinator:buildRadioFiles(dstPath, fileSetting, aframe, name, callsign)
     local function DecodePresetVal(presetVal, defaultFreq)
         local freq = defaultFreq
@@ -119,6 +141,7 @@ function VFW51MissionRadioinator:buildRadioFiles(dstPath, fileSetting, aframe, n
         veafMissionEditor.writeMissionFile(settingsPath .. "SETTINGS.lua", tableAsLua)
     end
 end
+]]
 
 function VFW51MissionRadioinator:editUnit(coaName, countryName, unit_t)
     self:logTrace(string.format("editUnit(%s)",self:p(unit_t)))
@@ -154,7 +177,7 @@ function VFW51MissionRadioinator:editUnit(coaName, countryName, unit_t)
                         -- edit the unit
                         self:logDebug(string.format("-> Edited unit unitType=%s, unitName=%s, unitId=%s in coaName=%s, countryName=%s) ", self:p(unitType), self:p(unitName), self:p(unitId),self:p(coaName), self:p(countryName)))
                         if setting_t["Radio"] then
-                            --unit_t["Radio"] = nil
+                            -- unit_t["Radio"] = nil
                             unit_t["Radio"] = self:buildRadioTable(setting_t["Radio"], unitType, unitName, unitCallsign)
                             hasBeenEdited = true
                         elseif not setting_t["emit"] then
@@ -184,10 +207,24 @@ function VFW51MissionRadioinator.processMission(mission_t, self)
                 local hasBeenEdited = self:editUnit(coaName, countryName, unit_t)
                 if hasBeenEdited then
                     if unit_t["Radio"] and unit_t["Radio"][1] then
-                        self:logTrace("aligning communication setup to preset 1")
-                        group_t["communication"] = false
-                        group_t["frequency"] = unit_t["Radio"][1]["channels"][1]
-                        group_t["modulation"] = unit_t["Radio"][1]["modulations"][1]
+                        local unitType = unit_t["type"]
+                        local unitName = unit_t["name"]
+                        local unitCallsign = "<unknown>"
+                        if type(unit_t["callsign"]) == "table" then
+                            unitCallsign = unit_t["callsign"]["name"]
+                        end
+                        local freq, modu = self:buildRadioDefault(coaName, unitType, unitName, unitCallsign)
+                        if freq then
+                            self:logTrace(string.format("configuring communication setup to %.2f (%d)", freq, modu))
+                            group_t["communication"] = false
+                            group_t["frequency"] = freq
+                            group_t["modulation"] = modu
+                        else
+                            self:logTrace("configuring communication setup align to preset 1")
+                            group_t["communication"] = false
+                            group_t["frequency"] = unit_t["Radio"][1]["channels"][1]
+                            group_t["modulation"] = unit_t["Radio"][1]["modulations"][1]
+                        end
                     end
                     -- set the "radioSet" value to true
                     self:logTrace("seting the radioSet value to true")
@@ -241,7 +278,7 @@ function VFW51MissionRadioinator:process()
         veafMissionEditor.editMission(mizMissionPath, mizMissionPath, "mission", editFn, self)
         self:logInfo(string.format("mission updated, inject %d presets in %d units", presetEditCount, unitEditCount))
 
-        -- emit legacy presets if necessary
+        -- DEPRECATED: emit legacy presets if necessary
         --[[
         -- TODO: the legacy files appear to apply to *all* units, even those with "radio" keys.
         -- TODO: for now, avoid emitting the legacy files.
