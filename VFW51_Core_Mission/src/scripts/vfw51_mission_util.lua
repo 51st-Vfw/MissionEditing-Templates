@@ -2,11 +2,10 @@
 --
 -- vfw51_mission_util.lua: Mission utilities
 --
--- Useful utility functions for mission designers.
+-- Useful utility functions for mission designers. This script requires MOOSE and mist.
 --
--- This script requires MOOSE and mist.
---
--- Verison 1.5 of 9-Apr-23, workflow 5-10-5
+-- v6-10-5, 16-Apr-23:
+--   - tot target info supports fn_hit, fn_hit_once for callback on tot target hits
 --
 -- ************************************************************************************************************
 
@@ -390,7 +389,13 @@ function V51UTIL.tot.eventHandler:onEvent(event)
                             if tgt_info.smoke_preset ~= nil then
                                 smoke_preset = tgt_info.smoke_preset
                             end
-                                V51UTIL.smokeInZone(tgt_info.smoke_zone, smoke_preset, 0.75)
+                            V51UTIL.smokeInZone(tgt_info.smoke_zone, smoke_preset, 0.75)
+                        end
+                        if tgt_info.fn_hit ~= nil then
+                            tgt_info.fn_hit(tgt_info)
+                            if tgt_info.fn_hit_once then
+                                tgt_info.fn_hit = nil
+                            end
                         end
                         break
                     end
@@ -423,10 +428,12 @@ end
 --
 -- each value in the tgt_info table contains the following fields,
 --
--- is_prefix        indicates if the key is treated as a full unit name (false, default) or a prefix (true)
 -- max_life         maximum life on [0,1] allowed for the unit to be considered destroyed (nil implies 0)
+-- is_prefix        indicates if the key is treated as a full unit name (false, default) or a prefix (true)
 -- smoke_zone       name of the zone to trigger smoke in on hit (nil for no smoke)
 -- smoke_preset     smoke preset to use, see BIGSMOKEPRESET enum (nil for large smoke)
+-- fn_hit           hit function, signature fn(tgt_info), called on target hit (nil for none)
+-- fn_hit_once      true => call fn_hit once (false, default)
 --
 -- NOTE: at present, this does not work on scenery objects unless there is a dcs unit nearby that can/will
 -- NOTE: be damaged by splash damage.
@@ -453,10 +460,13 @@ function V51UTIL.tot.addTargetGroup(tot_group, dt_window, tgt_info, fn_bda)
             max_life = info.max_life
         end
         V51UTIL.tot.groups[tot_group].tgt_info[tgt_name] = { t_hit = 0,
+                                                             t_name = tgt_name,
                                                              max_life = max_life,
                                                              is_prefix = is_prefix,
                                                              smoke_zone = info.smoke_zone,
-                                                             smoke_preset = info.smoke_preset
+                                                             smoke_preset = info.smoke_preset,
+                                                             fn_hit = info.fn_hit,
+                                                             fn_hit_once = info.fn_hit_once
         }
     end
 end

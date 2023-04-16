@@ -19,7 +19,8 @@ ScriptSettings = {
         [2] = "Moose_.lua",
         [3] = "mist_4_5_107.lua",
         [4] = "skynet-iads-compiled.lua",
-        [5] = "51stMapSOP.lua"
+        [5] = "51stMapSOP.lua",
+        [6] = "vfw51_mission_util.lua"
     },
     ["mission"] = {
         [1] = "globals_mission.lua",

@@ -18,6 +18,9 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20230323**, Workflow 6-10-5
+    - Updates to 51st VFW mission utilities
+    - Experimental support for Splash Damage scripting
 - **v20230323**, Workflow 5-10-5
     - Triginator handles missing script files a little more gracefully (no longer asserting out)
     - Radioinator handles presets in new A-10C ARC-211 radio

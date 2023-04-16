@@ -52,6 +52,7 @@
 RadioDefaults = {
     [1] = { ["c"] = "*", ["p"] = "*:*:*", ["f"] = 270.00, ["m"] = 0 }
 }
+
 -- NOTE: the tables are set up to align with 51st VFW comms SOPs and should need minimal edits for use in
 -- NOTE: a mission that follows SOPs. The primary changes may be around the carrier setups for F-14 and
 -- NOTE: FA-18C airframes and the depature ATIS/tower for all airframes. generally, only the RadioPresets
