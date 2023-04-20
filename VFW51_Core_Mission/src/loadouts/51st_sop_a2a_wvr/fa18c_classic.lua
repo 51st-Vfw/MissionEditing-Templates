@@ -1,5 +1,5 @@
--- extracted loadouts from first unit of group 'RED-WVR-2-F-18'
--- 68% fuel, 2x AIM-9X, TGP, smoke, no pylons removed
+-- extracted loadouts from first unit of group 'WVR F/A-18C (9M)'
+-- 68% fuel, 2x AIM-9M, TGP, smoke, no pylons removed
 LoadoutData = {
     ["ammo_type"] = 1,
     ["chaff"] = 60,
@@ -8,17 +8,17 @@ LoadoutData = {
     ["gun"] = 100,
     ["pylons"] = {
         [1] = {
-            ["CLSID"] = "{5CE2FF2A-645A-4197-B48D-8720AC69394F}",
+            ["CLSID"] = "{6CEB49FC-DED8-4DED-B053-E1F033FF72D3}",
         }, -- end of [1]
         [4] = {
             ["CLSID"] = "{AN_ASQ_228}",
         }, -- end of [4]
         [9] = {
-            ["CLSID"] = "{5CE2FF2A-645A-4197-B48D-8720AC69394F}",
+            ["CLSID"] = "{6CEB49FC-DED8-4DED-B053-E1F033FF72D3}",
         }, -- end of [9]
         [10] = {
-            ["CLSID"] = "{INV-SMOKE-COALITION}",
+            ["CLSID"] = "{INV-SMOKE-RED}",
         }, -- end of [10]
-}, -- end of ["pylons"]
+    }, -- end of ["pylons"]
 } -- end of LoadoutData
 
