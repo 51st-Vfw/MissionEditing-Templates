@@ -18,6 +18,9 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20230613**, Workflow 6-10-5
+    - Added support for Sinai map
+    - Updated for DCS 2.8.6.41066
 - **v20230323**, Workflow 6-10-5
     - Updates to 51st VFW mission utilities
     - Experimental support for Splash Damage scripting

@@ -18,7 +18,8 @@ The template can be configured to support any of the maps listed in the followin
 |MAR|Marianas|
 |NTTR|Nevada Test and Training Range|
 |PG|Persian Gulf|
-|SAT|South Atlantic
+|SAT|South Atlantic|
+|SNA|Sinai|
 |SYR|Syria|
 
 To use the template and configure it up for a particular map, see the Quick Start Guide in the
@@ -40,3 +41,8 @@ suitable for use as templates for kneeboards that are aligned with the
 These templates include common comms cards along with some per-airframe cards. Most vector
 graphics programs provide the ability to edit `.svg` files and export the results as `.png`
 or `.jpg` suitable for use as mission kneeboards.
+
+## Workflow Archive
+
+The `Workflow_v1` directory contains an archive of version 1 of the workflow. It is around for
+historical purposes. New missions should use the latest workflow in `VFW51_Core_Mission`.
