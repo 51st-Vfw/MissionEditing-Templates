@@ -54,14 +54,26 @@ function VFW51MissionRadioinator:buildRadioTable(radioSetting, aframe, name, cal
             self:logTrace(string.format("[%d] %s", presetNum, type(presetVal)))
             if (type(presetVal) == "table") then
                 local freq = defaultFreq
+                local freqName
                 for _, preset in ipairs(presetVal) do
                     local pattern = preset["p"]
                     if self:matchRadioPattern(pattern, aframe, name, callsign) then
                         freq = preset["f"]
-                        self:logTrace(string.format("'%s' -- %s, %s, %s <<< **** MATCH **** %.2f", pattern, aframe, name, callsign, freq))
+                        if preset["s"] then
+                            freqName = preset["s"]
+                        else
+                            freqName = preset["d"]
+                        end
+                            self:logTrace(string.format("'%s' -- %s, %s, %s <<< **** MATCH **** %.2f", pattern, aframe, name, callsign, freq))
                     else
                         self:logTrace(string.format("'%s' -- %s, %s, %s", pattern, aframe, name, callsign))
                     end
+                end
+                if freqName and radioNum == 1 and aframe == "A-10C_2" then
+                    if radio["channelsNames"] == nil then
+                        radio["channelsNames"] = {}
+                    end
+                    radio["channelsNames"][presetNum] = freqName
                 end
                 radio["channels"][presetNum] = freq
                 presetEditCount = presetEditCount + 1
