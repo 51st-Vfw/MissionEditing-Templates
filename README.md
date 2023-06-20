@@ -18,7 +18,6 @@ The template can be configured to support any of the maps listed in the followin
 |MAR|Marianas|
 |NTTR|Nevada Test and Training Range|
 |PG|Persian Gulf|
-|SAT|South Atlantic|
 |SNA|Sinai|
 |SYR|Syria|
 

@@ -34,8 +34,8 @@
 --     "p" : <string>       airframe/name/callsign pattern to match
 --     "f" : <number>       preset frequency (MHz), 0 for default freqency appropriate for the radio
 --     "d" : <string>       descriptive string
---     "s": <string>        short descriptive string, for the A-10C II's ARC-210 COMM page
---                          13 characters maximum, only applicable on radio 1
+--     "s" : <string>       short descriptive string (13 chars max), for radios that support custom
+--                          channel names like the A-10C II's ARC-210
 --
 -- the "p" string is of the form "<a>:<n>:<c>" (e.g., "F-16C_50:*:Uzi"), where
 --
@@ -73,13 +73,16 @@ RadioPresetsBlue = {
         [1] = { ["p"] = "*:*:*",             ["f"] = 275.00,                        ["d"] = "Strike Common" }
     },
     ["$RADIO_1_03"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00, ["s"] = "Dept ATIS",   ["d"] = "Departure ATIS (UHF)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                        ["d"] = "Departure ATIS (UHF)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] =   0.00, ["s"] = "Dept ATIS",   ["d"] = "Departure ATIS (UHF)" }
     },
     ["$RADIO_1_04"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00, ["s"] = "Dept Tower",  ["d"] = "Departure Tower (UHF)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                        ["d"] = "Departure Tower (UHF)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] =   0.00, ["s"] = "Dept Tower",  ["d"] = "Departure Tower (UHF)" }
     },
     ["$RADIO_1_05"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] = 240.00, ["s"] = "AI AWACS",    ["d"] = "AWACS Overlord 1-1 (AI)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 240.00,                        ["d"] = "AWACS Overlord 1-1 (AI)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 240.00, ["s"] = "AI AWACS",    ["d"] = "AWACS Overlord 1-1 (AI)" }
      },
     ["$RADIO_1_06"] = {
         [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                        ["d"] = "AAR #1" },
@@ -96,10 +99,12 @@ RadioPresetsBlue = {
         [5] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 254.00,                        ["d"] = "AAR Arco 2-1 (54Y)" }
     },
     ["$RADIO_1_08"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] = 238.00, ["s"] = "AI JTAC",     ["d"] = "JTAC/AFAC Darknight 1-1 (UHF, AI)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 238.00,                        ["d"] = "JTAC/AFAC Darknight 1-1 (UHF, AI)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 238.00, ["s"] = "AI JTAC",     ["d"] = "JTAC/AFAC Darknight 1-1 (UHF, AI)" }
     },
     ["$RADIO_1_09"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] = 238.10, ["s"] = "HUMAN JTAC",  ["d"] = "JTAC/AFAC (UHF, Human)" },
+        [1] = { ["p"] = "*:*:*",             ["f"] = 238.10,                        ["d"] = "JTAC/AFAC (UHF, Human)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 238.10, ["s"] = "HUMAN JTAC",  ["d"] = "JTAC/AFAC (UHF, Human)" }
      },
     ["$RADIO_1_10"] = {
         [1] = { ["p"] = "F-14B:*:*",         ["f"] = 271.40,                        ["d"] = "CVN-71 ATC" },
