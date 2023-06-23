@@ -67,75 +67,78 @@ RadioPresetsBlue = {
     -----------------------------------------------------------------------------------------------------------
 
     ["$RADIO_1_01"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] = 270.00,                        ["d"] = "Tac Common" },
+        [1] = { ["p"] = "*:*:*",             ["f"] = 270.00,                          ["d"] = "Tac Common" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 270.00, ["s"] = "Tac Common",    ["d"] = "Tac Common" }
     },
     ["$RADIO_1_02"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] = 275.00,                        ["d"] = "Strike Common" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 275.00,                          ["d"] = "Strike Common" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] =   0.00, ["s"] = "Strike Common", ["d"] = "Strike Common" }
     },
     ["$RADIO_1_03"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                        ["d"] = "Departure ATIS (UHF)" },
-        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] =   0.00, ["s"] = "Dept ATIS",   ["d"] = "Departure ATIS (UHF)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                          ["d"] = "Departure ATIS (UHF)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] =   0.00, ["s"] = "Dept ATIS",     ["d"] = "Departure ATIS (UHF)" }
     },
     ["$RADIO_1_04"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                        ["d"] = "Departure Tower (UHF)" },
-        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] =   0.00, ["s"] = "Dept Tower",  ["d"] = "Departure Tower (UHF)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                          ["d"] = "Departure Tower (UHF)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] =   0.00, ["s"] = "Dept Tower",    ["d"] = "Departure Tower (UHF)" }
     },
     ["$RADIO_1_05"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] = 240.00,                        ["d"] = "AWACS Overlord 1-1 (AI)" },
-        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 240.00, ["s"] = "AI AWACS",    ["d"] = "AWACS Overlord 1-1 (AI)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 240.00,                          ["d"] = "AWACS Overlord 1-1 (AI)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 240.00, ["s"] = "AI AWACS",      ["d"] = "AWACS Overlord 1-1 (AI)" }
      },
     ["$RADIO_1_06"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                        ["d"] = "AAR #1" },
-        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 251.00, ["s"] = "Texaco 1-1",  ["d"] = "AAR Texaco 1-1 (51Y)" },
-        [3] = { ["p"] = "F-16C_50:*:*",      ["f"] = 251.00,                        ["d"] = "AAR Texaco 1-1 (51Y)" },
-        [4] = { ["p"] = "F-14B:*:*",         ["f"] = 253.00,                        ["d"] = "AAR Arco 1-1 (53Y)" },
-        [5] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 253.00,                        ["d"] = "AAR Arco 1-1 (53Y)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                          ["d"] = "AAR #1" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 251.00, ["s"] = "Texaco 1-1",    ["d"] = "AAR Texaco 1-1 (51Y)" },
+        [3] = { ["p"] = "F-16C_50:*:*",      ["f"] = 251.00,                          ["d"] = "AAR Texaco 1-1 (51Y)" },
+        [4] = { ["p"] = "F-14B:*:*",         ["f"] = 253.00,                          ["d"] = "AAR Arco 1-1 (53Y)" },
+        [5] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 253.00,                          ["d"] = "AAR Arco 1-1 (53Y)" }
     },
     ["$RADIO_1_07"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                        ["d"] = "AAR #2" },
-        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 252.00, ["s"] = "Texaco 2-1",  ["d"] = "AAR Texaco 2-1 (52Y)" },
-        [3] = { ["p"] = "F-16C_50:*:*",      ["f"] = 252.00,                        ["d"] = "AAR Texaco 2-1 (52Y)" },
-        [4] = { ["p"] = "F-14B:*:*",         ["f"] = 254.00,                        ["d"] = "AAR Arco 2-1 (54Y)" },
-        [5] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 254.00,                        ["d"] = "AAR Arco 2-1 (54Y)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] =   0.00,                          ["d"] = "AAR #2" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 252.00, ["s"] = "Texaco 2-1",    ["d"] = "AAR Texaco 2-1 (52Y)" },
+        [3] = { ["p"] = "F-16C_50:*:*",      ["f"] = 252.00,                          ["d"] = "AAR Texaco 2-1 (52Y)" },
+        [4] = { ["p"] = "F-14B:*:*",         ["f"] = 254.00,                          ["d"] = "AAR Arco 2-1 (54Y)" },
+        [5] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 254.00,                          ["d"] = "AAR Arco 2-1 (54Y)" }
     },
     ["$RADIO_1_08"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] = 238.00,                        ["d"] = "JTAC/AFAC Darknight 1-1 (UHF, AI)" },
-        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 238.00, ["s"] = "AI JTAC",     ["d"] = "JTAC/AFAC Darknight 1-1 (UHF, AI)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 238.00,                          ["d"] = "JTAC/AFAC Darknight 1-1 (UHF, AI)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 238.00, ["s"] = "AI JTAC",       ["d"] = "JTAC/AFAC Darknight 1-1 (UHF, AI)" }
     },
     ["$RADIO_1_09"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] = 238.10,                        ["d"] = "JTAC/AFAC (UHF, Human)" },
-        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 238.10, ["s"] = "HUMAN JTAC",  ["d"] = "JTAC/AFAC (UHF, Human)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 238.10,                          ["d"] = "JTAC/AFAC (UHF, Human)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 238.10, ["s"] = "HUMAN JTAC",    ["d"] = "JTAC/AFAC (UHF, Human)" }
      },
     ["$RADIO_1_10"] = {
-        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 271.40,                        ["d"] = "CVN-71 ATC" },
-        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 271.40,                        ["d"] = "CVN-71 ATC" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 271.40,                          ["d"] = "CVN-71 ATC" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 271.40,                          ["d"] = "CVN-71 ATC" }
     },                      
     ["$RADIO_1_11"] = {                     
-        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 271.60,                        ["d"] = "CVN-71 AWACS Magic 1-1" },
-        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 271.60,                        ["d"] = "CVN-71 AWACS Magic 1-1" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 271.60,                          ["d"] = "CVN-71 AWACS Magic 1-1" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 271.60,                          ["d"] = "CVN-71 AWACS Magic 1-1" }
     },                      
     ["$RADIO_1_12"] = {                     
-        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 271.80,                        ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" },
-        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 271.80,                        ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 271.80,                          ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 271.80,                          ["d"] = "CVN-71 Tanker Shell 1-1 (121Y)" }
     },                      
     ["$RADIO_1_13"] = { },                      
     ["$RADIO_1_14"] = { },                      
     ["$RADIO_1_15"] = {
-        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 275.40,                        ["d"] = "CVN-75 ATC" },
-        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 275.40,                        ["d"] = "CVN-75 ATC" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 275.40,                          ["d"] = "CVN-75 ATC" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 275.40,                          ["d"] = "CVN-75 ATC" }
     },                      
     ["$RADIO_1_16"] = {                     
-        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 275.60,                        ["d"] = "CVN-75 AWACS Magic 5-1" },
-        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 275.60,                        ["d"] = "CVN-75 AWACS Magic 5-1" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 275.60,                          ["d"] = "CVN-75 AWACS Magic 5-1" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 275.60,                          ["d"] = "CVN-75 AWACS Magic 5-1" }
     },                      
     ["$RADIO_1_17"] = {
-        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 275.80,                        ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" },
-        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 275.80,                        ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" }
+        [1] = { ["p"] = "F-14B:*:*",         ["f"] = 275.80,                          ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" },
+        [2] = { ["p"] = "FA-18C_hornet:*:*", ["f"] = 275.80,                          ["d"] = "CVN-75 Tanker Shell 5-1 (125Y)" }
     },
     ["$RADIO_1_18"] = { },
     ["$RADIO_1_19"] = { },
     ["$RADIO_1_20"] = {
-        [1] = { ["p"] = "*:*:*",             ["f"] = 243.00,                        ["d"] = "Guard (UHF)" }
+        [1] = { ["p"] = "*:*:*",             ["f"] = 243.00,                          ["d"] = "Guard (UHF)" },
+        [2] = { ["p"] = "A-10C_2:*:*",       ["f"] = 243.00, ["s"] = "Guard (UHF)",   ["d"] = "Guard (UHF)" }
     },
 
 
@@ -152,6 +155,8 @@ RadioPresetsBlue = {
         [ 6] = { ["p"] = "F-16C_50:*:Lobo",              ["f"] = 138.75 },
         [ 7] = { ["p"] = "F-14B:*:Dodge1",               ["f"] = 140.25 },
         [ 8] = { ["p"] = "F-14B:*:Dodge2",               ["f"] = 140.75 },
+        [ 7] = { ["p"] = "F-15ESE:*:Ford1",              ["f"] = 143.25 },
+        [ 8] = { ["p"] = "F-15ESE:*:Ford2",              ["f"] = 143.75 },
         [ 9] = { ["p"] = "FA-18C_hornet:*:Enfield",      ["f"] = 254.00 },
         [10] = { ["p"] = "FA-18C_hornet:*:Springfield",  ["f"] = 254.00 }
     },
@@ -3472,6 +3477,304 @@ RadioSettings =
                     [18] = RadioPresetsRed["$RADIO_2_18"],
                     [19] = RadioPresetsRed["$RADIO_2_19"],
                     [20] = RadioPresetsRed["$RADIO_2_20"],
+                }, -- end of ["channels"]
+            }, -- end of [2]
+        },
+    },
+
+    ["blue F-15ESE"] = {
+        type = "F-15ESE",
+        coalition = "blue",
+        country = nil,
+        ["Radio"] =
+        {
+            --UHF with modulation selection box (but no modulation selection in the ME)
+            [1] =
+            {
+                ["modulations"] =
+                {
+                    [1] =  0,
+                    [2] =  0,
+                    [3] =  0,
+                    [4] =  0,
+                    [5] =  0,
+                    [6] =  0,
+                    [7] =  0,
+                    [8] =  0,
+                    [9] =  0,
+                    [10] = 0,
+                    [11] = 0,
+                    [12] = 0,
+                    [13] = 0,
+                    [14] = 0,
+                    [15] = 0,
+                    [16] = 0,
+                    [17] = 0,
+                    [18] = 0,
+                    [19] = 0,
+                    [20] = 0,
+                }, -- end of ["modulations"]
+                ["channels"] =
+                {
+                    [1]  = RadioPresetsBlue["$RADIO_1_01"],
+                    [2]  = RadioPresetsBlue["$RADIO_1_02"],
+                    [3]  = RadioPresetsBlue["$RADIO_1_03"],
+                    [4]  = RadioPresetsBlue["$RADIO_1_04"],
+                    [5]  = RadioPresetsBlue["$RADIO_1_05"],
+                    [6]  = RadioPresetsBlue["$RADIO_1_06"],
+                    [7]  = RadioPresetsBlue["$RADIO_1_07"],
+                    [8]  = RadioPresetsBlue["$RADIO_1_08"],
+                    [9]  = RadioPresetsBlue["$RADIO_1_09"],
+                    [10] = RadioPresetsBlue["$RADIO_1_10"],
+                    [11] = RadioPresetsBlue["$RADIO_1_11"],
+                    [12] = RadioPresetsBlue["$RADIO_1_12"],
+                    [13] = RadioPresetsBlue["$RADIO_1_13"],
+                    [14] = RadioPresetsBlue["$RADIO_1_14"],
+                    [15] = RadioPresetsBlue["$RADIO_1_15"],
+                    [16] = RadioPresetsBlue["$RADIO_1_16"],
+                    [17] = RadioPresetsBlue["$RADIO_1_17"],
+                    [18] = RadioPresetsBlue["$RADIO_1_18"],
+                    [19] = RadioPresetsBlue["$RADIO_1_19"],
+                    [20] = RadioPresetsBlue["$RADIO_1_20"],
+                }, -- end of ["channels"]
+            }, -- end of [1]
+            --VHF/UHF with modulation selection box (but no modulation selection in the ME)
+            [2] =
+            {
+                ["modulations"] =
+                {
+                    [1] =  0,
+                    [2] =  0,
+                    [3] =  0,
+                    [4] =  0,
+                    [5] =  0,
+                    [6] =  0,
+                    [7] =  0,
+                    [8] =  0,
+                    [9] =  0,
+                    [10] = 0,
+                    [11] = 0,
+                    [12] = 0,
+                    [13] = 0,
+                    [14] = 0,
+                    [15] = 0,
+                    [16] = 0,
+                    [17] = 0,
+                    [18] = 0,
+                    [19] = 0,
+                    [20] = 0,
+                    [21] = 0,
+                    [22] = 0,
+                    [23] = 0,
+                    [24] = 0,
+                    [25] = 0,
+                    [26] = 0,
+                    [27] = 0,
+                    [28] = 0,
+                    [29] = 0,
+                    [30] = 0,
+                    [31] = 0,
+                    [32] = 0,
+                    [33] = 0,
+                    [34] = 0,
+                    [35] = 0,
+                    [36] = 0,
+                    [37] = 0,
+                    [38] = 0,
+                    [39] = 0,
+                    [40] = 0,
+                }, -- end of ["modulations"]
+                ["channels"] =
+                {
+                    [1]  = RadioPresetsBlue["$RADIO_2_01"],
+                    [2]  = RadioPresetsBlue["$RADIO_2_02"],
+                    [3]  = RadioPresetsBlue["$RADIO_2_03"],
+                    [4]  = RadioPresetsBlue["$RADIO_2_04"],
+                    [5]  = RadioPresetsBlue["$RADIO_2_05"],
+                    [6]  = RadioPresetsBlue["$RADIO_2_06"],
+                    [7]  = RadioPresetsBlue["$RADIO_2_07"],
+                    [8]  = RadioPresetsBlue["$RADIO_2_08"],
+                    [9]  = RadioPresetsBlue["$RADIO_2_09"],
+                    [10] = RadioPresetsBlue["$RADIO_2_10"],
+                    [11] = RadioPresetsBlue["$RADIO_2_11"],
+                    [12] = RadioPresetsBlue["$RADIO_2_12"],
+                    [13] = RadioPresetsBlue["$RADIO_2_13"],
+                    [14] = RadioPresetsBlue["$RADIO_2_14"],
+                    [15] = RadioPresetsBlue["$RADIO_2_15"],
+                    [16] = RadioPresetsBlue["$RADIO_2_16"],
+                    [17] = RadioPresetsBlue["$RADIO_2_17"],
+                    [18] = RadioPresetsBlue["$RADIO_2_18"],
+                    [19] = RadioPresetsBlue["$RADIO_2_19"],
+                    [20] = RadioPresetsBlue["$RADIO_2_20"],
+                    [21] = 0,
+                    [22] = 0,
+                    [23] = 0,
+                    [24] = 0,
+                    [25] = 0,
+                    [26] = 0,
+                    [27] = 0,
+                    [28] = 0,
+                    [29] = 0,
+                    [30] = 0,
+                    [31] = 0,
+                    [32] = 0,
+                    [33] = 0,
+                    [34] = 0,
+                    [35] = 0,
+                    [36] = 0,
+                    [37] = 0,
+                    [38] = 0,
+                    [39] = 0,
+                    [40] = 0,
+                }, -- end of ["channels"]
+            }, -- end of [2]
+        },
+    },
+
+    ["red F-15ESE"] = {
+        type = "F-15ESE",
+        coalition = "red",
+        country = nil,
+        ["Radio"] =
+        {
+            --UHF with modulation selection box (but no modulation selection in the ME)
+            [1] =
+            {
+                ["modulations"] =
+                {
+                    [1] =  0,
+                    [2] =  0,
+                    [3] =  0,
+                    [4] =  0,
+                    [5] =  0,
+                    [6] =  0,
+                    [7] =  0,
+                    [8] =  0,
+                    [9] =  0,
+                    [10] = 0,
+                    [11] = 0,
+                    [12] = 0,
+                    [13] = 0,
+                    [14] = 0,
+                    [15] = 0,
+                    [16] = 0,
+                    [17] = 0,
+                    [18] = 0,
+                    [19] = 0,
+                    [20] = 0,
+                }, -- end of ["modulations"]
+                ["channels"] =
+                {
+                    [1]  = RadioPresetsRed["$RADIO_1_01"],
+                    [2]  = RadioPresetsRed["$RADIO_1_02"],
+                    [3]  = RadioPresetsRed["$RADIO_1_03"],
+                    [4]  = RadioPresetsRed["$RADIO_1_04"],
+                    [5]  = RadioPresetsRed["$RADIO_1_05"],
+                    [6]  = RadioPresetsRed["$RADIO_1_06"],
+                    [7]  = RadioPresetsRed["$RADIO_1_07"],
+                    [8]  = RadioPresetsRed["$RADIO_1_08"],
+                    [9]  = RadioPresetsRed["$RADIO_1_09"],
+                    [10] = RadioPresetsRed["$RADIO_1_10"],
+                    [11] = RadioPresetsRed["$RADIO_1_11"],
+                    [12] = RadioPresetsRed["$RADIO_1_12"],
+                    [13] = RadioPresetsRed["$RADIO_1_13"],
+                    [14] = RadioPresetsRed["$RADIO_1_14"],
+                    [15] = RadioPresetsRed["$RADIO_1_15"],
+                    [16] = RadioPresetsRed["$RADIO_1_16"],
+                    [17] = RadioPresetsRed["$RADIO_1_17"],
+                    [18] = RadioPresetsRed["$RADIO_1_18"],
+                    [19] = RadioPresetsRed["$RADIO_1_19"],
+                    [20] = RadioPresetsRed["$RADIO_1_20"],
+                }, -- end of ["channels"]
+            }, -- end of [1]
+            --UHF/VHF with modulation selection box (but no modulation selection in the ME)
+            [2] =
+            {
+                ["modulations"] =
+                {
+                    [1] =  0,
+                    [2] =  0,
+                    [3] =  0,
+                    [4] =  0,
+                    [5] =  0,
+                    [6] =  0,
+                    [7] =  0,
+                    [8] =  0,
+                    [9] =  0,
+                    [10] = 0,
+                    [11] = 0,
+                    [12] = 0,
+                    [13] = 0,
+                    [14] = 0,
+                    [15] = 0,
+                    [16] = 0,
+                    [17] = 0,
+                    [18] = 0,
+                    [19] = 0,
+                    [20] = 0,
+                    [21] = 0,
+                    [22] = 0,
+                    [23] = 0,
+                    [24] = 0,
+                    [25] = 0,
+                    [26] = 0,
+                    [27] = 0,
+                    [28] = 0,
+                    [29] = 0,
+                    [30] = 0,
+                    [31] = 0,
+                    [32] = 0,
+                    [33] = 0,
+                    [34] = 0,
+                    [35] = 0,
+                    [36] = 0,
+                    [37] = 0,
+                    [38] = 0,
+                    [39] = 0,
+                    [40] = 0,
+                }, -- end of ["modulations"]
+                ["channels"] =
+                {
+                    [1]  = RadioPresetsRed["$RADIO_2_01"],
+                    [2]  = RadioPresetsRed["$RADIO_2_02"],
+                    [3]  = RadioPresetsRed["$RADIO_2_03"],
+                    [4]  = RadioPresetsRed["$RADIO_2_04"],
+                    [5]  = RadioPresetsRed["$RADIO_2_05"],
+                    [6]  = RadioPresetsRed["$RADIO_2_06"],
+                    [7]  = RadioPresetsRed["$RADIO_2_07"],
+                    [8]  = RadioPresetsRed["$RADIO_2_08"],
+                    [9]  = RadioPresetsRed["$RADIO_2_09"],
+                    [10] = RadioPresetsRed["$RADIO_2_10"],
+                    [11] = RadioPresetsRed["$RADIO_2_11"],
+                    [12] = RadioPresetsRed["$RADIO_2_12"],
+                    [13] = RadioPresetsRed["$RADIO_2_13"],
+                    [14] = RadioPresetsRed["$RADIO_2_14"],
+                    [15] = RadioPresetsRed["$RADIO_2_15"],
+                    [16] = RadioPresetsRed["$RADIO_2_16"],
+                    [17] = RadioPresetsRed["$RADIO_2_17"],
+                    [18] = RadioPresetsRed["$RADIO_2_18"],
+                    [19] = RadioPresetsRed["$RADIO_2_19"],
+                    [20] = RadioPresetsRed["$RADIO_2_20"],
+                    [21] = 0,
+                    [22] = 0,
+                    [23] = 0,
+                    [24] = 0,
+                    [25] = 0,
+                    [26] = 0,
+                    [27] = 0,
+                    [28] = 0,
+                    [29] = 0,
+                    [30] = 0,
+                    [31] = 0,
+                    [32] = 0,
+                    [33] = 0,
+                    [34] = 0,
+                    [35] = 0,
+                    [36] = 0,
+                    [37] = 0,
+                    [38] = 0,
+                    [39] = 0,
+                    [40] = 0,
                 }, -- end of ["channels"]
             }, -- end of [2]
         },

@@ -18,6 +18,9 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20230622**, Workflow 6-12-7
+    - Added support for F-15E radios
+    - Updated for DCS 2.8.6.41363
 - **v20230619**, Workflow 6-11-6
     - Added support tvredact.py script to redact TacView files
     - Incorporated A-10C II ARC-210 labels PR from Fizzle

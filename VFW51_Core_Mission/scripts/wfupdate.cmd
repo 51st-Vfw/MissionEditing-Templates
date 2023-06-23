@@ -129,6 +129,9 @@ if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SCRIPT%\versions\scripts.txt %TARG_MDIR
 if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SCRIPT%\*.cmd %TARG_MDIR_SCRIPT%\
 if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SCRIPT%\*.cmd %TARG_MDIR_SCRIPT%\ >nul 2>&1
 
+if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SCRIPT%\*.py %TARG_MDIR_SCRIPT%\
+if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SCRIPT%\*.py %TARG_MDIR_SCRIPT%\ >nul 2>&1
+
 if %ARG_VERBOSE% == 1 echo copy /Y %THIS_MDIR_SCRIPT%\lua\* %TARG_MDIR_SCRIPT%\lua\
 if %ARG_DRY_RUN% == 0 copy /Y %THIS_MDIR_SCRIPT%\lua\* %TARG_MDIR_SCRIPT%\lua\ >nul 2>&1
 
