@@ -11,51 +11,62 @@ env.info("*** Loading Mission Script: vfw51_mission_splash_damage.lua")
 -- Based on Splash_Damage v2.0
 -- From: https://github.com/spencershepard/DCS-Scripts/blob/master/Splash_Damage_2_0.lua
 --
-2 October 2020
-FrozenDroid:
-- Added error handling to all event handler and scheduled functions. Lua script errors can no longer bring the server down.
-- Added some extra checks to which weapons to handle, make sure they actually have a warhead (how come S-8KOM's don't have a warhead field...?)
-
-28 October 2020
-FrozenDroid: 
-- Uncommented error logging, actually made it an error log which shows a message box on error.
-- Fixed the too restrictive weapon filter (took out the HE warhead requirement)
-
-21 December 2021
-spencershepard (GRIMM):
- SPLASH DAMAGE 2.0:
- -Added blast wave effect to add timed and scaled secondary explosions on top of game objects
- -object geometry within blast wave changes damage intensity
- -damage boost for structures since they are hard to kill, even if very close to large explosions
- -increased some rocket values in explTable
- -missing weapons from explTable will display message to user and log to DCS.log so that we can add what's missing
- -damage model for ground units that will disable their weapons and ability to move with partial damage before they are killed
- -added options table to allow easy adjustments before release
- -general refactoring and restructure
- 
- 31 December 2021
- spencershepard (GRIMM):
--added many new weapons
--added filter for weapons.shells events
--fixed mission weapon message option
--changed default for damage_model option
- 
- 16 April 2022
- spencershepard (GRIMM):
- added new/missing weapons to explTable
- added new option rocket_multiplier
+-- v3.1 | 30 May 2023, 51st VFW / ilominar:
+--   - Added expl_multiplier setting to scale explosion table values
+--   - Added SCUD_RAKETA
+--
+-- v3.0 | 20 April 2023, 51st VFW / ilominar:
+--    - Forked from Splash_Damage v2.0
+--    - Cleaned up namespace, moved most everything local
+--    - Pushed script_enable and refreshRate into options
+--    - Added BGM_109B
+--
+-- Splash_Damage v2.0 Change Log
+--
+-- v1.0 | 2 October 2020, FrozenDroid:
+--    - Added error handling to all event handler and scheduled functions. Lua script errors can no longer bring the server down.
+--    - Added some extra checks to which weapons to handle, make sure they actually have a warhead (how come S-8KOM's don't have a warhead field...?)
+--
+-- v1.0 | 28 October 2020, FrozenDroid:
+--    - Uncommented error logging, actually made it an error log which shows a message box on error.
+--    - Fixed the too restrictive weapon filter (took out the HE warhead requirement)
+--
+-- v2.0 | 21 December 2021, spencershepard (GRIMM):
+--    - Added blast wave effect to add timed and scaled secondary explosions on top of game objects
+--    - object geometry within blast wave changes damage intensity
+--    - damage boost for structures since they are hard to kill, even if very close to large explosions
+--    - increased some rocket values in explTable
+--    - missing weapons from explTable will display message to user and log to DCS.log so that we can add what's missing
+--    - damage model for ground units that will disable their weapons and ability to move with partial damage before they are killed
+--    - added options table to allow easy adjustments before release
+--    - general refactoring and restructure
+--
+-- v2.0 | 31 December 2021, spencershepard (GRIMM):
+--    - added many new weapons
+--    - added filter for weapons.shells events
+--    - fixed mission weapon message option
+--    - changed default for damage_model option
+--
+-- v2.0 | 16 April 2022, spencershepard (GRIMM):
+--    - added new/missing weapons to explTable
+--    - added new option rocket_multiplier
+--
+-- v2.0 | 18 December 2022, spencershepard (GRIMM):
+--    - reduced rocket_multiplier
 --]]
 
 ----[[ ##### SCRIPT CONFIGURATION ##### ]]----
 
 local splash_damage_options = {
+    ["script_enable"] = true, --enable script
+    ["refresh_rate"] = 0.1, --refresh rate (s)
     ["static_damage_boost"] = 2000, --apply extra damage to Unit.Category.STRUCTUREs with wave explosions
     ["wave_explosions"] = true, --secondary explosions on top of game objects, radiating outward from the impact point and scaled based on size of object and distance from weapon impact point
     ["larger_explosions"] = true, --secondary explosions on top of weapon impact points, dictated by the values in the explTable
     ["damage_model"] = false, --allow blast wave to affect ground unit movement and weapons
     ["blast_search_radius"] = 100, --this is the max size of any blast wave radius, since we will only find objects within this zone
     ["cascade_damage_threshold"] = 0.1, --if the calculated blast damage doesn't exeed this value, there will be no secondary explosion damage on the unit.  If this value is too small, the appearance of explosions far outside of an expected radius looks incorrect.
-    ["game_messages"] = true, --enable some messages on screen
+    ["game_messages"] = false, --enable some messages on screen
     ["blast_stun"] = false, --not implemented
     ["unit_disabled_health"] = 30, --if health is below this value after our explosions, disable its movement 
     ["unit_cant_fire_health"] = 50, --if health is below this value after our explosions, set ROE to HOLD to simulate damage weapon systems
@@ -63,10 +74,8 @@ local splash_damage_options = {
     ["debug"] = false,  --enable debugging messages
     ["weapon_missing_message"] = false, --false disables messages alerting you to weapons missing from the explTable
     ["rocket_multiplier"] = 1.3, --multiplied by the explTable value for rockets
+    ["expl_multiplier"] = 1.0, --multiplied by the explTable value for all ordnance to scale damage up/down
 }
-
-local script_enable = 1
-local refreshRate = 0.1
 
 ----[[ ##### End of SCRIPT CONFIGURATION ##### ]]----
 
@@ -188,6 +197,7 @@ local explTable = {
     ["HOT3"] = 15,
     ["AGR_20A"] = 8,
     ["GBU_54_V_1B"] = 118,
+    ["SCUD_RAKETA"] = 582
 }
 
 
@@ -197,6 +207,7 @@ local function tableHasKey(table,key)
     return table[key] ~= nil
 end
 
+--[[
 local function debugMsg(str)
     if splash_damage_options.debug == true then
         trigger.action.outText(str , 5)
@@ -208,6 +219,7 @@ local function gameMsg(str)
         trigger.action.outText(str , 5)
     end
 end
+]]
 
 local function getDistance(point1, point2)
     local dX = math.abs(point1.x - point2.x)
@@ -225,7 +237,7 @@ end
 
 local function lookahead(speedVec)
     local speed = vec3Mag(speedVec)
-    return speed * refreshRate * 1.5
+    return speed * splash_damage_options.refresh_rate * 1.5
 end
 
 -- params = { obj_location, distance, explosion_size }
@@ -235,7 +247,7 @@ end
 
 local function getWeaponExplosive(name)
     if explTable[name] then
-        return explTable[name]
+        return explTable[name] * splash_damage_options.expl_multiplier
     else
         return 0
     end
@@ -269,13 +281,13 @@ local function modelUnitDamage(units)
                 if health <= splash_damage_options.unit_cant_fire_health then
                     ---disable unit's ability to fire---
                     unit:getController():setOption(AI.Option.Ground.id.ROE , AI.Option.Ground.val.ROE.WEAPON_HOLD)
-                    gameMsg(unit:getTypeName().." weapons disabled")
+                    --gameMsg(unit:getTypeName().." weapons disabled")
                 end
                 if health <= splash_damage_options.unit_disabled_health and health > 0 then
                     ---disable unit's ability to move---
                     unit:getController():setTask({id = 'Hold', params = { }} )
                     unit:getController():setOnOff(false)
-                    gameMsg(unit:getTypeName().." disabled")
+                    --gameMsg(unit:getTypeName().." disabled")
                 end
             end
         else
@@ -357,7 +369,7 @@ local function blastWave(_point, _radius, weapon, power)
 end
 
 local tracked_weapons = {}
-local function track_wpns()
+local function trackWpns()
     --  env.info("Weapon Track Start")
     for wpn_id_, wpnData in pairs(tracked_weapons) do
         if wpnData.wpn:isExist() then  -- just update speed, position and direction.
@@ -399,7 +411,7 @@ local function onWpnEvent(event)
         local ordnance = event.weapon
         local weapon_desc = ordnance:getDesc()
         if string.find(ordnance:getTypeName(), "weapons.shells") then
-            debugMsg("event shot, but not tracking: "..ordnance:getTypeName())
+            --debugMsg("event shot, but not tracking: "..ordnance:getTypeName())
             return  --we wont track these types of weapons, so exit here
         end
 
@@ -409,7 +421,7 @@ local function onWpnEvent(event)
             env.info(ordnance:getTypeName().." missing from Splash Damage script")
             if splash_damage_options.weapon_missing_message == true then
                 trigger.action.outText(ordnance:getTypeName().." missing from Splash Damage script", 10)
-                debugMsg("desc: "..mist.utils.tableShow(weapon_desc))
+                --debugMsg("desc: "..mist.utils.tableShow(weapon_desc))
             end
         end
         if (weapon_desc.category ~= 0) and event.initiator then
@@ -438,20 +450,20 @@ local function onWpnEvent(event)
     end
 end
 
-SplashDamageWpnHandler = {}
-function SplashDamageWpnHandler:onEvent(event)
+Splash_Damage_Wpn_Handler = { }
+function Splash_Damage_Wpn_Handler:onEvent(event)
     protectedCall(onWpnEvent, event)
 end
 
-if (script_enable == 1) then
-    gameMsg("SPLASH DAMAGE 2 SCRIPT RUNNING")
-    env.info("SPLASH DAMAGE 2 SCRIPT RUNNING")
+if (splash_damage_options.script_enable == true) then
+    --gameMsg("Splash_Damage v3.1 (51st VFW, 30 May 2023) script enabled")
+    env.info("Splash_Damage v3.1 (51st VFW, 30 May 2023) script enabled")
     timer.scheduleFunction(function()
-        protectedCall(track_wpns)
-        return timer.getTime() + refreshRate
+        protectedCall(trackWpns)
+        return timer.getTime() + splash_damage_options.refresh_rate
       end,
       { },
-      timer.getTime() + refreshRate
+      timer.getTime() + splash_damage_options.refresh_rate
     )
-    world.addEventHandler(SplashDamageWpnHandler)
+    world.addEventHandler(Splash_Damage_Wpn_Handler)
 end

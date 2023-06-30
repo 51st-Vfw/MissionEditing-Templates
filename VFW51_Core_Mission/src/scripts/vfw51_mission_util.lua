@@ -4,6 +4,8 @@
 --
 -- Useful utility functions for mission designers. This script requires MOOSE and mist.
 --
+-- v7-12-7, 29-Jun-23:
+--   - added pauseMovement(), resumeMovement() to convoy
 -- v6-10-5, 16-Apr-23:
 --   - tot target info supports fn_hit, fn_hit_once for callback on tot target hits
 --
@@ -498,6 +500,9 @@ end
 -- HACK: threats have been addressed. this function will respawn the air defense group in this case. this has
 -- HACK: the side-effect of re-arming the group, but it does allow forward progress to be maintained.
 --
+-- the pauseMovement() and resumeMovement() functions can be used to explicity stop and start movement of the
+-- convoy and it's guardian air defense units.
+--
 -- to use this functionality,
 --
 -- 1) set up the air defense group to handle EVENTS.Shot,
@@ -523,9 +528,15 @@ end
 V51UTIL.convoy = {
 
     -- dictionary describing current convoy state. key is air defense group name, value is a boolean indicating
-    -- the convoy should be stopped. nil indicates the convoy is no longer running.
+    -- the convoy is halted by scripting or paused by mission. nil indicates the convoy is no longer running.
     --
     convoyHalted = { },
+    convoyPaused = { },
+
+    -- dictionary describing current convoy pause state. key is air defense group name, value is boolean
+    -- indicating when the mission has requested a pause.
+    --
+    convoyPauseReq = { },
 
     -- dictionary describing contacts function to use for convoys. key is air defense group name, value is a
     -- "get contacts" function
@@ -559,9 +570,18 @@ local function CoordinateConvoys(tout, one_time, ads_group, def_group, wez_size)
         local ads_v = mist.utils.round(ads_convoy:GetVelocityMPS())
         local def_v = mist.utils.round(def_convoy:GetVelocityMPS())
         local dt = 30
-        local action = "IDLE"
+        local action = "IDLE '" .. ads_group .. "'"
 
-        if is_threat and ads_v == 0 and def_v ~= 0 and V51UTIL.convoy.convoyHalted[ads_group] == false then
+        if V51UTIL.convoy.convoyPaused[ads_group] == true then
+            if V51UTIL.convoy.convoyPauseReq[ads_group] == true then
+                action = "RESUME '" .. ads_group .. "', '" .. def_group .. "'"
+                V51UTIL.convoy.convoyPaused[ads_group] = true
+                V51UTIL.convoy.convoyPauseReq[ads_group] = false
+                ads_convoy:PopCurrentTask()
+                def_convoy:PopCurrentTask()
+            end
+            tout = 0
+        elseif is_threat and ads_v == 0 and def_v ~= 0 and V51UTIL.convoy.convoyHalted[ads_group] == false then
             action = "STOP '" .. def_group .. "'"
             V51UTIL.convoy.convoyHalted[ads_group] = true
             def_convoy:PushTask(def_convoy:TaskHold(), 0)
@@ -586,17 +606,33 @@ local function CoordinateConvoys(tout, one_time, ads_group, def_group, wez_size)
             mist.teleportToPoint(args)
             tout = 0
             dt = 5
+        elseif V51UTIL.convoy.convoyPauseReq[ads_group] == true then
+            action = "PAUSE '" .. ads_group .. "', '" .. def_group .. "'"
+            V51UTIL.convoy.convoyPaused[ads_group] = true
+            V51UTIL.convoy.convoyPauseReq[ads_group] = false
+            ads_convoy:PushTask(ads_convoy:TaskHold(), 0)
+            def_convoy:PushTask(def_convoy:TaskHold(), 0)
+            tout = 0
         end
         if tout ~= 0 and cur_time + dt > tout then
             dt = tout - cur_time
         end
 
+        V51UTIL.log(string.format("V51UTIL.convoy.CoordinateConvoys(tout=%d, one_time=%s) %s" ..
+                                  " / halted=%s, paused=%s, tout=%d, is_threat=%s, ads_v=%d, def_v=%d, dt=%d",
+                                  mist.utils.round(tout), tostring(one_time), action,
+                                  tostring(V51UTIL.convoy.convoyHalted[ads_group]),
+                                  tostring(V51UTIL.convoy.convoyPaused[ads_group]),
+                                  mist.utils.round(tout), tostring(is_threat),
+                                  tostring(ads_v), tostring(def_v), mist.utils.round(dt)))
+--[[
         V51UTIL.log("V51UTIL.convoy.CoordinateConvoys(tout=" .. mist.utils.round(tout) .. ", one_time=" ..
                     tostring(one_time) .. ") " .. action ..
                     " / halted=" .. tostring(V51UTIL.convoy.convoyHalted[ads_group]) ..
                     ", tout=" .. mist.utils.round(tout) .. ", is_threat=" .. tostring(is_threat) ..
                     ", ads_v=" .. tostring(ads_v) .. ", def_v=" .. tostring(def_v) ..
                     ", dt=" .. mist.utils.round(dt))
+]]
 
         if not one_time then
             mist.scheduleFunction(CoordinateConvoys,
@@ -620,6 +656,8 @@ function V51UTIL.convoy.startCoordination(ads_group, def_group, wez_size, fn_con
     V51UTIL.log("V51UTIL.convoy.StartCoordination(ads='" .. ads_group .. "', def='" .. def_group ..
                 "', wez=" .. tostring(wez_size) .. ")")
     V51UTIL.convoy.convoyHalted[ads_group] = false
+    V51UTIL.convoy.convoyPaused[ads_group] = false
+    V51UTIL.convoy.convoyPauseReq[ads_group] = false
     V51UTIL.convoy.convoyContactsFn[ads_group] = fn_contacts
     mist.scheduleFunction(CoordinateConvoys,
                           { 0, false, ads_group, def_group, wez_size }, timer.getTime() + 30)
@@ -632,6 +670,24 @@ end
 function V51UTIL.convoy.endCoordination(ads_group)
     V51UTIL.log("V51UTIL.convoy.EndCoordination(ads='" .. ads_group .. "')")
     V51UTIL.convoy.convoyHalted[ads_group] = nil
+    V51UTIL.convoy.convoyPaused[ads_group] = nil
+end
+
+-- pause and resume convoy movement. stops the air defense group and it's associated convoy at the next
+-- coordination update. there should be one resumeMovement() call for each pauseMovement() call.
+--
+-- @param ads_group     name of air defense group providing defense
+--
+function V51UTIL.convoy.pauseMovement(ads_group)
+    if V51UTIL.convoy.convoyPaused[ads_group] ~= true then
+        V51UTIL.convoy.convoyPauseReq[ads_group] = true
+    end
+end
+
+function V51UTIL.convoy.resumeMovement(ads_group)
+    if V51UTIL.convoy.convoyPaused[ads_group] == true then
+        V51UTIL.convoy.convoyPauseReq[ads_group] = true
+    end
 end
 
 -- OnEventShot handler for air defense groups in the convoy. called from the "shot" event handler for the air

@@ -18,6 +18,9 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20230629**, Workflow 7-12-7
+    - Updated vfw51_mission_util.lua
+    - Updated vfw51_mission_splash_damage.lua
 - **v20230622**, Workflow 6-12-7
     - Added support for F-15E radios
     - Updated for DCS 2.8.6.41363
