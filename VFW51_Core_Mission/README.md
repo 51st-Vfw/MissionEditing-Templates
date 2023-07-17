@@ -18,6 +18,8 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20230716**, Workflow 7-13-7
+    - Added in-game output to note --dyanmic build via triggerinator
 - **v20230629**, Workflow 7-12-7
     - Updated vfw51_mission_util.lua
     - Updated vfw51_mission_splash_damage.lua

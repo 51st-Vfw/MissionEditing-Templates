@@ -104,6 +104,11 @@ local mizTrigActionsTmplDynamic = "a_do_script(\"assert(loadfile(VFW51_DYN_PATH 
 local mizTrigActionsTmplStatic = "a_do_script_file(getValueResourceByKey(\"$SCRIPT_RESKEY\"));"
 local mizTrigActionsTmplAudio = "a_out_sound(getValueResourceByKey(\"$AUDIO_RESKEY\"), 0);"
 
+local mizTricActionDynamicInfo = {
+    ["predicate"] = "a_do_script",
+    ["text"] = "trigger.action.outText(\"VFW51 Workflow: Dynamic .miz build\", 10)",
+}
+
 -- mission file value for ["trig"]["trigRules"], this must be updated per setup
 --
 local mizTrigTrigRules = {
@@ -326,11 +331,15 @@ end
 -- pass self explicitly as the arg
 function VFW51MissionTriginator.processMission(mission_t, self)
     -- helper function to build actions/trigrules for dynamic script loading
-    local function buildLoadDynamic(mission, files, action, num, trigRules, tmplt)
+    local function buildLoadDynamic(mission, files, action, num, trigRules, tmplt, noteDynamic)
         local rules = { [1] = trigRules[1] }
+        if noteDynamic then
+            rules[2] = mizTricActionDynamicInfo
+        end
+        local offset = #rules
         for key, val in ipairs(files) do
             action = action .. tmplt:gsub("$SCRIPT_FILE", val)
-            rules[key+1] = {
+            rules[key+offset] = {
                 ["predicate"] = "a_do_script",
                 ["text"] = "assert(loadfile(VFW51_DYN_PATH .. \"" .. val .. "\"))()",
             }
@@ -433,9 +442,9 @@ function VFW51MissionTriginator.processMission(mission_t, self)
 
     -- trigger actions 2-5: set up dynamic/static framework/mission script loads
     mission_t = buildLoadDynamic(mission_t, ScriptSettings["framework"], mizTrigActions[2], 2,
-                                 mizTrigTrigRules[2]["actions"], mizTrigActionsTmplDynamic)
+                                 mizTrigTrigRules[2]["actions"], mizTrigActionsTmplDynamic, true)
     mission_t = buildLoadDynamic(mission_t, ScriptSettings["mission"], mizTrigActions[4], 4,
-                                 mizTrigTrigRules[4]["actions"], mizTrigActionsTmplDynamic)
+                                 mizTrigTrigRules[4]["actions"], mizTrigActionsTmplDynamic, false)
 
     mission_t = buildLoadStatic(mission_t, ScriptSettings["framework"], mizTrigActions[3], 3,
                                 mizTrigTrigRules[3]["actions"], mizTrigActionsTmplStatic)
