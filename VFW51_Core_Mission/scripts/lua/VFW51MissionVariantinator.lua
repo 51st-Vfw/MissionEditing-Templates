@@ -20,6 +20,11 @@
 --   <dst_path>/../<mission_name>[-<version>][-<variant>]
 --   <dst_path>/../options-<mission_name>[-<version>][-<variant>]
 --
+-- in addition, for redaction, the tool can generate an exclude file list that lists files that should not
+-- be included in the .miz. these are saved to
+--
+--   <dst_path>/../exclude-<mission_name>[-<version>][-<variant>]
+--
 -- the .miz must be unpacked at the usual place (src/miz_core) prior to using this tool.
 --
 -- this tool is run from the lua console, it uses the veafMissionEditor and VFW51WorkflowUtil libraries which
@@ -40,6 +45,26 @@ VFW51MissionVariantinator = VFW51WorkflowUtil:new()
 
 local wxVersions = { }
 local optVersions = { }
+
+function VFW51MissionVariantinator:buildExcludedFileList(srcPath)
+    local excludes = { }
+
+    local audioSettingsPath = self:loadLuaFile(srcPath, "audio", "vfw51_audio_settings.lua")
+    if audioSettingsPath ~= nil then
+        for i = 1, #AudioSettings do
+            table.insert(excludes, AudioSettings[i])
+        end
+    end
+
+    local scriptSettingsPath = self:loadLuaFile(srcPath, "scripts", "vfw51_script_settings.lua")
+    if scriptSettingsPath ~= nil and ScriptSettings["mission"] ~= nil then
+        for i = 1, #ScriptSettings["mission"] do
+            table.insert(excludes, ScriptSettings["mission"][i])
+        end
+    end
+
+    return excludes
+end
 
 function VFW51MissionVariantinator:parseMoment(moment)
     -- time in .miz is seconds after midnight while moment is 4-digit 24-hour time (with colon), covert
@@ -265,6 +290,9 @@ function VFW51MissionVariantinator:process()
         self:logInfo(string.format("Loaded settings [%s]", settingsPath))
     end
 
+    -- build the list of excluded files just in case we need them.
+    local excludedFiles = self:buildExcludedFileList(self.srcPath)
+
     -- build out wxVersions table, this has the weather information for each weather setup defined in
     -- the versions settings
     self:logDebug(string.format("Loading weather"))
@@ -304,7 +332,7 @@ function VFW51MissionVariantinator:process()
     local outPath = self.dstPath .. "..\\" .. self.missionName
     veafMissionEditor.editMission(inPath, outPath, "mission", nil)
 
-    -- walk the versions and build mission files for each
+    -- walk the versions and build mission and exclude files for each
     for targName, targ in pairs(VariantSettings["variants"]) do
         self:logInfo(string.format("Building mission files for %s target", targName))
         local editArgs = { ["self"] = self,
@@ -314,6 +342,19 @@ function VFW51MissionVariantinator:process()
         inPath = self.dstPath .. "mission"
         outPath = self.dstPath .. "..\\" .. self.missionName .. "-" .. targName
         veafMissionEditor.editMission(inPath, outPath, "mission", editFn, editArgs)
+
+        if VariantSettings["variants"][targName]["redact"] ~= nil then
+            outPath = self.dstPath .. "..\\exclude-" .. self.missionName .. "-" .. targName
+            local file, e = io.open(outPath, "w+");
+            if file == nil then
+                veafMissionEditor.logError(string.format("Error while writing excludes to file [%s]", outPath))
+            else
+                for i = 1, #excludedFiles do
+                    file:write(string.format("%s\n", excludedFiles[i]))
+                end
+                file:close();
+            end
+        end
     end
 end
 

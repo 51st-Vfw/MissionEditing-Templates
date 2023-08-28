@@ -18,6 +18,8 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20230827**, Workflow 7-14-7
+    - Updated Variantinator and build scripts to redact .lua from redacted missions.
 - **v20230716**, Workflow 7-13-7
     - Added in-game output to note --dyanmic build via triggerinator
 - **v20230629**, Workflow 7-12-7

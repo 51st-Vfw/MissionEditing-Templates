@@ -221,8 +221,14 @@ for %%f in (%VARIANT_FILES%) do (
     if %ARG_VERBOSE% == 1 echo del /f /q %MISSION_BASE%\%%~nxf.miz
     if %ARG_DRY_RUN% == 0 del /f /q %MISSION_BASE%\%%~nxf.miz >nul 2>&1
 
-    if %ARG_VERBOSE% == 1 echo %VFW51_7ZIP_EXE% a -r -tzip %MISSION_BASE%\%%~nxf.miz %MIZ_BLD_PATH%\* -mem=AES256
-    if %ARG_DRY_RUN% == 0 %VFW51_7ZIP_EXE% a -r -tzip %MISSION_BASE%\%%~nxf.miz %MIZ_BLD_PATH%\* -mem=AES256 >nul 2>&1
+    echo %MIZ_BLD_PATH%\..\exclude-%%~nxf
+    if exist %MIZ_BLD_PATH%\..\exclude-%%~nxf (
+        if %ARG_VERBOSE% == 1 echo %VFW51_7ZIP_EXE% a -r -tzip %MISSION_BASE%\%%~nxf.miz %MIZ_BLD_PATH%\* -mem=AES256 -x@%MIZ_BLD_PATH%\..\exclude-%%~nxf
+        if %ARG_DRY_RUN% == 0 %VFW51_7ZIP_EXE% a -r -tzip %MISSION_BASE%\%%~nxf.miz %MIZ_BLD_PATH%\* -mem=AES256 -x@%MIZ_BLD_PATH%\..\exclude-%%~nxf >nul 2>&1
+    ) else (
+        if %ARG_VERBOSE% == 1 echo %VFW51_7ZIP_EXE% a -r -tzip %MISSION_BASE%\%%~nxf.miz %MIZ_BLD_PATH%\* -mem=AES256
+        if %ARG_DRY_RUN% == 0 %VFW51_7ZIP_EXE% a -r -tzip %MISSION_BASE%\%%~nxf.miz %MIZ_BLD_PATH%\* -mem=AES256 >nul 2>&1
+    )
 )
 
 popd
