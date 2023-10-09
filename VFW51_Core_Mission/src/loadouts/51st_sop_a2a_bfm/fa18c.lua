@@ -10,6 +10,6 @@ LoadoutData = {
         [10] = {
             ["CLSID"] = "{INV-SMOKE-COALITION}",
         }, -- end of [10]
-}, -- end of ["pylons"]
+    }, -- end of ["pylons"]
 } -- end of LoadoutData
 
