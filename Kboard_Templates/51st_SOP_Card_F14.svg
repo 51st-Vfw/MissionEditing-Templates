@@ -10,7 +10,7 @@
             <polygon id="Border-Background-Footer" fill="#32372A" transform="translate(768.000000, 2014.000000) scale(1, -1) translate(-768.000000, -2014.000000) " points="24 2002.94737 31 2000 1504 2000 1513 2002.21053 1516 2008.10526 1516 2028 20 2028 20 2008.10526"></polygon>
             <polygon id="Border-Background-Header" fill="#32372A" points="24 24 31 20 1504 20 1513 23 1516 31 1516 148 20 148 20 31"></polygon>
             <text id="Footer-R" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="21" font-weight="400" fill="#C0C0C0">
-                <tspan x="1039.952" y="2023">51st VFW: Flight Card (F-14B) — 1.0, 14-AUG-22</tspan>
+                <tspan x="1037.6" y="2023">51st VFW: Flight Card (F-14B) — 2.0, 27-MAR-23</tspan>
             </text>
             <text id="Header" font-family="HelveticaNeue-Bold, Helvetica Neue" font-size="72" font-weight="bold" fill="#E0E0E0">
                 <tspan x="44" y="111">51st VFW: Flight Card (F-14B)</tspan>
@@ -417,63 +417,63 @@
                         <tspan x="58.548" y="33">5</tspan>
                     </text>
                 </g>
-                <g id="Template" transform="translate(0.000000, 224.000000)">
-                    <rect id="C3-Border" stroke="#32372A" stroke-width="4" x="780" y="0" width="640" height="48"></rect>
-                    <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="644" height="48"></rect>
-                    <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="-5.68434189e-14" width="136" height="48"></rect>
-                    <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#9B9B9B">
-                        <tspan x="796" y="33">Unassigned</tspan>
-                    </text>
-                    <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#9B9B9B">
-                        <tspan x="152" y="33">Unassigned</tspan>
-                    </text>
-                    <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="58.548" y="33">4</tspan>
-                    </text>
-                </g>
-                <g id="Template" transform="translate(0.000000, 176.000000)">
-                    <rect id="C3-Border" stroke="#32372A" stroke-width="4" x="780" y="0" width="640" height="48"></rect>
-                    <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="644" height="48"></rect>
-                    <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="5.68434189e-14" width="136" height="48"></rect>
-                    <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="796" y="33">Departure Tower (VHF)</tspan>
-                    </text>
-                    <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="152" y="33">Departure Tower (UHF)</tspan>
-                    </text>
-                    <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="58.548" y="33">3</tspan>
-                    </text>
-                </g>
-                <g id="Template" transform="translate(0.000000, 128.000000)">
-                    <rect id="C3-Border" stroke="#32372A" stroke-width="4" x="780" y="0" width="640" height="48"></rect>
-                    <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="644" height="48"></rect>
-                    <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="5.68434189e-14" width="136" height="48"></rect>
-                    <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="796" y="33">Departure ATIS (VHF)</tspan>
-                    </text>
-                    <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="152" y="33">Departure ATIS (UHF)</tspan>
-                    </text>
-                    <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="58.548" y="33">2</tspan>
-                    </text>
-                </g>
-                <g id="Template" transform="translate(0.000000, 80.000000)">
-                    <rect id="C3-Border" stroke="#32372A" stroke-width="4" x="780" y="0" width="640" height="48"></rect>
-                    <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="644" height="48"></rect>
-                    <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="2.84217094e-14" width="136" height="48"></rect>
-                    <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="796" y="33">Intraflight</tspan>
-                    </text>
-                    <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="152" y="33">Tactical Common</tspan>
-                    </text>
-                    <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
-                        <tspan x="58.548" y="33">1</tspan>
-                    </text>
-                </g>
                 <g id="Header">
+                    <g id="Template" transform="translate(0.000000, 224.000000)">
+                        <rect id="C3-Border" stroke="#32372A" stroke-width="4" x="780" y="0" width="640" height="48"></rect>
+                        <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="644" height="48"></rect>
+                        <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="2.84217094e-14" width="136" height="48"></rect>
+                        <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="796" y="33">Departure Tower (UHF)</tspan>
+                        </text>
+                        <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="152" y="33">Departure Tower (UHF)</tspan>
+                        </text>
+                        <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="58.548" y="33">4</tspan>
+                        </text>
+                    </g>
+                    <g id="Template" transform="translate(0.000000, 176.000000)">
+                        <rect id="C3-Border" stroke="#32372A" stroke-width="4" x="780" y="0" width="640" height="48"></rect>
+                        <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="644" height="48"></rect>
+                        <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="5.68434189e-14" width="136" height="48"></rect>
+                        <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="796" y="33">Departure ATIS (UHF)</tspan>
+                        </text>
+                        <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="152" y="33">Departure ATIS (UHF)</tspan>
+                        </text>
+                        <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="58.548" y="33">3</tspan>
+                        </text>
+                    </g>
+                    <g id="Template" transform="translate(0.000000, 128.000000)">
+                        <rect id="C3-Border" stroke="#32372A" stroke-width="4" x="780" y="0" width="640" height="48"></rect>
+                        <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="644" height="48"></rect>
+                        <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="8.52651283e-14" width="136" height="48"></rect>
+                        <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#9B9B9B">
+                            <tspan x="796" y="33">Unassigned</tspan>
+                        </text>
+                        <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="152" y="33">Strike Common — Dragnet 1-1</tspan>
+                        </text>
+                        <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="58.548" y="33">2</tspan>
+                        </text>
+                    </g>
+                    <g id="Template" transform="translate(0.000000, 80.000000)">
+                        <rect id="C3-Border" stroke="#32372A" stroke-width="4" x="780" y="0" width="640" height="48"></rect>
+                        <rect id="C2-Border" stroke="#32372A" stroke-width="4" x="136" y="0" width="644" height="48"></rect>
+                        <rect id="C1-Border" stroke="#32372A" stroke-width="4" x="0" y="8.52651283e-14" width="136" height="48"></rect>
+                        <text id="C3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="796" y="33">Intraflight</tspan>
+                        </text>
+                        <text id="C2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="152" y="33">Tactical Common — Darkstar 1-1</tspan>
+                        </text>
+                        <text id="C1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#FFFFFF">
+                            <tspan x="58.548" y="33">1</tspan>
+                        </text>
+                    </g>
                     <rect id="C3-Border" stroke="#32372A" stroke-width="4" fill="#32372A" x="784" y="0" width="636" height="80"></rect>
                     <rect id="C2-Border" stroke="#32372A" stroke-width="4" fill="#32372A" x="140" y="0" width="636" height="80"></rect>
                     <rect id="C1-Border" stroke="#32372A" stroke-width="4" fill="#32372A" x="0" y="0" width="132" height="80"></rect>
