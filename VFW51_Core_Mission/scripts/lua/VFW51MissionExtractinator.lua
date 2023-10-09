@@ -8,7 +8,8 @@
 --   --wx               extract weather information
 --   --opt              extract options infomration
 --   --wp <group>       extract waypoints from group <group>, <group> must exact-match
---   --loadout <group>  extract loadout from first unit of group <group>, <group> must exact-match
+--   --loadout <group>  extract loadout payload from first unit of group <group>, <group> must exact-match
+--   --props <group>    extract aircraft properties from first unit of group <group>, <group> must exact-match
 --   --debug            enable debug log output
 --   --trace            enable trace log output
 --
@@ -125,6 +126,55 @@ function VFW51MissionExtractinator:findLoadoutsFromGroupInCoalition(mission_t, g
     return loadout
 end
 
+function VFW51MissionExtractinator:findPropsFromGroupInCoalition(mission_t, groupPattern)
+    local props = nil
+
+    local coalitions = { "blue", "red", "neutrals" }
+    local foundGroup = nil
+    local numFound = 0
+    for _, coa in ipairs(coalitions) do
+        for _, country in pairs(mission_t["coalition"][coa]["country"]) do
+            if country["plane"] then
+                for _, group in ipairs(country["plane"]["group"]) do
+                    -- TODO: for regex match, use string.match(group["name"], sanitize(groupPattern))
+                    if group["name"] == groupPattern then
+                        if numFound == 0 and group["units"] and group["units"][1] and group["units"][1]["AddPropAircraft"] then
+                            foundGroup = group["name"]
+                            props = self:deepCopy(group["units"][1]["AddPropAircraft"])
+                        end
+                        numFound = numFound + 1
+                    end
+                end
+            end
+            if country["helicopter"] then
+                for _, group in ipairs(country["helicopter"]["group"]) do
+                    -- TODO: for regex match, use string.match(group["name"], sanitize(groupPattern))
+                    if group["name"] == groupPattern then
+                        if numFound == 0 and group["units"] and group["units"][1] and group["units"][1]["AddPropAircraft"] then
+                            foundGroup = group["name"]
+                            props = self:deepCopy(group["units"][1]["AddPropAircraft"])
+                        end
+                        numFound = numFound + 1
+                    end
+                end
+            end
+        end
+    end
+
+    if numFound == 0 then
+        print(string.format("-- no valid groups found matching '%s'", groupPattern))
+    elseif numFound == 1 then
+        print(string.format("-- extracted properties from first unit of group '%s'", foundGroup))
+        print(string.format("---@diagnostic disable: undefined-global"))
+    elseif numFound > 1 then
+        print(string.format("-- %d groups match '%s', extracted properties from first unit of group '%s'",
+                            numFound, groupPattern, foundGroup))
+        print(string.format("---@diagnostic disable: undefined-global"))
+    end
+
+    return props
+end
+
 function VFW51MissionExtractinator:process()
     local luaData = nil
     local tableName
@@ -144,6 +194,10 @@ function VFW51MissionExtractinator:process()
 ---@diagnostic disable-next-line: undefined-global
         luaData = self:findLoadoutsFromGroupInCoalition(mission, self.loutGroup)
         tableName = "LoadoutData"
+    elseif self.propGroup and self:loadLuaFile(self.mizPath, "", "mission") then
+---@diagnostic disable-next-line: undefined-global
+        luaData = self:findPropsFromGroupInCoalition(mission, self.propGroup)
+        tableName = "PropertyData"
     end
     if luaData then
         print(veafMissionEditor.serialize(tableName, luaData))
@@ -164,30 +218,37 @@ function VFW51MissionExtractinator:new(o, arg)
     local isArgBad = false
     local isArgWp = false
     local isArgLout = false
+    local isArgProp = false
     for _, val in ipairs(arg) do
         if val:lower() == "--wx" then
-            if self.isOpt or self.wpGroup or self.loutGroup then
+            if self.isOpt or self.wpGroup or self.loutGroup or self.propGroup then
                 isArgBad = true
             else
                 self.isWx = true
             end
         elseif val:lower() == "--opt" then
-            if self.isWx or self.wpGroup or self.loutGroup then
+            if self.isWx or self.wpGroup or self.loutGroup or self.propGroup then
                 isArgBad = true
             else
                 self.isOpt = true
             end
         elseif val:lower() == "--wp" then
-            if self.isOpt or self.isWx or self.loutGroup then
+            if self.isOpt or self.isWx or self.loutGroup or self.propGroup then
                 isArgBad = true
             else
                 isArgWp = true
             end
         elseif val:lower() == "--loadout" then
-            if self.isOpt or self.isWx or self.wpGroup then
+            if self.isOpt or self.isWx or self.wpGroup or self.propGroup then
                 isArgBad = true
             else
                 isArgLout = true
+            end
+        elseif val:lower() == "--props" then
+            if self.isOpt or self.isWx or self.wpGroup or self.loutGroup then
+                isArgBad = true
+            else
+                isArgProp = true
             end
         elseif isArgWp then
             self.wpGroup = val
@@ -195,6 +256,9 @@ function VFW51MissionExtractinator:new(o, arg)
         elseif isArgLout then
             self.loutGroup = val
             isArgLout = false
+        elseif isArgProp then
+            self.propGroup = val
+            isArgProp = false
         elseif self.mizPath == nil then
             self.mizPath = self:canonicalizeDirPath(val)
         elseif (val:lower() ~= "--debug") and (val:lower() ~= "--trace") then
@@ -203,9 +267,10 @@ function VFW51MissionExtractinator:new(o, arg)
     end
 
     if isArgBad or not self.mizPath or (self.isArgWp and not self.wpGroup) or
-                                       (self.isArgLout and not self.loutGroup)
+                                       (self.isArgLout and not self.loutGroup) or
+                                       (self.isArgProp and not self.proptGroup)
     then
-        print("Usage: VFW51MissionExtractinator <miz_path> <--wx|--opt|--wp <group>|--loadout <group>> [--debug|--trace]")
+        print("Usage: VFW51MissionExtractinator <miz_path> <--wx|--opt|--wp <group>|--loadout <group>|--prop <group>> [--debug|--trace]")
         return nil
     end
 
