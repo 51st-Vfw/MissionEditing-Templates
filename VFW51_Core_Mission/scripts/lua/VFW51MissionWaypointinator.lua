@@ -111,7 +111,7 @@ function VFW51MissionWaypointinator:process()
         local editFn = self.processMission
         self:logDebug(string.format("Processing [%s]", mizMissionPath))
         veafMissionEditor.editMission(mizMissionPath, mizMissionPath, "mission", editFn, self)
-        self:logInfo(string.format("mission updated, injected waypoints for %d units", self.unitEditCount))
+        self:logInfo(string.format("mission updated, injected waypoints for %d group(s)", self.unitEditCount))
     else
         self:logInfo("Waypoint settings not found, skipping")
     end
