@@ -17,13 +17,13 @@
 -- the base mission. the base mission files are found on the build path. mission and options versions are
 -- saved to
 --
---   <dst_path>/../<mission_name>[-<version>][-<variant>]
---   <dst_path>/../options-<mission_name>[-<version>][-<variant>]
+--   <dst_path>/../<mission_name>[-v<version>][-<variant>]
+--   <dst_path>/../options-<mission_name>[-v<version>][-<variant>]
 --
 -- in addition, for redaction, the tool can generate an exclude file list that lists files that should not
--- be included in the .miz. these are saved to
+-- be included in the .miz (such as lua files in redacted variants). these are saved to
 --
---   <dst_path>/../exclude-<mission_name>[-<version>][-<variant>]
+--   <dst_path>/../exclude-<mission_name>[-v<version>][-<variant>]
 --
 -- the .miz must be unpacked at the usual place (src/miz_core) prior to using this tool.
 --
@@ -45,6 +45,9 @@ VFW51MissionVariantinator = VFW51WorkflowUtil:new()
 
 local wxVersions = { }
 local optVersions = { }
+
+function VFW51MissionVariantinator:buildDstFileName(srcPath)
+end
 
 function VFW51MissionVariantinator:buildExcludedFileList(srcPath)
     local excludes = { }
@@ -134,9 +137,13 @@ function VFW51MissionVariantinator.processMission(mission_t, args)
 
     -- set the mission weather
     local wx = targInfo["wx"]
+    local wx_delta = targInfo["wx_delta"] or { }
     if (wx ~= nil) and (wx:lower() ~= "base") then
         self:logTrace(string.format("Setting mission Wx for %s", wx))
         mission_t["weather"] = self:deepCopy(wxVersions[wx])
+        for key, value in pairs(wx_delta) do
+            mission_t["weather"][key] = self:deepCopy(value)
+        end
     end
 
     -- set the mission options
@@ -325,26 +332,26 @@ function VFW51MissionVariantinator:process()
         end
     end
 
-    -- copy initial mission file over without changes for the baseline
-    self:logInfo(string.format("Building mission files for base target"))
+    -- copy initial mission file over without changes for the baseline (note baseline is not versioned)
+    self:logInfo(string.format("Building content for base target"))
     local editFn = VFW51MissionVariantinator.processMission
     local inPath = self.dstPath .. "mission"
     local outPath = self.dstPath .. "..\\" .. self.missionName
     veafMissionEditor.editMission(inPath, outPath, "mission", nil)
 
-    -- walk the versions and build mission and exclude files for each
+    -- walk the target variants and build mission and exclude files for each
     for targName, targ in pairs(VariantSettings["variants"]) do
-        self:logInfo(string.format("Building mission files for %s target", targName))
+        self:logInfo(string.format("Building content for %s variant", targName))
         local editArgs = { ["self"] = self,
                            ["targInfo"] = VariantSettings["variants"][targName]
         }
         editFn = VFW51MissionVariantinator.processMission
         inPath = self.dstPath .. "mission"
-        outPath = self.dstPath .. "..\\" .. self.missionName .. "-" .. targName
+        outPath = self.dstPath .. "..\\" .. self.missionNameVers .. "-" .. targName
         veafMissionEditor.editMission(inPath, outPath, "mission", editFn, editArgs)
 
         if VariantSettings["variants"][targName]["redact"] ~= nil then
-            outPath = self.dstPath .. "..\\exclude-" .. self.missionName .. "-" .. targName
+            outPath = self.dstPath .. "..\\exclude-" .. self.missionNameVers.. "-" .. targName
             local file, e = io.open(outPath, "w+");
             if file == nil then
                 veafMissionEditor.logError(string.format("Error while writing excludes to file [%s]", outPath))
@@ -367,14 +374,14 @@ function VFW51MissionVariantinator:new(o, arg)
     self.version = "1.1.0"
 
     local isArgBad = false
-    local isArgTag = false
-    local argTag = nil
+    local isArgVersion = false
+    local argVersion = nil
     for _, val in ipairs(arg) do
-        if val:lower() == "--tag" then
-            isArgTag = true
-        elseif isArgTag then
-            argTag = val
-            isArgTag = false
+        if val:lower() == "--version" then
+            isArgVersion = true
+        elseif isArgVersion then
+            argVersion = val
+            isArgVersion = false
         elseif self.missionName == nil then
             self.missionName = val
         elseif self.srcPath == nil then
@@ -385,12 +392,14 @@ function VFW51MissionVariantinator:new(o, arg)
             isArgBad = true
         end
     end
-    if isArgBad or isArgTag or not self.missionName or not self.srcPath or not self.dstPath then
-        print("Usage: VFW51MissionVariantinator <mission_name> <src_path> <dst_path> [--tag <tag>] [--debug|--trace]")
+    if isArgBad or isArgVersion or not self.missionName or not self.srcPath or not self.dstPath then
+        print("Usage: VFW51MissionVariantinator <mission_name> <src_path> <dst_path> [--version <version>] [--debug|--trace]")
         return nil
     end
-    if argTag then
-        self.missionName = self.missionName .. "-v" .. argTag
+    if argVersion then
+        self.missionNameVers = self.missionName .. "-v" .. argVersion
+    else
+        self.missionNameVers = self.missionName
     end
 
     return o

@@ -28,6 +28,8 @@
 --                              <string>. This file should be located in src/variants. if this key/value
 --                              pair is not defined or the weather file is "base", the variant uses the 
 --                              weather from the base mission.
+--   "wx_deltas" : <table>      Overwrites the weather key/pairs with the contents of <table>. Ignored if the
+--                              weather is "base".
 --   "options" : <string>       Sets the mission options in the variant according to the file named by
 --                              <string>. This file should be located in src/variants. if this key/value
 --                              pair is not defined or the options file is "base", the variant uses the 
