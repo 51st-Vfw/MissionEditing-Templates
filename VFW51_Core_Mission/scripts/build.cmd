@@ -23,8 +23,8 @@ set ARG_DYNAMIC=0
 set ARG_LUADEBUG=0
 set ARG_LUATRACE=0
 set ARG_NOSYNC=0
-set ARG_TAG=0
-set ARG_TAG_PARAM=""
+set ARG_VERS=0
+set ARG_VERS_PARAM=""
 set ARG_VERBOSE=0
 
 for %%x in (%*) do (
@@ -51,23 +51,23 @@ for %%x in (%*) do (
     ) else if "%%~x" == "--luatrace" (
         set ARG_LUATRACE=1
         set SYNC_ARGS=!SYNC_ARGS! --luatrace
-rem ) else if "%%~x" == "--tag" (
-rem     set ARG_TAG_PARAM=1
+    ) else if "%%~x" == "--version" (
+        set ARG_VERS_PARAM=1
     ) else if "%%~x" == "--verbose" (
         set ARG_VERBOSE=1
         set SYNC_ARGS=!SYNC_ARGS! --verbose
-rem ) else if !ARG_TAG_PARAM! == 1 (
-rem     if %%~x == 0 goto Usage
-rem     set ARG_TAG_PARAM=0
-rem     set ARG_TAG=%%~x
-rem     set LUA_TAG=--tag %%~x
+    ) else if !ARG_VERS_PARAM! == 1 (
+        if %%~x == 0 goto Usage
+        set ARG_VERS_PARAM=0
+        set ARG_VERS=%%~x
+        set LUA_VERS=--version %%~x
     ) else (
         echo Unknown command line argument
         goto Usage
     )
 )
 
-if %ARG_TAG_PARAM% == 1 if %ARG_TAG% == 0 goto Usage
+if %ARG_VERS_PARAM% == 1 if %ARG_VERS% == 0 goto Usage
 
 rem ======== set up variables
 
@@ -191,8 +191,8 @@ rem [options-]<mission_name>[-v<version>][-<variant>] at the top level of the bu
 rem copy these down and pack to build the final mission.
 
 echo ---- Building DCS ME mission files for mission versions
-if %ARG_VERBOSE% == 1 echo %VFW51_LUA_EXE% VFW51MissionVariantinator.lua %MISSION_NAME% %MISSION_SRC% %MIZ_BLD_PATH% %VFW51_LUA_LOG% %LUA_TAG%
-if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% VFW51MissionVariantinator.lua %MISSION_NAME% %MISSION_SRC% %MIZ_BLD_PATH% %VFW51_LUA_LOG% %LUA_TAG%
+if %ARG_VERBOSE% == 1 echo %VFW51_LUA_EXE% VFW51MissionVariantinator.lua %MISSION_NAME% %MISSION_SRC% %MIZ_BLD_PATH% %VFW51_LUA_LOG% %LUA_VERS%
+if %ARG_DRY_RUN% == 0 %VFW51_LUA_EXE% VFW51MissionVariantinator.lua %MISSION_NAME% %MISSION_SRC% %MIZ_BLD_PATH% %VFW51_LUA_LOG% %LUA_VERS%
 
 if %ARG_BASE% == 0 set VARIANT_FILES="%MISSION_BASE%\build\%MISSION_NAME%*"
 if %ARG_BASE% == 1 set VARIANT_FILES="%MISSION_BASE%\build\%MISSION_NAME%"
@@ -254,7 +254,7 @@ exit /be 0
 :Usage
 echo.
 echo Usage: build [--help] [--nosync] [--dirty] [--base] [--dynamic] [--dryrun] [--verbose]
-echo              [--luadebug, --luatrace]
+echo              [--version (vers)] [--luadebug, --luatrace]
 echo.
 echo Assemble and build the .miz mission file(s) described by the mission directory. The .miz
 echo files are output at the root level of the mission directory. The sync.cmd script is
@@ -271,6 +271,7 @@ echo   --base               Build base mission only, do not build any other vari
 echo   --dynamic            Build mission for dynamic script loading
 echo   --dryrun             Dry run, print but do not execute commands (implies --verbose)
 echo   --verbose            Verbose logging output
+echo   --version (vers)     Add integer version (vers) to non-baseline generated .miz files
 echo   --luatrace           Pass "--trace" to Lua scripts to set "trace" level logging
 echo   --luadebug           Pass "--debug" to Lua scripts to set "debug" level logging
 echo.
