@@ -29,6 +29,9 @@ require("VFW51WorkflowUtil")
 
 VFW51MissionLoadoutinator = VFW51WorkflowUtil:new()
 
+InjectGroupNum = 1
+InjectUnitNum = 1
+
 ---------------------------------------------------------------------------------------------------------------
 -- Core Methods
 ---------------------------------------------------------------------------------------------------------------
@@ -57,18 +60,44 @@ function VFW51MissionLoadoutinator.processMission(mission_t, self)
             if country["plane"] then
                 for groupIdx, group in ipairs(country["plane"]["group"]) do
 ---@diagnostic disable-next-line: undefined-global
-                    for groupPattern, groupFile in pairs(LoadoutSettings) do
+                    for groupPattern, groupInfo in pairs(LoadoutSettings) do
                         local gsubPattern = self:sanitizePattern(groupPattern)
                         if string.match(group["name"], gsubPattern) then
-                            self:logInfo(string.format("Updating group '%s', matches key '%s'", group["name"], groupPattern))
-                            if self:loadLuaFile(self.srcPath, "loadouts", groupFile) then
-                                for unitIdx, table in pairs(group["units"]) do
----@diagnostic disable-next-line: undefined-global
-                                    local loadoutData = self:processSmokePods(coa, self:deepCopy(LoadoutData))
-                                    country["plane"]["group"][groupIdx]["units"][unitIdx]["payload"] = loadoutData
+                            self:logInfo(string.format("Updating plane group '%s', matches key '%s'", group["name"], groupPattern))
+                            for _, info in pairs(groupInfo) do
+                                InjectGroupNum = info.group_num or 1
+                                InjectUnitNum = 1
+                                local perUnit = info.per_unit or false
+                                local loadPath = "initial"
+
+                                LoadoutData = nil
+                                PropertyData = nil
+                                if not perUnit then
+                                    loadPath = self:loadLuaFile(self.srcPath, "loadouts", info.file)
                                 end
-                            else
-                                self:logInfo("Loadout file '" .. groupFile .. "' not found, skipping")
+                                for unitIdx, table in pairs(group["units"]) do
+                                    if perUnit then
+                                        InjectUnitNum = unitIdx
+                                        loadPath = self:loadLuaFile(self.srcPath, "loadouts", info.file)
+                                    end
+                                    if loadPath == nil then
+                                        self:logInfo("Loadout file '" .. info.file .. "' not found, skipping")
+                                        break
+                                    end
+                                    if LoadoutData then
+---@diagnostic disable-next-line: undefined-global
+                                        local loadoutData = self:processSmokePods(coa, self:deepCopy(LoadoutData))
+                                        country["plane"]["group"][groupIdx]["units"][unitIdx]["payload"] = loadoutData
+                                    end
+                                    if PropertyData then
+                                        local propertyData = self:deepCopy(PropertyData)
+                                        country["plane"]["group"][groupIdx]["units"][unitIdx]["AddPropAircraft"] = propertyData
+                                    end
+                                    if perUnit then
+                                        LoadoutData = nil
+                                        PropertyData = nil
+                                    end
+                                end
                             end
                             self.unitEditCount = self.unitEditCount + 1
                         end
@@ -78,18 +107,46 @@ function VFW51MissionLoadoutinator.processMission(mission_t, self)
             if country["helicopter"] then
                 for groupIdx, group in ipairs(country["helicopter"]["group"]) do
 ---@diagnostic disable-next-line: undefined-global
-                    for groupPattern, groupFile in pairs(LoadoutSettings) do
+                    for groupPattern, groupInfo in pairs(LoadoutSettings) do
                         local gsubPattern = self:sanitizePattern(groupPattern)
                         if string.match(group["name"], gsubPattern) then
-                            self:logInfo(string.format("Updating group '%s', matches key '%s'", group["name"], groupPattern))
-                            if self:loadLuaFile(self.srcPath, "loadouts", groupFile) then
-                                for unitIdx, table in pairs(group["units"]) do
----@diagnostic disable-next-line: undefined-global
-                                    local loadoutData = self:processSmokePods(coa, self:deepCopy(LoadoutData))
-                                    country["helicopter"]["group"][groupIdx]["units"][unitIdx]["payload"] = loadoutData
+                            self:logInfo(string.format("Updating helo group '%s', matches key '%s'", group["name"], groupPattern))
+                            for _, info in pairs(groupInfo) do
+                                InjectGroupNum = info.group_num or 1
+                                InjectUnitNum = 1
+                                local injectGroupNum = info.group_num or 1
+                                local perUnit = info.per_unit or false
+                                local isErr = false
+
+                                LoadoutData = nil
+                                PropertyData = nil
+                                if not perUnit then
+                                    isErr = self:loadLuaFile(self.srcPath, "loadouts", info.file)
                                 end
-                            else
-                                self:logInfo("Loadout file '" .. groupFile .. "' not found, skipping")
+                                for unitIdx, table in pairs(group["units"]) do
+                                    if perUnit then
+                                        InjectUnitNum = unitIdx
+                                        local injectUnitNum = unitIdx
+                                        isErr = self:loadLuaFile(self.srcPath, "loadouts", info.file)
+                                    end
+                                    if isErr then
+                                        self:logInfo("Loadout file '" .. info.file .. "' not found, skipping")
+                                        break
+                                    end
+                                    if LoadoutData then
+---@diagnostic disable-next-line: undefined-global
+                                        local loadoutData = self:processSmokePods(coa, self:deepCopy(LoadoutData))
+                                        country["helicopter"]["group"][groupIdx]["units"][unitIdx]["payload"] = loadoutData
+                                    end
+                                    if PropertyData then
+                                        local propertyData = self:deepCopy(PropertyData)
+                                        country["helicopter"]["group"][groupIdx]["units"][unitIdx]["AddPropAircraft"] = propertyData
+                                    end
+                                    if perUnit then
+                                        LoadoutData = nil
+                                        PropertyData = nil
+                                    end
+                                end
                             end
                             self.unitEditCount = self.unitEditCount + 1
                         end
@@ -113,7 +170,7 @@ function VFW51MissionLoadoutinator:process()
         local editFn = self.processMission
         self:logDebug(string.format("Processing [%s]", mizMissionPath))
         veafMissionEditor.editMission(mizMissionPath, mizMissionPath, "mission", editFn, self)
-        self:logInfo(string.format("mission updated, injected loadouts for %d units", self.unitEditCount))
+        self:logInfo(string.format("mission updated, injected loadouts for %d group(s)", self.unitEditCount))
     else
         self:logInfo("Loadout settings not found, skipping")
     end
