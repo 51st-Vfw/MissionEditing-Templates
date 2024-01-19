@@ -1,7 +1,7 @@
 # 51st VFW Core Mission Template
 
 This is the base 51st VFW mission template supporting the Caucusas, Marianas, NTTR, Persian
-Gulf, South Atlantic, and Syria maps using the
+Gulf, Sinai, and Syria maps using the
 [51st VFW workflow](https://github.com/51st-Vfw/MissionEditing-Index/blob/master/documentation/me_workflow.md).
 The template includes default setups for all 51st VFW airframes and flights, support
 flights, and carrier groups per 
@@ -18,8 +18,19 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20240118**, Workflow 8-15-8
+    - Added support for mision versions via --version argument to build, removed --tag argument
+    - Added support for aircraft property extraction via --prop argument to Extractinator and
+      extract scripts
+    - Added suport for loadout properties in Loadoutinator
+    - Added support for mission versions in Variantinator
+    - Updated default loadouts and kneeboard templates
+    - Updated to MapSOP v20231217.1
+    - Updated to Skynet v3.3.0
+    - Updated to MOOSE 5b7e0ce3
+    - Updated for DCS 2.9.2.49940
 - **v20230827**, Workflow 7-14-7
-    - Updated Variantinator and build scripts to redact .lua from redacted missions.
+    - Updated Variantinator and build scripts to redact .lua from redacted missions
 - **v20230716**, Workflow 7-13-7
     - Added in-game output to note --dyanmic build via triggerinator
 - **v20230629**, Workflow 7-12-7
