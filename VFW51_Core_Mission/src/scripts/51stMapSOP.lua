@@ -1,9 +1,9 @@
 -- 51st MapSOP
-MAPSOP_VERSION = "20230205.1"
+MAPSOP_VERSION = "20231217.1"
 -- Initial version by Blackdog Jan 2022
 --
 -- Tested against MOOSE GITHUB Commit Hash ID:
--- 2023-02-04T22:34:14.0000000Z-57079e5104a7f43085a90a0887de1546132ae350
+-- 2023-12-16T09:31:56+01:00-5b7e0ce3759efd4a2de1af7592220150f2f3c4b4
 --
 -- Version 20220101.1 - Blackdog initial version
 -- Version 20220115.1 - Fix: Tanker speeds adjusted to be close KIAS from SOP + better starting altitudes.
@@ -85,6 +85,7 @@ MAPSOP_VERSION = "20230205.1"
 --                    - Fixed a potential 'Support Base' / 'Red Support Base' related Lua error.
 --                    - Improved documentation (readme.md)
 -- Version 20230205.1 - Fixed PauseTime related 'nil' error.
+-- Version 20231217.1 - Fix DCS/MOOSE things (DCS 2.9.1.48335), some code cleanup.
 
 --                    
 -- Known issues/limitations:
@@ -94,35 +95,6 @@ MAPSOP_VERSION = "20230205.1"
 --   - ACLS does not work for CVN-70 (USS Carl Vincent, apparently not a 'real' DCS SuperCarrier).
 
 env.info("=== Loading 51stMapSOP v" .. MAPSOP_VERSION .. " ===")
-
-ENUMS.CallsignString={}
-ENUMS.CallsignString["Aircraft"]={}
-ENUMS.CallsignString["AWACS"]={}
-ENUMS.CallsignString["Tanker"]={}
-
-ENUMS.CallsignString["Aircraft"][1]="Enfield"
-ENUMS.CallsignString["Aircraft"][2]="Springfield"
-ENUMS.CallsignString["Aircraft"][3]="Uzi"
-ENUMS.CallsignString["Aircraft"][4]="Colt"
-ENUMS.CallsignString["Aircraft"][5]="Dodge"
-ENUMS.CallsignString["Aircraft"][6]="Ford"
-ENUMS.CallsignString["Aircraft"][7]="Chevy"
-ENUMS.CallsignString["Aircraft"][8]="Pontiac"
-ENUMS.CallsignString["Aircraft"][9]="Hawg"
-ENUMS.CallsignString["Aircraft"][10]="Boar"
-ENUMS.CallsignString["Aircraft"][11]="Pig"
-ENUMS.CallsignString["Aircraft"][12]="Tusk"
-ENUMS.CallsignString["Helicopter"] = ENUMS.CallsignString["Aircraft"]
-
-ENUMS.CallsignString["AWACS"][1]="Overlord"
-ENUMS.CallsignString["AWACS"][2]="Magic"
-ENUMS.CallsignString["AWACS"][3]="Wizard"
-ENUMS.CallsignString["AWACS"][4]="Focus"
-ENUMS.CallsignString["AWACS"][5]="Darkstar"
-
-ENUMS.CallsignString["Tanker"][1]="Texaco"
-ENUMS.CallsignString["Tanker"][2]="Arco"
-ENUMS.CallsignString["Tanker"][3]="Shell"
 
 ENUMS.UnitType = {
     AIRCRAFT     = "Aircraft",
@@ -263,7 +235,7 @@ SUPPORTUNITS["_"][ "CVN-75" ] = { "Lone Warrior", nil, ENUMS.UnitType.SHIP,  275
 -- Rescue Helo
 SUPPORTUNITS["_"][ "CSAR1" ] = { CALLSIGN.Aircraft.Pontiac , 8, ENUMS.UnitType.HELICOPTER, nil, nil, nil, nil, nil, nil, nil, nil, nil, 265, nil, false, ENUMS.SupportUnitTemplate.RESCUEHELO }
 
-local BASESUPPORTUNITS = routines.utils.deepCopy(SUPPORTUNITS)
+local BASESUPPORTUNITS = UTILS.DeepCopy(SUPPORTUNITS)
 
 local MAPSOPSETTINGS = {}
 MAPSOPSETTINGS.Defaults = {}
@@ -297,6 +269,83 @@ function TEMPLATE.SetPayload(Template, Fuel, Flare, Chaff, Gun, Pylons, UnitNum)
     Template["units"][UnitNum or 1]["payload"]["gun"] = Gun or 0
     Template["units"][UnitNum or 1]["payload"]["pylons"] = Pylons or {}
     return Template
+end
+
+--- Get the callsign name from its enumerator value
+-- @param #number Callsign The enumerator callsign.
+-- @param #number CALLSIGN category (CALLSIGN.Aircraft, CALLSIGN.AWACS, etc)
+-- @return #string The callsign name or "Ghostrider".
+function UTILS.GetCallsignName(Callsign,CallsignCategory)
+
+  local CallsignCat = CallsignCategory or CALLSIGN.Aircraft
+
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+  
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+  
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+  
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+  
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+  
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+  
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+  
+  for name, value in pairs(CallsignCat) do
+    if value==Callsign then
+      return name
+    end
+  end
+  
+  return "Ghostrider"
 end
 
 -- Init MapSOP Settings
@@ -536,123 +585,6 @@ function UpdateFlightMenu(TrackFlight, track, oldtrack)
   return false
 end
 
-function ChangeTemplateCallsign(Template, CallsignName, CallsignGroup, CallsignNameString)
-
-  if not Template or not Template.units or not Template.units[1].callsign then
-      return nil
-  end
-
-  local callsign1 = CallsignName or nil
-  local callsign2 = CallsignGroup or nil
-
-  Template.KeepCallsigns = true
-
-  for unit,_ in ipairs(Template.units) do
-      local callsign3 = Template.units[unit].callsign[3]
-      Template.units[1].callsign = 
-                      {
-                          [1] = callsign1,
-                          [2] = callsign2,
-                          [3] = callsign3,
-                          ["name"] = CallsignNameString .. callsign2 .. callsign3,
-                      }
-  end
-
-  return Template
-end
-
--- Overriding MOOSE function to hack callsign behavior
--- If SPAWN.KeepCallsigns is set to true, then retain template callsigns
---- Prepares the new Group Template.
--- @param #SPAWN self
--- @param #string SpawnTemplatePrefix
--- @param #number SpawnIndex
--- @return #SPAWN self
---- Prepares the new Group Template.
--- @param #SPAWN self
--- @param #string SpawnTemplatePrefix
--- @param #number SpawnIndex
--- @return #SPAWN self
-function SPAWN:_Prepare( SpawnTemplatePrefix, SpawnIndex ) -- R2.2
-  self:F( { self.SpawnTemplatePrefix, self.SpawnAliasPrefix } )
-
-  --  if not self.SpawnTemplate then
-  --    self.SpawnTemplate = self:_GetTemplate( SpawnTemplatePrefix )
-  --  end
-
-  local SpawnTemplate
-  if self.TweakedTemplate ~= nil and self.TweakedTemplate == true then
-    --BASE:I( "WARNING: You are using a tweaked template." )
-    SpawnTemplate = self.SpawnTemplate
-  else
-    SpawnTemplate = self:_GetTemplate( SpawnTemplatePrefix )
-    SpawnTemplate.name = self:SpawnGroupName( SpawnIndex )
-  end
-
-  SpawnTemplate.groupId = nil
-  -- SpawnTemplate.lateActivation = false
-  SpawnTemplate.lateActivation = self.LateActivated or false
-
-  if SpawnTemplate.CategoryID == Group.Category.GROUND then
-    self:T3( "For ground units, visible needs to be false..." )
-    SpawnTemplate.visible = false
-  end
-
-  if self.SpawnGrouping then
-    local UnitAmount = #SpawnTemplate.units
-    self:F( { UnitAmount = UnitAmount, SpawnGrouping = self.SpawnGrouping } )
-    if UnitAmount > self.SpawnGrouping then
-      for UnitID = self.SpawnGrouping + 1, UnitAmount do
-        SpawnTemplate.units[UnitID] = nil
-      end
-    else
-      if UnitAmount < self.SpawnGrouping then
-        for UnitID = UnitAmount + 1, self.SpawnGrouping do
-          SpawnTemplate.units[UnitID] = UTILS.DeepCopy( SpawnTemplate.units[1] )
-          SpawnTemplate.units[UnitID].unitId = nil
-        end
-      end
-    end
-  end
-
-  if self.SpawnInitKeepUnitNames == false then
-    for UnitID = 1, #SpawnTemplate.units do
-      SpawnTemplate.units[UnitID].name = string.format( SpawnTemplate.name .. '-%02d', UnitID )
-      SpawnTemplate.units[UnitID].unitId = nil
-    end
-  else
-    for UnitID = 1, #SpawnTemplate.units do
-      local UnitPrefix, Rest = string.match( SpawnTemplate.units[UnitID].name, "^([^#]+)#?" ):gsub( "^%s*(.-)%s*$", "%1" )
-      self:T( { UnitPrefix, Rest } )
-
-      SpawnTemplate.units[UnitID].name = string.format( '%s#%03d-%02d', UnitPrefix, SpawnIndex, UnitID )
-      SpawnTemplate.units[UnitID].unitId = nil
-    end
-  end
-
-  -- Callsign
-  for UnitID = 1, #SpawnTemplate.units do
-    local Callsign = SpawnTemplate.units[UnitID].callsign
-    if Callsign then
-      if not SpawnTemplate.KeepCallsigns then --MapSOP
-        if type( Callsign ) ~= "number" then -- blue callsign
-          Callsign[2] = ((SpawnIndex - 1) % 10) + 1
-          local CallsignName = SpawnTemplate.units[UnitID].callsign["name"] -- #string
-          CallsignName = string.match(CallsignName,"^(%a+)") -- 2.8 - only the part w/o numbers
-          local CallsignLen = CallsignName:len()
-          SpawnTemplate.units[UnitID].callsign["name"] = CallsignName:sub( 1, CallsignLen ) .. SpawnTemplate.units[UnitID].callsign[2] .. SpawnTemplate.units[UnitID].callsign[3]
-        else
-          SpawnTemplate.units[UnitID].callsign = Callsign + SpawnIndex
-        end
-      end -- MapSOP
-    end
-  end
-
-  self:T3( { "Template:", SpawnTemplate } )
-  return SpawnTemplate
-
-end
-
 --- Overriding MOOSE function to make less log spammy.
 --- Create a new BEACON Object. This doesn't activate the beacon, though, use @{#BEACON.ActivateTACAN} etc.
 -- If you want to create a BEACON, you probably should use @{Wrapper.Positionable#POSITIONABLE.GetBeacon}() instead.
@@ -788,7 +720,7 @@ CARRIER.CarrierType = AIRBOSS.CarrierType
 
 -- CARRIER class, gutted version of the Moose AIRBOSS class keeping only relevant features
 -- Hacked together from AIRBOSS v1.2.1
-CARRIER.version = "1.2.1" .. "-1"
+CARRIER.version = "1.3.3" .. "-1"
 
 function CARRIER:New(carriername, alias)
     -- Inherit everthing from FSM class.
@@ -863,35 +795,48 @@ function CARRIER:New(carriername, alias)
   self:SetQueueUpdateTime()
   self:SetStatusUpdateTime()
 
-  -- Init runway angle
-  if self.carriertype==CARRIER.CarrierType.STENNIS then
-    self.carrierparam.rwyangle   =  -9.1359
-  elseif self.carriertype==CARRIER.CarrierType.ROOSEVELT then
-    self.carrierparam.rwyangle   =  -9.1359
-  elseif self.carriertype==CARRIER.CarrierType.LINCOLN then
-    self.carrierparam.rwyangle   =  -9.1359
-  elseif self.carriertype==CARRIER.CarrierType.WASHINGTON then
-    self.carrierparam.rwyangle   =  -9.1359
-  elseif self.carriertype==CARRIER.CarrierType.TRUMAN then
-    self.carrierparam.rwyangle   =  -9.1359
-  elseif self.carriertype==CARRIER.CarrierType.FORRESTAL then
-    self.carrierparam.rwyangle   =  -9.1359
-  elseif self.carriertype==CARRIER.CarrierType.VINSON then
-    self.carrierparam.rwyangle   =  -9.1359
-  elseif self.carriertype==CARRIER.CarrierType.TARAWA then
-    self.carrierparam.rwyangle   =  0
-  elseif self.carriertype==CARRIER.CarrierType.AMERICA then
-    self.carrierparam.rwyangle   =  0
-  elseif self.carriertype==CARRIER.CarrierType.JCARLOS then
-    self.carrierparam.rwyangle   =  0
-  elseif self.carriertype==CARRIER.CarrierType.CANBERRA then
-    self.carrierparam.rwyangle   =  0
-  elseif self.carriertype==CARRIER.CarrierType.KUZNETSOV then
-    self.carrierparam.rwyangle   =  -9.1359
+  -- Init carrier parameters.
+  if self.carriertype == CARRIER.CarrierType.STENNIS then
+    -- Stennis parameters were updated to match the other Super Carriers.
+    self:_InitNimitz()
+  elseif self.carriertype == CARRIER.CarrierType.ROOSEVELT then
+    self:_InitNimitz()
+  elseif self.carriertype == CARRIER.CarrierType.LINCOLN then
+    self:_InitNimitz()
+  elseif self.carriertype == CARRIER.CarrierType.WASHINGTON then
+    self:_InitNimitz()
+  elseif self.carriertype == CARRIER.CarrierType.TRUMAN then
+    self:_InitNimitz()
+  elseif self.carriertype == CARRIER.CarrierType.FORRESTAL then
+    self:_InitForrestal()
+  elseif self.carriertype == CARRIER.CarrierType.VINSON then
+    -- Carl Vinson is legacy now.
+    self:_InitStennis()
+  elseif self.carriertype == CARRIER.CarrierType.HERMES then
+    -- Hermes parameters.
+    self:_InitHermes()
+  elseif self.carriertype == CARRIER.CarrierType.INVINCIBLE then
+    -- Invincible parameters.
+    self:_InitInvincible()
+  elseif self.carriertype == CARRIER.CarrierType.TARAWA then
+    -- Tarawa parameters.
+    self:_InitTarawa()
+  elseif self.carriertype == CARRIER.CarrierType.AMERICA then
+    -- Use America parameters.
+    self:_InitAmerica()
+  elseif self.carriertype == CARRIER.CarrierType.JCARLOS then
+    -- Use Juan Carlos parameters.
+    self:_InitJcarlos()
+  elseif self.carriertype == CARRIER.CarrierType.CANBERRA then
+    -- Use Juan Carlos parameters at this stage.
+    self:_InitCanberra()
+  elseif self.carriertype == CARRIER.CarrierType.KUZNETSOV then
+    -- Kusnetsov parameters - maybe...
+    self:_InitStennis()
   else
-    self:E(self.lid..string.format("ERROR: Unknown carrier type %s!", tostring(self.carriertype)))
+    self:E( self.lid .. string.format( "ERROR: Unknown carrier type %s!", tostring( self.carriertype ) ) )
     return nil
-  end    
+  end
 
   -----------------------
   --- FSM Transitions ---
@@ -911,287 +856,6 @@ function CARRIER:New(carriername, alias)
   return self
 end
 
---- Get wind direction and speed at carrier position.
--- @param #CARRIER self
--- @param #number alt Altitude ASL in meters. Default 50 m.
--- @param #boolean magnetic Direction including magnetic declination.
--- @param Core.Point#COORDINATE coord (Optional) Coordinate at which to get the wind. Default is current carrier position.
--- @return #number Direction the wind is blowing **from** in degrees.
--- @return #number Wind speed in m/s.
-function CARRIER:GetWind(alt, magnetic, coord)
-
-    -- Current position of the carrier or input.
-    local cv=coord or self:GetCoordinate()
-  
-    -- Wind direction and speed. By default at 50 meters ASL.
-    local Wdir, Wspeed=cv:GetWind(alt or 15)
-  
-    -- Include magnetic declination.
-    if magnetic then
-      Wdir=Wdir-self.magvar
-      -- Adjust negative values.
-      if Wdir<0 then
-        Wdir=Wdir+360
-      end
-    end
-  
-    return Wdir, Wspeed
-  end
-
---- Let the carrier turn into the wind.
--- @param #CARRIER self
--- @param #number time Time in seconds.
--- @param #number vdeck Speed on deck m/s. Carrier will
--- @param #boolean uturn Make U-turn and go back to initial after downwind leg.
--- @return #CARRIER self
-function CARRIER:CarrierTurnIntoWind(time, vdeck, uturn)
-
-    -- Wind speed.
-    local _,vwind=self:GetWind()
-  
-    -- Speed of carrier in m/s but at least 2 knots.
-    local vtot=math.max(vdeck-vwind, UTILS.KnotsToMps(2))
-  
-    -- Distance to travel
-    local dist=vtot*time
-  
-    -- Speed in knots
-    local speedknots=UTILS.MpsToKnots(vtot)
-    local distNM=UTILS.MetersToNM(dist)
-  
-    -- Debug output
-    self:T(self.lid..string.format("Carrier steaming into the wind (%.1f kts). Distance=%.1f NM, Speed=%.1f knots, Time=%d sec.", UTILS.MpsToKnots(vwind), distNM, speedknots, time))
-  
-    -- Get heading into the wind accounting for angled runway.
-    local hiw=self:GetHeadingIntoWind()
-  
-    -- Current heading.
-    local hdg=self:GetHeading()
-  
-    -- Heading difference.
-    local deltaH=self:_GetDeltaHeading(hdg, hiw)
-  
-    local Cv=self:GetCoordinate()
-  
-    local Ctiw=nil --Core.Point#COORDINATE
-    local Csoo=nil --Core.Point#COORDINATE
-  
-    -- Define path depending on turn angle.
-    if deltaH<45 then
-      -- Small turn.
-  
-      -- Point in the right direction to help turning.
-      Csoo=Cv:Translate(750, hdg):Translate(750, hiw)
-  
-      -- Heading into wind from Csoo.
-      local hsw=self:GetHeadingIntoWind(false, Csoo)
-  
-      -- Into the wind coord.
-      Ctiw=Csoo:Translate(dist, hsw)
-  
-    elseif deltaH<90 then
-      -- Medium turn.
-  
-       -- Point in the right direction to help turning.
-      Csoo=Cv:Translate(900, hdg):Translate(900, hiw)
-  
-      -- Heading into wind from Csoo.
-      local hsw=self:GetHeadingIntoWind(false, Csoo)
-  
-      -- Into the wind coord.
-      Ctiw=Csoo:Translate(dist, hsw)
-  
-    elseif deltaH<135 then
-      -- Large turn backwards.
-  
-      -- Point in the right direction to help turning.
-      Csoo=Cv:Translate(1100, hdg-90):Translate(1000, hiw)
-  
-      -- Heading into wind from Csoo.
-      local hsw=self:GetHeadingIntoWind(false, Csoo)
-  
-      -- Into the wind coord.
-      Ctiw=Csoo:Translate(dist, hsw)
-  
-    else
-      -- Huge turn backwards.
-  
-      -- Point in the right direction to help turning.
-      Csoo=Cv:Translate(1200, hdg-90):Translate(1000, hiw)
-  
-      -- Heading into wind from Csoo.
-      local hsw=self:GetHeadingIntoWind(false, Csoo)
-  
-      -- Into the wind coord.
-      Ctiw=Csoo:Translate(dist, hsw)
-  
-    end
-  
-  
-    -- Return to coordinate if collision is detected.
-    self.Creturnto=self:GetCoordinate()
-  
-    -- Next waypoint.
-    local nextwp=self:_GetNextWaypoint()
-  
-    -- For downwind, we take the velocity at the next WP.
-    local vdownwind=UTILS.MpsToKnots(nextwp:GetVelocity())
-  
-    -- Make sure we move at all in case the speed at the waypoint is zero.
-    if vdownwind<1 then
-      vdownwind=10
-    end
-  
-    -- Let the carrier make a detour from its route but return to its current position.
-    self:CarrierDetour(Ctiw, speedknots, uturn, vdownwind, Csoo)
-  
-    -- Set switch that we are currently turning into the wind.
-    self.turnintowind=true
-  
-    return self
-  end
-
---- Set the magnetic declination (or variation). By default this is set to the standard declination of the map.
--- @param #CARRIER self
--- @param #number declination Declination in degrees or nil for default declination of the map.
--- @return #CARRIER self
-function CARRIER:SetMagneticDeclination(declination)
-    self.magvar=declination or UTILS.GetMagneticDeclination()
-    return self
-end
-
---- Set distance up to which water ahead is scanned for collisions.
--- @param #CARRIER self
--- @param #number dist Distance in NM. Default 5 NM.
--- @return #CARRIER self
-function CARRIER:SetCollisionDistance(distance)
-    self.collisiondist=UTILS.NMToMeters(distance or 5)
-    return self
-end
-
---- Set time interval for updating queues and other stuff.
--- @param #CARRIER self
--- @param #number interval Time interval in seconds. Default 30 sec.
--- @return #CARRIER self
-function CARRIER:SetQueueUpdateTime(interval)
-    self.dTqueue=interval or 30
-    return self
-end
-
---- Set time interval for updating player status and other things.
--- @param #CARRIER self
--- @param #number interval Time interval in seconds. Default 0.5 sec.
--- @return #CARRIER self
-function CARRIER:SetStatusUpdateTime(interval)
-    self.dTstatus=interval or 0.5
-    return self
-end
-
---- Carrier patrols ad inifintum. If the last waypoint is reached, it will go to waypoint one and repeat its route.
--- @param #CARRIER self
--- @param #boolean switch If true or nil, patrol until the end of time. If false, go along the waypoints once and stop.
--- @return #CARRIER self
-function CARRIER:SetPatrolAdInfinitum(switch)
-    if switch==false then
-      self.adinfinitum=false
-    else
-      self.adinfinitum=true
-    end
-    return self
-end
-
---- Check if carrier is idle, i.e. no operations are carried out.
--- @param #CARRIER self
--- @return #boolean If true, carrier is in idle state.
-function CARRIER:IsIdle()
-    return self:is("Idle")
-end
-  
---- Check if recovery of aircraft is paused.
--- @param #CARRIER self
--- @return #boolean If true, recovery is paused
-function CARRIER:IsPaused()
-    return self:is("Paused")
-end
-
---- Disable automatic TACAN activation
--- @param #CARRIER self
--- @return #CARRIER self
-function CARRIER:SetTACANoff()
-    self.TACANon=false
-    return self
-  end
-  
-  --- Set TACAN channel of carrier.
-  -- @param #CARRIER self
-  -- @param #number channel TACAN channel. Default 74.
-  -- @param #string mode TACAN mode, i.e. "X" or "Y". Default "X".
-  -- @param #string morsecode Morse code identifier. Three letters, e.g. "STN".
-  -- @return #CARRIER self
-  function CARRIER:SetTACAN(channel, mode, morsecode)
-  
-    self.TACANchannel=channel or 74
-    self.TACANmode=mode or "X"
-    self.TACANmorse=morsecode or "STN"
-    self.TACANon=true
-  
-    return self
-  end
-  
-  --- Disable automatic ICLS activation.
-  -- @param #CARRIER self
-  -- @return #CARRIER self
-  function CARRIER:SetICLSoff()
-    self.ICLSon=false
-    return self
-  end
-  
-  --- Set ICLS channel of carrier.
-  -- @param #CARRIER self
-  -- @param #number channel ICLS channel. Default 1.
-  -- @param #string morsecode Morse code identifier. Three letters, e.g. "STN". Default "STN".
-  -- @return #CARRIER self
-  function CARRIER:SetICLS(channel, morsecode)
-  
-    self.ICLSchannel=channel or 1
-    self.ICLSmorse=morsecode or "STN"
-    self.ICLSon=true
-  
-    return self
-  end
-  
-  
---- Set beacon (TACAN/ICLS) time refresh interfal in case the beacons die.
--- @param #CARRIER self
--- @param #number interval Time interval in seconds. Default 1200 sec = 20 min.
--- @return #CARRIER self
-function CARRIER:SetBeaconRefresh(interval)
-    local dTbeacon = interval or (20*60)
-    self.dTbeacon = dTbeacon
-
-    return self
-end
-
---- Activate TACAN and ICLS beacons.
--- @param #CARRIER self
-function CARRIER:_ActivateBeacons()
-    self:T(self.lid..string.format("Activating Beacons (TACAN=%s, ICLS=%s)", tostring(self.TACANon), tostring(self.ICLSon)))
-  
-    -- Activate TACAN.
-    if self.TACANon then
-      self:T(self.lid..string.format("Activating TACAN Channel %d%s (%s)", self.TACANchannel, self.TACANmode, self.TACANmorse))
-      self.beacon:ActivateTACAN(self.TACANchannel, self.TACANmode, self.TACANmorse, true)
-    end
-  
-    -- Activate ICLS.
-    if self.ICLSon then
-      self:T(self.lid..string.format("Activating ICLS Channel %d (%s)", self.ICLSchannel, self.ICLSmorse))
-      self.beacon:ActivateICLS(self.ICLSchannel, self.ICLSmorse)
-    end
-  
-    -- Set time stamp.
-    self.Tbeacon=timer.getTime()
-end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- FSM event functions
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1308,35 +972,6 @@ function CARRIER:onafterStatus(From, Event, To)
     -- Call status every ~0.5 seconds.
     self:__Status(-30)
   
-end
-  
---- Function called when a group is passing a waypoint.
---@param Wrapper.Group#GROUP group Group that passed the waypoint
---@param #CARRIER carrier Airboss object.
---@param #number i Waypoint number that has been reached.
---@param #number final Final waypoint number.
-function CARRIER._PassingWaypoint(group, carrier, i, final)
-
-    -- Debug message.
-    local text=string.format("Group %s passing waypoint %d of %d.", group:GetName(), i, final)
-  
-    -- Debug message.
-    MESSAGE:New(text,10):ToAllIf(carrier.Debug)
-    carrier:T(carrier.lid..text)
-  
-    -- Set current waypoint.
-    carrier.currentwp=i
-  
-    -- Passing Waypoint event.
-    carrier:PassingWaypoint(i)
-  
-    -- Reactivate beacons.
-    --carrier:_ActivateBeacons()
-  
-    -- If final waypoint reached, do route all over again.
-    if i==final and final>1 and carrier.adinfinitum then
-      carrier:_PatrolRoute()
-    end
 end
   
 --- Carrier Strike Group resumes the route of the waypoints defined in the mission editor.
@@ -1486,7 +1121,7 @@ function CARRIER:_CheckCarrierTurning()
       local hdg
       if self.turnintowind then
         -- We are now steaming into the wind.
-        hdg=self:GetHeadingIntoWind(false)
+        hdg=self:GetHeadingIntoWind(20, false)
       else
         -- We turn towards the next waypoint.
         hdg=self:GetCoordinate():HeadingTo(self:_GetNextWaypoint())
@@ -1671,14 +1306,14 @@ function InitSupportBases()
                   template = 1
                 end
                 if trackname == "_" then
-                  SUPPORTUNITS["_"][ FullCallsign ] = routines.utils.deepCopy(BASESUPPORTUNITS["_"][callsign .. template])
+                  SUPPORTUNITS["_"][ FullCallsign ] = UTILS.DeepCopy(BASESUPPORTUNITS["_"][callsign .. template])
                 else
                   -- Default "_" track will have already gone thanks to sort, so can copy it
                   SUPPORTUNITS[trackname] = SUPPORTUNITS[trackname] or {}
                   if notemplate then
-                    SUPPORTUNITS[trackname][ FullCallsign ] = routines.utils.deepCopy(SUPPORTUNITS["_"][FullCallsign])
+                    SUPPORTUNITS[trackname][ FullCallsign ] = UTILS.DeepCopy(SUPPORTUNITS["_"][FullCallsign])
                   else
-                    SUPPORTUNITS[trackname][ FullCallsign ] = routines.utils.deepCopy(BASESUPPORTUNITS["_"][callsign .. template])
+                    SUPPORTUNITS[trackname][ FullCallsign ] = UTILS.DeepCopy(BASESUPPORTUNITS["_"][callsign .. template])
                   end
                 end
                 SUPPORTUNITS[trackname][ FullCallsign ][ ENUMS.SupportUnitFields.CALLSIGN_NUM ] = num
@@ -1987,14 +1622,14 @@ function InitSupportBases()
                 SpawnTemplate = TEMPLATE.GetHelicopter(SupportUnitTypeName, SupportUnit)
             end
 
-            if SpawnTemplate then
-                if SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN] and SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN_NUM] then
+            local CallsignCategory = CALLSIGN.Aircraft
+            if SupportUnitFields[ENUMS.SupportUnitFields.TYPE] == ENUMS.UnitType.TANKER then
+              CallsignCategory = CALLSIGN.Tanker
+            elseif SupportUnitFields[ENUMS.SupportUnitFields.TYPE] == ENUMS.UnitType.AWACS then
+              CallsignCategory = CALLSIGN.AWACS
+            end
 
-                  ChangeTemplateCallsign(SpawnTemplate, 
-                      SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN], 
-                      SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN_NUM], 
-                      ENUMS.CallsignString[SupportUnitFields[ENUMS.SupportUnitFields.TYPE]][SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN]])
-                end
+            if SpawnTemplate then
 
                 if SupportUnitFields[ENUMS.SupportUnitFields.SPEED] then
                   SpawnTemplate.route.points[1].speed = UTILS.KnotsToMps(UTILS.KnotsToAltKIAS(SupportUnitFields[ENUMS.SupportUnitFields.SPEED],SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE]) or 350)
@@ -2004,13 +1639,16 @@ function InitSupportBases()
                 TEMPLATE.SetPayload(SpawnTemplate, SupportUnitInfo[ENUMS.SupportUnitTemplateFields.FUEL], SupportUnitInfo[ENUMS.SupportUnitTemplateFields.FLARE], 
                     SupportUnitInfo[ENUMS.SupportUnitTemplateFields.CHAFF], SupportUnitInfo[ENUMS.SupportUnitTemplateFields.GUNS], {})
 
+                --BASE:I({SupportUnit,SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN],SupportUnit:sub(1, -2),SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN_NUM],1})
                 --SUPPORTUNITS["_"][SupportUnit].SpawnTemplate = SpawnTemplate
-                SPAWN:NewFromTemplate( SpawnTemplate, SupportUnit .. " Group", SupportUnit)
+                SPAWN:NewFromTemplate( SpawnTemplate, SupportUnit .. " Template", SupportUnit .. " Template")
                   :InitLateActivated()
                   :InitModex(SupportUnitFields[ENUMS.SupportUnitFields.MODEX])
                   :InitAirbase(SupportBase, SPAWN.Takeoff.Hot)
+                  :InitCallSign(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN],UTILS.GetCallsignName(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN], CallsignCategory),SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN_NUM],1)
                   :OnSpawnGroup(
                     function( SpawnGroup )
+                      SpawnGroup:I(SpawnGroup:GetName())
                       if SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN] and SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN_NUM] then
                         -- noop
                       end
@@ -2146,7 +1784,6 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
     if SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup and SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:IsAlive() 
         and SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:GetName() ~= self:GetName() or IsPostMission then
 
-      self:SwitchRadio(258.0)
       self:SwitchCallsign(supportunitfields[ENUMS.SupportUnitFields.CALLSIGN], 8)
 
       if unittype ~= ENUMS.UnitType.AWACS then
@@ -2183,6 +1820,9 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
         end
       end
 
+      FlightGroup:SwitchRadio(supportunitfields[ENUMS.SupportUnitFields.RADIOFREQ])
+      FlightGroup:SwitchCallsign(supportunitfields[ENUMS.SupportUnitFields.CALLSIGN], supportunitfields[ENUMS.SupportUnitFields.CALLSIGN_NUM])
+
       if MAPSOPSETTINGS.UseSRS and VFW51ST_TACCOMMON_msrsQ and SUPPORTUNITS["_"][SupportUnit].IsBlue and aliveOpsGroups then
 
         local tracktext
@@ -2216,6 +1856,8 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
           if SUPPORTUNITS["_"][SupportUnit][ENUMS.SupportUnitFields.RESPAWNAIR] then
             SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:Destroy()
           else
+            SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:GetGroup():ClearTasks()
+            SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:SwitchCallsign(supportunitfields[ENUMS.SupportUnitFields.CALLSIGN], 8)
             SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:RTB(SupportBase)
           end
 
@@ -2232,11 +1874,14 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
       if newtrack and SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission then
         SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission:Success()
       end
+
+      if SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission and SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission:IsNotOver() then
+        FlightGroup:SwitchCallsign(supportunitfields[ENUMS.SupportUnitFields.CALLSIGN], supportunitfields[ENUMS.SupportUnitFields.CALLSIGN_NUM])
+        FlightGroup:SwitchRadio(tonumber(supportunitfields[ENUMS.SupportUnitFields.RADIOFREQ]))
+      end
+
       SUPPORTUNITS["_"][SupportUnit].PreviousMission.mission = self
       SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup = FlightGroup
-
-      self:GetOpsGroups()[1]:GetGroup():CommandSetCallsign(supportunitfields[ENUMS.SupportUnitFields.CALLSIGN], supportunitfields[ENUMS.SupportUnitFields.CALLSIGN_NUM])
-      FlightGroup:SwitchRadio(tonumber(supportunitfields[ENUMS.SupportUnitFields.RADIOFREQ]))
 
       if unittype ~= ENUMS.UnitType.AWACS then
         -- Start Tacan after 1 second and every 5 minutes
@@ -2273,9 +1918,9 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
 
   FlightGroup:SetFuelLowRefuel(false)
         :AddMission( Mission )
-        :SetFuelLowThreshold(math.random(30,35))  
+        :SetFuelLowThreshold(math.random(20,25))  
         :SetFuelLowRTB(false)
-        :SetFuelCriticalThreshold(15)
+        :SetFuelCriticalThreshold(10)
         :SetFuelCriticalRTB(true)
         :SetDefaultSpeed(UTILS.KnotsToAltKIAS(350,30000))
         :SetDefaultAltitude(30000)
@@ -2312,31 +1957,32 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
   end
 
   function FlightGroup:OnAfterDead(From, Event, To)
-    -- BASE:I(FlightGroup:GetName() .. " OnAfterDead()")
-    -- if FlightGroup:GetGroup():IsAlive() then
-    --   BASE:I(FlightGroup:GetGroup():GetName() .. " is Alive?")
-    --   BASE:I("First alive Spawn group for " .. Spawn.SpawnTemplatePrefix ..  " is: " .. Spawn:GetFirstAliveGroup():GetName() )
-    -- end
-    -- self:I("SpawnIndex: " .. Spawn.SpawnIndex)
-		-- self:I("SpawnCount: " ..  Spawn.SpawnCount)
-    -- self:I("AliveUnits: " .. Spawn.AliveUnits)
-    -- self:I("SpawnMaxUnitsAlive: " .. Spawn.SpawnMaxUnitsAlive)
-    -- self:I("SpawnMaxGroups: " .. Spawn.SpawnMaxGroups)
+    Spawn:FixAliveGroupCount()
   end
 
   function FlightGroup:OnAfterFuelLow(From, Event, To)
     self:I(self:GetName() .. " fuel low, launching relief flight.")
     local FirstGroup = Spawn:GetFirstAliveGroup()
     local LastGroup = Spawn:GetLastAliveGroup()
+    local SupportUnitFields = SUPPORTUNITS["_"][SupportUnit]
 
     Spawn:FixAliveGroupCount()
+
+    local CallsignCategory = CALLSIGN.Aircraft
+    if SupportUnitFields[ENUMS.SupportUnitFields.TYPE] == ENUMS.UnitType.TANKER then
+      CallsignCategory = CALLSIGN.Tanker
+    elseif SupportUnitFields[ENUMS.SupportUnitFields.TYPE] == ENUMS.UnitType.AWACS then
+      CallsignCategory = CALLSIGN.AWACS
+    end
     
     local SpawnedGroup
     if CURRENTUNITTRACK[SupportUnit] then
       if SUPPORTUNITS["_"][SupportUnit][ ENUMS.SupportUnitFields.RESPAWNAIR ] and SUPPORTUNITS["_"][SupportUnit].SpawnPt then
-        SpawnedGroup = Spawn:SpawnFromCoordinate( SUPPORTUNITS["_"][SupportUnit].SpawnPt )
+        SpawnedGroup = Spawn:InitCallSign(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN],UTILS.GetCallsignName(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN], CallsignCategory),SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN_NUM],1)
+                        :SpawnFromCoordinate( SUPPORTUNITS["_"][SupportUnit].SpawnPt )
       else
-        SpawnedGroup = Spawn:SpawnAtAirbase( SupportBase, SPAWN.Takeoff.Hot )
+        SpawnedGroup = Spawn:InitCallSign(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN],UTILS.GetCallsignName(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN], CallsignCategory),SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN_NUM],1)
+                        :SpawnAtAirbase( SupportBase, SPAWN.Takeoff.Hot )
       end
     end
 
@@ -2344,17 +1990,17 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
 
   function FlightGroup:OnAfterArrived(From, Event, To)
     -- Make airframe available again in 60 minutes if airframes limited.
-    if not UnlimitedAirframes then
+    if tonumber(SUPPORTUNITS["_"][SupportUnit].airframes or 0) > 0 then
       local SupportUnitFields = SUPPORTUNITS["_"][SupportUnit]
-      local airframes = SupportUnitFields.airframes or 0
-      FlightGroup:I(FlightGroup:GetName() .. " landed, airframe will be refueling for 1 hour before operational. " .. airframes .. " airframes available for this mission.")
-      SCHEDULER:New( nil,
+      local airframes = tonumber(SupportUnitFields.airframes or 0)
+      BASE:I(FlightGroup:GetName() .. " landed, airframe will be refueling for 1 hour before operational. (" .. airframes .. ")")
+      SUPPORTUNITS["_"][SupportUnit].RefuelScheduler = SCHEDULER:New( nil,
         function()
-          if SupportUnitFields.airframes then
-            SUPPORTUNITS["_"][SupportUnit].airframes = tonumber(SupportUnitFields.airframes) + 1
-            Flight:InitLimit( 2, SUPPORTUNITS["_"][SupportUnit].airframes )
+          if airframes > 0 then
+            SUPPORTUNITS["_"][SupportUnit].airframes = airframes + 1
+            SUPPORTUNITS["_"][SupportUnit].Spawn:InitLimit( 2, tonumber(SUPPORTUNITS["_"][SupportUnit].airframes) )
           end
-          FlightGroup:I(FlightGroup:GetName() .. " refueled and airframe available for new tasking. " .. airframes .. " airframes available for this mission.")
+          BASE:I(FlightGroup:GetName() .. " refueled and airframe available for new tasking. (" .. tostring(SUPPORTUNITS["_"][SupportUnit].airframes) .. ")")
         end, {}, 3600)
     end
   end
@@ -2368,6 +2014,13 @@ function InitSupport( SupportBaseParam, RedSupportBase)
     local UnitName = nil
     local NoRedSupportUnit = nil
     local pattern = "^([Rr][Ee][Dd])-" .. "(.*)"
+
+    local CallsignCategory = CALLSIGN.Aircraft
+    if SupportUnitFields[ENUMS.SupportUnitFields.TYPE] == ENUMS.UnitType.TANKER then
+      CallsignCategory = CALLSIGN.Tanker
+    elseif SupportUnitFields[ENUMS.SupportUnitFields.TYPE] == ENUMS.UnitType.AWACS then
+      CallsignCategory = CALLSIGN.AWACS
+    end
 
     red, UnitName =  string.match(SupportUnit,  pattern)
     if red then
@@ -2442,7 +2095,7 @@ function InitSupport( SupportBaseParam, RedSupportBase)
 
             SUPPORTUNITS["_"][SupportUnit].UnlimitedAirframes = UnlimitedAirframes
           
-            local Spawn = SPAWN:NewWithAlias(SupportUnit, SupportUnit .. " Flight")
+            local Spawn = SPAWN:NewWithAlias(SupportUnit .. " Template#001", SupportUnit .. " Flight")
                 :InitLimit( 2, airframes )
                 :InitHeading(OrbitDir-180)
 
@@ -2508,7 +2161,8 @@ function InitSupport( SupportBaseParam, RedSupportBase)
                       Spawn:InitAirbase(SupportBase, SPAWN.Takeoff.Hot)
                       SUPPORTUNITS["_"][SupportUnit].SpawnPt = OrbitPt:Translate( UTILS.NMToMeters(3), OrbitDir-30, true, false)
                         :SetAltitude(UTILS.FeetToMeters(SupportUnitFields[ENUMS.SupportUnitFields.ALTITUDE]+100), false)
-                      Spawn:SpawnFromCoordinate(SUPPORTUNITS["_"][SupportUnit].SpawnPt)
+                      Spawn:InitCallSign(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN],UTILS.GetCallsignName(SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN], CallsignCategory),SupportUnitFields[ENUMS.SupportUnitFields.CALLSIGN_NUM],1)
+                           :SpawnFromCoordinate(SUPPORTUNITS["_"][SupportUnit].SpawnPt)
                     else
                       Spawn:SpawnAtAirbase( SupportBase, SPAWN.Takeoff.Hot)
                     end
@@ -2546,7 +2200,7 @@ function InitNavySupport( AircraftCarriers, CarrierMenu)
             if SupportUnitInfo == ENUMS.SupportUnitTemplate.NAVYTANKER and ends_with(SupportUnit,CarrierNum) then
                 if not SupportUnitFields.zoneP2exists then
                   -- S-3B Recovery Tanker
-                  local tanker=RECOVERYTANKER:New(AircraftCarrier, SupportUnit)
+                  local tanker=RECOVERYTANKER:New(AircraftCarrier, SupportUnit .. " Template#001")
                   if not SupportUnitFields[ENUMS.SupportUnitFields.GROUNDSTART] then
                       tanker:SetTakeoffAir()
                   else
@@ -2574,7 +2228,7 @@ function InitNavySupport( AircraftCarriers, CarrierMenu)
               if not SupportUnitFields.zoneP2exists then
 
                 -- E-2 AWACS
-                local awacs=RECOVERYTANKER:New(AircraftCarrier, SupportUnit)
+                local awacs=RECOVERYTANKER:New(AircraftCarrier, SupportUnit .. " Template#001")
                 if not SupportUnitFields[ENUMS.SupportUnitFields.GROUNDSTART] then
                     awacs:SetTakeoffAir()
                 else
@@ -2618,7 +2272,7 @@ function InitNavySupport( AircraftCarriers, CarrierMenu)
                   end
                 end
 
-                local rescuehelo=RESCUEHELO:New(SupportUnit, "CSAR1")
+                local rescuehelo=RESCUEHELO:New(SupportUnit, "CSAR1 Template#001")
 
                 if SUPPORTUNITS["_"][ 'CSAR1' ][ ENUMS.SupportUnitFields.GROUNDSTART ] then
                   rescuehelo:SetTakeoffCold()
@@ -2674,7 +2328,7 @@ function InitNavySupport( AircraftCarriers, CarrierMenu)
 
         if not SupportUnit:find("CVN") then
         -- Rescue Helo for LHAs and other non-carriers
-          local rescuehelo=RESCUEHELO:New(SupportUnit, "CSAR1")
+          local rescuehelo=RESCUEHELO:New(SupportUnit, "CSAR1 Template#001")
 
           if SUPPORTUNITS["_"][ 'CSAR1' ][ ENUMS.SupportUnitFields.GROUNDSTART ] then
             rescuehelo:SetTakeoffCold()
@@ -2860,7 +2514,12 @@ env.info("")
 SupportBase, RedSupportBase, AircraftCarriers = InitSupportBases()
 
 -- Init land-based support units
-InitSupport(SupportBase, RedSupportBase)
+SCHEDULER:New( nil, 
+function()
+  InitSupport(SupportBase, RedSupportBase)
+end, { }, 1
+)
+
 
 -- Setup carrier and carrier group support units
 local Carriers = InitNavySupport(AircraftCarriers, CarrierMenu)
