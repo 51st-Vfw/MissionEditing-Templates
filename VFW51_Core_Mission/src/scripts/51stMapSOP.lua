@@ -1,9 +1,9 @@
 -- 51st MapSOP
-MAPSOP_VERSION = "20231217.1"
+MAPSOP_VERSION = "20240811.1"
 -- Initial version by Blackdog Jan 2022
 --
 -- Tested against MOOSE GITHUB Commit Hash ID:
--- 2023-12-16T09:31:56+01:00-5b7e0ce3759efd4a2de1af7592220150f2f3c4b4
+-- 2024-08-10T18:54:12+02:00-e768ec3c17352e67545eb9b4174aacb8cca89a66
 --
 -- Version 20220101.1 - Blackdog initial version
 -- Version 20220115.1 - Fix: Tanker speeds adjusted to be close KIAS from SOP + better starting altitudes.
@@ -86,6 +86,8 @@ MAPSOP_VERSION = "20231217.1"
 --                    - Improved documentation (readme.md)
 -- Version 20230205.1 - Fixed PauseTime related 'nil' error.
 -- Version 20231217.1 - Fix DCS/MOOSE things (DCS 2.9.1.48335), some code cleanup.
+-- Version 20240811.1 - Fix DCS/MOOSE things (DCS 2.9.7.58293) including AWACS datalink, some code cleanup.
+--                    - Tested/included MOOSE version bump.
 
 --                    
 -- Known issues/limitations:
@@ -1781,6 +1783,8 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
       SpawnGroup:SetCommandImmortal(supportunitfields.immortal)
     end
 
+    SpawnGroup:CommandEPLRS(true)
+
     if SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup and SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:IsAlive() 
         and SUPPORTUNITS["_"][SupportUnit].PreviousMission.flightgroup:GetName() ~= self:GetName() or IsPostMission then
 
@@ -1962,8 +1966,8 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
 
   function FlightGroup:OnAfterFuelLow(From, Event, To)
     self:I(self:GetName() .. " fuel low, launching relief flight.")
-    local FirstGroup = Spawn:GetFirstAliveGroup()
-    local LastGroup = Spawn:GetLastAliveGroup()
+    -- local FirstGroup = Spawn:GetFirstAliveGroup()
+    -- local LastGroup = Spawn:GetLastAliveGroup()
     local SupportUnitFields = SUPPORTUNITS["_"][SupportUnit]
 
     Spawn:FixAliveGroupCount()
@@ -1985,7 +1989,6 @@ function ManageFlights( SpawnGroupIn, SupportUnit, NewTrack )
                         :SpawnAtAirbase( SupportBase, SPAWN.Takeoff.Hot )
       end
     end
-
   end
 
   function FlightGroup:OnAfterArrived(From, Event, To)

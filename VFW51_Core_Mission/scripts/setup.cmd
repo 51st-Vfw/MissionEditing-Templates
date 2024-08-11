@@ -150,7 +150,7 @@ echo.
 echo Command line arguments:
 echo.
 echo   --help               Displays this usage information
-echo   --map {map}          Set up the mission from the map template for {map}, see Tmplt_*_core.miz
+echo   --map {map}          Set up the mission from the map template for {map}, see Tmplt_*_Core.miz
 echo   --miz {path}         Set up the mission from the existing .miz at {path}
 echo   --dynamic            Build mission for dynamic script loading
 echo   --dryrun             Dry run, print but do not execute commands (implies --verbose)

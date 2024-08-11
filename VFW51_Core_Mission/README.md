@@ -18,6 +18,13 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20240811**, Workflow 9-15-8
+    - Added Afghanistan, Kola tempaltes
+    - Removed F-14, A/V-8B from templates
+    - Minor template tweaks
+    - Updated to MapSOP v20240811.1
+    - Updated to MOOSE e768ec3c
+    - Updated for DCS 2.9.7.58923
 - **v20240118**, Workflow 8-15-8
     - Added support for mision versions via --version argument to build, removed --tag argument
     - Added support for aircraft property extraction via --prop argument to Extractinator and
