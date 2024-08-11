@@ -18,7 +18,9 @@ The template can be configured to support any of the maps listed in the followin
 
 |Abbreviation|Map Name|
 |:----------:|---|
+|AFG|Afghanistan|
 |CAU|Caucasus|
+|KOL|Kola Peninsula|
 |MAR|Marianas|
 |NTTR|Nevada Test and Training Range|
 |PG|Persian Gulf|
