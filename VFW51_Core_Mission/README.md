@@ -18,6 +18,8 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20240811**, Workflow 10-15-8
+    - Updated to MapSOP v20240818.1
 - **v20240811**, Workflow 9-15-8
     - Added Afghanistan, Kola tempaltes
     - Removed F-14, A/V-8B from templates

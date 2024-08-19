@@ -1,5 +1,5 @@
 -- 51st MapSOP
-MAPSOP_VERSION = "20240811.1"
+MAPSOP_VERSION = "20240818.1"
 -- Initial version by Blackdog Jan 2022
 --
 -- Tested against MOOSE GITHUB Commit Hash ID:
@@ -88,6 +88,7 @@ MAPSOP_VERSION = "20240811.1"
 -- Version 20231217.1 - Fix DCS/MOOSE things (DCS 2.9.1.48335), some code cleanup.
 -- Version 20240811.1 - Fix DCS/MOOSE things (DCS 2.9.7.58293) including AWACS datalink, some code cleanup.
 --                    - Tested/included MOOSE version bump.
+-- Version 20240818.1 - Address MOOSE TTS provider function changes to prevent error on servers with gRPC.
 
 --                    
 -- Known issues/limitations:
@@ -424,10 +425,10 @@ if GRPC and MAPSOPSETTINGS.UseSRS then
   end
   VFW51ST_TACCOMMON_msrs:SetLabel("MapSOP")
   if MAPSOPSETTINGS.UseSRS == 'gcloud' or MAPSOPSETTINGS.UseSRS == 'google' then
-    VFW51ST_TACCOMMON_msrs:SetGoogle()
+    VFW51ST_TACCOMMON_msrs:SetProvider(MSRS.Provider.GOOGLE)
     AllSpeechVoices = ENUMS.GoogleVoices
   else
-    VFW51ST_TACCOMMON_msrs:SetWin()
+    VFW51ST_TACCOMMON_msrs:SetProvider(MSRS.Provider.WINDOWS)
     AllSpeechVoices = ENUMS.WinVoices
   end
   SpeechVoices = UTILS.DeepCopy(AllSpeechVoices)
@@ -2361,10 +2362,10 @@ function CarrierTurnIntoWind( Carrier )
           Carrier.msrs = MSRS:New('', Carrier.FreqTTS)
           Carrier.msrs:SetLabel(Carrier.CallsignTTS)
           if MAPSOPSETTINGS.UseSRS == 'gcloud' or MAPSOPSETTINGS.UseSRS == 'google' then
-            Carrier.msrs:SetGoogle()
+            Carrier.msrs:SetProvider(MSRS.Provider.GOOGLE)
             Carrier.Voice = ENUMS.GoogleVoices[math.random(1,#ENUMS.GoogleVoices)]
           else
-            Carrier.msrs:SetWin()
+            Carrier.msrs:SetProvider(MSRS.Provider.WINDOWS)
             Carrier.Voice = ENUMS.WinVoices[math.random(1,#ENUMS.WinVoices)]
           end
           Carrier.msrs:SetVoice(Carrier.Voice)
