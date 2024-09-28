@@ -4,6 +4,8 @@
 --
 -- Useful utility functions for mission designers. This script requires MOOSE and mist.
 --
+-- v10-16-8, 27-Sep-24
+--   - added V51UTIL.skynet.alwaysDarkConstraint
 -- v8-15-8, 8-Oct-23:
 --   - added APIs to V51UTIL top-level: logc()
 --   - added APIs to V51UTIL.groups module: destroyWithPrefix(), swizzle(), startRandomPauses(),
@@ -21,6 +23,7 @@
 ---@diagnostic disable: duplicate-set-field
 
 env.info("*** Loading Mission Script: vfw51_mission_util.lua")
+env.info("VFW51UTIL version: v16, 27-Sep-24")
 
 V51UTIL = {
     debugLogging = false
@@ -1446,6 +1449,12 @@ function V51UTIL.skynet.contactsNearGroup(iads, group_name, dist)
         end
     end
     return hit_contacts
+end
+
+-- skynet "go live" constraint to always remain dark.
+--
+function V51UTIL.skynet.alwaysDarkConstraint(contact)
+    return false
 end
 
 -- ============================================================================================================
