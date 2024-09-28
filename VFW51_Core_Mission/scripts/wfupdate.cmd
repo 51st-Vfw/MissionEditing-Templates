@@ -234,8 +234,8 @@ echo.
 echo   --help               Displays this usage information
 echo   --dryrun             Dry run, print but do not execute commands (implies --verbose)
 echo   --force              Force updates regardless of version
-echo   --frame              Update mission framework scripts component
-echo   --script             Update workflow scripting component
+echo   --frame              Update mission framework scripts (DCS LUA) component
+echo   --script             Update workflow scripting (Windows CMD) component
 echo   --settings           Update workflow settings component
 echo   --version            Display current workflow versions without making changes
 echo   --verbose            Verbose logging output

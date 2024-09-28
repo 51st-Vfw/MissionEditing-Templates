@@ -18,7 +18,7 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
-- **v20240927**, Workflow 10-16-8
+- **v20240927**, Workflow 11-16-9
     - Updates to VFW51 utilities
 - **v20240811**, Workflow 10-15-8
     - Updated to MapSOP v20240818.1
