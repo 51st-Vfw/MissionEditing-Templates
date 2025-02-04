@@ -13,7 +13,7 @@
 --
 -- walk the map defined in src/waypoints/vfw51_waypoint_settings.lua file to update group steerpoints in the
 -- mission file. the map is keyed by group name with a value of a file name in src/waypoints that provides
--- the waypoints to inject.
+-- the waypoints to inject. only first match is applied.
 --
 -- the .miz must be unpacked at the usual place (src/miz_core) prior to using this tool.
 --
@@ -63,6 +63,7 @@ function VFW51MissionWaypointinator.processMission(mission_t, self)
                                 WaypointSettings[groupPattern] = nil
                             end
                             self.unitEditCount = self.unitEditCount + 1
+                            break
                         end
                     end
                 end
@@ -90,6 +91,7 @@ function VFW51MissionWaypointinator.processMission(mission_t, self)
                                 WaypointSettings[groupPattern] = nil
                             end
                             self.unitEditCount = self.unitEditCount + 1
+                            break
                         end
                     end
                 end

@@ -20,6 +20,7 @@ The template can be configured to support any of the maps listed in the followin
 |:----------:|---|
 |AFG|Afghanistan|
 |CAU|Caucasus|
+|IRQ|Iraq|
 |KOL|Kola Peninsula|
 |MAR|Marianas|
 |NTTR|Nevada Test and Training Range|

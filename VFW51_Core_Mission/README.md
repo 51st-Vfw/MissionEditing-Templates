@@ -18,6 +18,9 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20241215**, Workflow 11-17-9
+    - Added Iraq template
+    - Updated waypointinator to stop after first match
 - **v20240927**, Workflow 11-16-9
     - Updates to VFW51 utilities
 - **v20240811**, Workflow 10-15-8

@@ -26,7 +26,7 @@
 -- the loadout CLSID "INV-SMOKE-COALITION" will be replaced by a smoke pod in the color of the unit's
 -- coalition.
 --
--- note that group names are unique across coalitions.
+-- note that group names are assumed to be unique across coalitions.
 --
 -- ************************************************************************************************************
 
