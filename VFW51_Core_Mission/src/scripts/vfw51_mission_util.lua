@@ -4,6 +4,8 @@
 --
 -- Useful utility functions for mission designers. This script requires MOOSE and mist.
 --
+-- v12-16-8, 8-Jun-25
+--   - added ...
 -- v11-16-8, 27-Sep-24
 --   - added V51UTIL.skynet.alwaysDarkConstraint
 -- v8-15-8, 8-Oct-23:
@@ -23,7 +25,7 @@
 ---@diagnostic disable: duplicate-set-field
 
 env.info("*** Loading Mission Script: vfw51_mission_util.lua")
-env.info("VFW51UTIL version: v11, 27-Sep-24")
+env.info("VFW51UTIL version: v12, 8-Jun-25")
 
 V51UTIL = {
     debugLogging = false
@@ -51,6 +53,15 @@ function V51UTIL.log(msg, log_ui, dt)
         end
         trigger.action.outText(msg, dt)
     end
+end
+
+-- log message to env.info using string.format to build the message.
+--
+-- @param fmt           format string for string.format
+-- @param ...           varargs for values to fill in to the format string
+--
+function V51UTIL.logfmt(fmt, ...)
+    V51UTIL.log("MISSION: " .. string.format(fmt, unpack(arg)))
 end
 
 -- log message to env.info and UI for a coalition via trigger.action.outTextForCoalition.
