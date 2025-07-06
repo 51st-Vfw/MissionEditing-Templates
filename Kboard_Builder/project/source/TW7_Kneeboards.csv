@@ -1,0 +1,160 @@
+Flight Card,,,,,
+,,,,,
+Description,Field,LOBO1,PYTHON7,,Notes
+Template file name,KBB Template,KBT_Flight_Card.svg,KBT_Flight_Card.svg,,"Template file name, must be ""KBT_Bases.svg"" for airbase information card kneeboards"
+Output file base name,KBB Output,00_TW7_LO1_Flight_Card,00_TW7_PN7_Flight_Card,,"Base name for output files, ""FLIGHT"" is replaced with flight name from flight's column heading. If empty, default is the template name with _FLIGHT."
+,,,,,
+Card Title,Card Title,TW 7: LOBO1 Flight Card,TW 7: PYTHON7 Flight Card,`,"Optional title for card header, can be blank"
+Card version,Card Version,"v1.2, 21-FEB-25","v1.1, 22-FEB-25",,"Optional version number for card footer, can be blank"
+,,,,,
+Hack time,Hack,0000Z / 0300L,0000Z / 0300L,,
+Mission type,Mission Type,Strike,"SEAD, DEAD",,
+Acceptable level of risk,ALR,HIGH,Medium,,
+JOKER fuel state,Fuel JOKER,3000,4200,,
+BINGO fuel state,Fuel BINGO,2000,3200,,
+EMER fuel state,Fuel EMER,1000,2000,,
+Threat summary (2 lines),Threats,"A2G: Target area with multiple S2A WEZ: SA10, SA11, SA15, SA19
+A2A: MiG-29S, MiG-31, Su-30, Su-33 operating in AO","A2G: Target area with multiple S2A WEZ: SA10, SA11, SA15, SA19
+A2A: MiG-29S, MiG-31, Su-30, Su-33 operating in AO",,"Threats may be up to two lines, line breaks match those in the value cell"
+Abbreviated flight name,FL,LO1,PN7,,"First + last letter of flight name followed by flight number (for example, ""PN2"" for ""PYTHON2"")"
+-1 Pilot callsign,Pilot 1,Raven,Drafty,,
+-1 Pilot ID,T 1,67327,67161,,Pilot identifier (5 characters) such as TNDL
+-1 Aircraft loadout,Loadout 1,2WT / L / 200+6060 / 2A65G,2WT / HLE / 200+6060 / 4G38,,"Use SCL format, may include notes such as laser codes as required"
+-2 Pilot callsign,Pilot 2,Rage,Jenga,,
+-2 Pilot TNDL,T 2,67333,67312,,Pilot identifier (5 characters) such as TNDL
+-2 Aircraft loadout,Loadout 2,2WT / L / 200+6060 / 2A65G,2WT / HLE / 200+6060 / 4G38,,"Use SCL format, may include notes such as laser codes as required"
+-3 Pilot callsign,Pilot 3,,,,
+-3 Pilot TNDL,T 3,,,,Pilot identifier (5 characters) such as TNDL
+-3 Aircraft loadout,Loadout 3,,,,"Use SCL format, may include notes such as laser codes as required"
+-4 Pilot callsign,Pilot 4,,,,
+-4 Pilot TNDL,T 4,,,,Pilot identifier (5 characters) such as TNDL
+-4 Aircraft loadout,Loadout 4,,,,"Use SCL format, may include notes such as laser codes as required"
+,,,,,
+Step time,Step Time,0000Z / 0300L,0000Z / 0300L,,
+Departure ATIS frequency,COMM ATIS,136.325,136.325,,
+Departure tower frequency,COMM TWR,280.350 U5,280.350 U5,,
+,Start Time,0000Z / 0300L,0003Z / 0303L,,
+,Taxi Time,0008Z / 0308L,0015Z / 0315L,,
+,TO Time,0010Z / 0310L,0017Z / 0317L,,
+Startup notes (2 lines),Startup,"Check-in V3, Load NVG, Boresight A65, ALOW 100, Radar SNOOZE,
+Altimeter 29.93, Monitor GUARD","Set COM2. Engine start. Check-in V1. ALOW 5,000, MSL 18,000. TAXI on GREEN
+== NOTE: FL180 MSL floor for SHORAD warning and mitigation.",,"Startup notes may be up to two lines, line breaks match those in the value cell"
+Inter-flight frequency,COMM PRI,280.350 U5,333.000 U1,,
+,COMM AUX,138.500 V3,138.250 V1,,
+TACAN flight setup,TACAN Flight,37Y / 100Y,38Y / 101Y,,
+Ground taxi instructions,Ground Taxi,"Ramp: RT out, LT onto C, RWY 34","Ramp: RT out, LT onto C, RWY 34",,
+,,,,,
+Takeoff instructions,Enroute Takeoff,"RWY 34, 10s interval","RWY 34, 10s rolling",,
+Rejoin instructions,Enroute Rejoin,RT to Wedge L at 350KIAS,RT to F Wing L at 350KIAS,,
+Climb instructions,Enroute Climb,2.5° at FF 9000 to A15,"95% RPM, 2.5° to FL220",,
+Routing to AO,Enroute Routing,Direct SP1,Direct SP1,,
+Checks for enroute,Enroute Checks,"NVG, MFD, A65G Power","ECM, HTS, TGP, G38 Power",,
+Check-in frequency for enroute,Enroute Check In,Monitor SENTRY 299.000 U2,HAMMER 270.500 U3,,
+,,,,,
+IFF Notes,Spins IFF,"VID, GCI as required","VID, GCI as required",,
+Rules of Engagement,Spins ROE,"WEAPON FREE: Targets, NCTR/IFF/AIC BANDIT in FIN; RETURN FIRE: If Attacked","WEAPON FREE: Targets, NCTR/IFF/AIC BANDIT in FIN; RETURN FIRE: If Attacked",,
+General notes (2 lines),Spins Notes,"TAC: SENTRY P 299.000 U2, A 270.000
+=== NOTE: EMCOM SILENT from departure until reaching SP11 on RTB ===","Neutralize SA-11 ""Charlie"" TR-Ls (DMPI 5, SP8) following SA-10 DEAD",,"General notes may be up to two lines, line breaks match those in the value cell"
+,,,,,
+AAR flight #1 callsign,AAR 1 Flight,SHELL3,SHELL3,,
+AAR flight #1 frequency and TACAN,AAR 1 FRQ TACAN,253.000 U13 / 53Y,253.000 U13 / 53Y,,
+AAR flight #1 notes,AAR 1 Notes,FL230,FL230,,
+AAR flight #2 callsign,AAR 2 Flight,SHELL4,SHELL4,,
+AAR flight #2 frequency and TACAN,AAR 2 FRQ TACAN,254.000 U14 / 54Y,254.000 U14 / 54Y,,
+AAR flight #2 notes,AAR 2 Notes,FL220,FL220,,
+,,,,,
+Primary airbase IACO,P I,ENNA,ENNA,,
+Primary airbase runway,P R,34,34,,
+Primary airbase ATIS frequency,P A,136.325,136.325,,
+Primary airbase tower frequency,P T,280.350 U5,280.350 U5,,
+Primay airbase NAVAIDs,P NAVAIDS,"47X, ILS34 108.30 352°","47X, ILS34 108.30 352°",,
+Alternate #1 airbase IACO,1 I,EFRO,EFRO,,
+Alternate #1 airbase runway,1 R,21,21,,
+Alternate #1 airbase ATIS frequency,1 A,113.700,113.700,,
+Alternate #1 airbase tower frequency,1 T,250.750 U7,250.750 U7,,
+Alternate #1 airbase NAVAIDs,1 NAVAIDS,"82X, ILS21 111.70 213°","82X, ILS21 111.70 213°",,
+Alternate #2 airbase IACO,2 I,,,,
+Alternate #2 airbase runway,2 R,,,,
+Alternate #2 airbase ATIS frequency,2 A,,,,
+Alternate #2 airbase tower frequency,2 T,,,,
+Alternate #2 airbase NAVAIDs,2 NAVAIDS,,,,
+,,,,,
+Detail Kneeboard,,,,,
+,,,,,
+Description,Field,LOBO1,PYTHON7,,Notes
+Template file name,KBB Template,KBT_Grid_Card.svg,KBT_Grid_Card.svg,,"Template file name, must be ""KBT_Bases.svg"" for airbase information card kneeboards"
+Output file base name,KBB Output,01_TW7_LO1_Details,01_TW7_PN7_Details,,"Base name for output files, ""FLIGHT"" is replaced with flight name from flight's column heading. If empty, default is the template name with _FLIGHT."
+,,,,,
+Card Title,Card Title,TW7: LOBO1,TW7: PYTHON7,,"Optional title for card header, can be blank"
+Card version,Card Version,"v1.3, 22-FEB-25","v1.1, 22-FEB-25",,"Optional version number for card footer, can be blank"
+,,,,,
+TARGET INFO TABLE,R 1 : Replace,Sect W1 : Elems_Grid.svg,Sect W1 : Elems_Grid.svg,,
+,: Title,TARGET AREA,TARGET AREA,,
+,,,,,
+,R 2 R : Replace,.PNG 720 450 : TW7_LO1_Target_AO.png,.PNG 720 450 : TW7_PN7_Target_AO.png,,
+,,,,,
+,R 2 : Replace,Row W2 STP : Elems_Grid.svg,Row W2 STP : Elems_Grid.svg,,
+,: C1,SP1,SP1,,
+,: C2,Enroute,AAR Track,,
+,,,,,
+,R 3 : Replace,Row W2 STP : Elems_Grid.svg,Row W2 STP : Elems_Grid.svg,,
+,: C1,SP2-5,SP2,,
+,: C2,Ingress (Remain under 250AGL),IP North,,
+,,,,,
+,R 4 : Replace,Row W2 STP : Elems_Grid.svg,Row W2 STP : Elems_Grid.svg,,
+,: C1,SP6,SP3,,
+,: C2,IP,Marshal (ALT 1 Airfield),,
+,,,,,
+,R 5 : Replace,Row W2 STP : Elems_Grid.svg,Row W2 STP : Elems_Grid.svg,,
+,: C1,SP7,SP4,,
+,: C2,TARGET,IP South,,
+,,,,,
+,R 6 : Replace,Row W2 STP : Elems_Grid.svg,Row W2 STP : Elems_Grid.svg,,
+,: C1,SP8-10,SP5-6,,
+,: C2,Egress (Remain under 250AGL),"SA11 Alpha (SE1), Bravo (VM3)",,
+,,,,,
+,R 7 : Replace,Row W2 STP : Elems_Grid.svg,Row W2 STP : Elems_Grid.svg,,
+,: C1,SP11,SP7,,
+,: C2,Enroute (COMMS available),SA10 North (RR5),,
+,,,,,
+,R 8 : Replace,Row W2 STP : Elems_Grid.svg,Row W2 STP : Elems_Grid.svg,,
+,: C1,SP12,SP8,,
+,: C2,Homeplate (ENNA),SA11 Charlie (PN7) LAST KNOWN,,
+,,,,,
+,R 9 : Replace,Row W2 STP : Elems_Grid.svg,Row W2 STP : Elems_Grid.svg,,
+,: C1,SP13-17,SP9,,
+,: C2,FIN / RU Border,SA11 Delta,,
+,,,,,
+,R 10 : Replace,Row W2 STP : Elems_Grid.svg,Row W2 STP : Elems_Grid.svg,,
+,: C1,,SP10,,
+,: C2,,Homeplate (ENNA),,
+,,,,,
+NOTES TABLE,R 11: Replace,Sect W1 : Elems_Grid.svg,Sect W1 : Elems_Grid.svg,,
+,: Title,MISSION NOTES,MISSION NOTES,,
+,,,,,
+,R 12 : Replace,Cell Title W1 L8 : Elems_Grid.svg,Cell Title W1 L8 : Elems_Grid.svg,,
+,: T,Gameplan,Gameplan,,
+,: Text,"FF 9000 for enroute ingress
+At +0:30 SP1: -1 direct SP2; -2 turns to SP2 when established 1-2nm TRAIL
+At +4:00 SP2: -4.5K FPM descent, hold FF 9000, DROP BAGS, FENCE IN
+Ingress SP2 at 250AGL BUSTER (-1 at SP2 +1-2nm), remain 250AGL to IP SP6
+2x AGM-65G on TARGET SP7 remain <700AGL on run-in, off RIGHT SP8
+Egress SP8-SP10 at 250AGL, BUSTER
+At SP10, FF9000 climb FL250, direct SP11, FENCE OUT
+At SP11, check-in V3 (flight) and U2 (SENTRY), RTB SP12","Taxi Order: Rattler 5 → Venom 3 → Python 7 → Lobo 1
+SP8 is not refined; marks last known location (approximately 3 hours old)
+Locate, mark, and destroy the four TR-Ls; Snow Drift radar is NOT a priority target
+
+SA-11 Attack Profile: 
+  • 1-mile trail, ingress from the SW, attack direction NE 
+  • Maintain altitude, Gate, > M1.0 
+  • Single bomb all four targets ",,
+,,,,,
+,,,,,
+AIRBASE INFORMATION,R 19 : Replace,ENNA : Elems_Bases_Kola.svg,ENNA : Elems_Bases_Kola.svg,,
+,: T,PR,PR,,
+,: TB2,U5,U5,,
+,,,,,
+,R 28 : Replace,EFRO : Elems_Bases_Kola.svg,EFRO : Elems_Bases_Kola.svg,,
+,: T,A1,A1,,
+,: TB2,U7,U7,,
