@@ -35,7 +35,7 @@ gLogFile = os.path.normpath("./kbb_log.txt")
 #
 gTagRegex = re.compile(r"#([^#;]+)[;]*([^#]*)#")
 
-# TODO
+# replacement regex, first capture is group id, second is the parameters.
 #
 gRepRegex = re.compile(r"^([^.]*)[\s]*:[\s]*([^.]+)")
 
@@ -92,7 +92,8 @@ def SanitizeKey(key):
 #
 # <dst_id> and <src_id> may only contain alphanumeric and "_" characters and are
 # case-insensitive. element <src_id> is translated to the x/y of element <dst_id> during the
-# replace. <dst_id> must be unique in the edits file.
+# replace. <dst_id> must be unique in the edits file. if <src_id> and <path> are None, the
+# replace functions as a remove.
 #
 # "substitute" commands come in two flavors. the first replaces a "tag" from the .svg template
 # that matches <key> with <value>. tags are searched for in the text of any element in the .svg
@@ -289,7 +290,8 @@ def CrackGroupsFromCSV(csv):
 # -------------------------------------------------------------------------------------------------
 
 # ------------------------------------
-# TODO
+# read the svg at the specified path and encapsulate it in an svg element. returns an element tree
+# with the encapsulated png, raises an exception if there was an error.
 #
 def ReadPNG(path, id):
     fields = id.replace("_", " ").split(" ")
@@ -352,6 +354,24 @@ def SearchForIDInSVG(elem, id):
             if foundElem is not None:
                 break
     return foundElem
+
+# ------------------------------------
+# force the first element with the given id to appear at the top of the visual stack ("bring to
+# front") by recursively walking the tree rooted at the element. returns true when something is
+# moved, false if not.
+#
+def ForceElemWithIDToFrontInSVG(parent, elem, id):
+    elemID = elem.get("id")
+    if elemID is not None and elemID == id:
+        Log(f"Bringing element {id} to front")
+        parent.remove(elem)
+        parent.append(elem)
+        return True
+    else:
+        for child in elem:
+            if ForceElemWithIDToFrontInSVG(elem, child, id):
+                return True
+    return False
 
 # ------------------------------------
 # TODO
@@ -498,6 +518,7 @@ def ParseGroup(group, flight, iColVariant, search):
     mapRep = { }
     pathTmpl = None
     pathOutBase = None
+    isNight = False
     lastReplaceID = None
         
     # build the sub and rep maps along with path names from the group for the current flight.
@@ -514,6 +535,8 @@ def ParseGroup(group, flight, iColVariant, search):
                 raise Exception(f"Unable to find template \"{value}\" in {flight} flight, line {rowNum}")
         elif SanitizeKey(rowCols[1]) == "kbb_output":
             pathOutBase = value
+        elif SanitizeKey(rowCols[1]) == "kbb_tinted":
+            isNight = True
 
         else:
             field = rowCols[1]
@@ -557,8 +580,8 @@ def ParseGroup(group, flight, iColVariant, search):
                         Log(f"Unknown ID \"{dstID}\" in {flight} flight, line {rowNum}", True)    
             else:
                 Log(f"Skipping field \"{field}\" with parse error in {flight} flight, line {rowNum}", True)
-                
-    return ( pathTmpl, pathOutBase, mapSub, mapRep )
+
+    return ( pathTmpl, pathOutBase, isNight, mapSub, mapRep )
 
 # ------------------------------------
 # TODO
@@ -571,6 +594,7 @@ def BuildOutputFiles(pathTmpl, mapSub, mapRep, pathOutBase, isSVG, isPNG):
     SubstituteInSVG(None, xmlTree.getroot(), mapSub)
     ReplaceInSVG(None, xmlTree.getroot(), mapRep, None)
     FinalizeCoordsInSVG(None, xmlTree.getroot())
+    ForceElemWithIDToFrontInSVG(None, xmlTree.getroot(), "Night-Tint")
 
     # TODO update xml ids carrying the template name with the output name?
 
@@ -599,7 +623,12 @@ def BuildGroup(group, search, output, isSVG, isPNG, isLog, isDry):
         if len(flight) == 0:
             break
 
-        pathTmpl, pathOutBase, mapSub, mapRep = ParseGroup(group, flight, iColVariant, search)
+        pathTmpl, pathOutBase, isNight, mapSub, mapRep = ParseGroup(group, flight, iColVariant, search)
+        
+        # add remove to pull the night tint layer if we're not night
+        if not isNight:
+            Log(f"Selected daytime tint for output, removing tint layer")
+            mapRep["night-tint"] = ( None, None, { } )
 
         # now iz ze time on sprockets vehn ve dhance...
         if pathOutBase is None:
@@ -607,8 +636,8 @@ def BuildGroup(group, search, output, isSVG, isPNG, isLog, isDry):
         pathOutBase = os.path.normpath(f"{output}/" + pathOutBase.replace("VARIANT", flight.replace(" ", "_")))
 
         if isLog:
-            Log(f"{mapSub}")
-            Log(f"{mapRep}")
+            Log(f"Subs {mapSub}")
+            Log(f"Reps {mapRep}")
         if not isDry:
             Log(f'\nBuilding {flight} flight kneeboard from "{pathTmpl}", output "{pathOutBase}"', True)
             BuildOutputFiles(pathTmpl, mapSub, mapRep, pathOutBase, isSVG, isPNG)
