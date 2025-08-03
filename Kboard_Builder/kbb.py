@@ -549,6 +549,7 @@ def ParseGroup(group, flight, iColVariant, search):
                 else:
                     Log(f"Skipping repeated field \"{field}\" in {flight} flight, line {rowNum}", True)
             elif len(match.groups()) == 2:
+                # TODO: here want to map "r[r] c[c]" onto grid coords
                 dstID = SanitizeKey(match.group(1))
                 key = SanitizeKey(match.group(2))
                 if key == SanitizeKey("Replace") and len(dstID) > 0:
@@ -571,13 +572,25 @@ def ParseGroup(group, flight, iColVariant, search):
                 else:
                     if len(dstID) == 0:
                         dstID = lastReplaceID
-                    if dstID in mapRep and key not in mapRep[dstID][2]:
-                        # has ":" and key: rep map sub map entry, sanitize <src_id>, <dst_id>
-                        mapRep[dstID][2][key] = value
-                    elif dstID in mapRep:
-                        Log(f"Skipping repeated field \"{key}\" in {flight} flight, line {rowNum}", True)
+                    if ";" in key:
+                        keys = [ SanitizeKey(x.lstrip().rstrip()) for x in match.group(2).split(";") ]
+                        vals = [ x.lstrip().rstrip() for x in value.split(";") ]
                     else:
-                        Log(f"Unknown ID \"{dstID}\" in {flight} flight, line {rowNum}", True)    
+                        keys = [ key ]
+                        vals = [ value ]
+                    if len(keys) == len(vals):
+                        for i in range(len(keys)):
+                            key = keys[i]
+                            value = vals[i]
+                            if dstID in mapRep and key not in mapRep[dstID][2]:
+                                # has ":" and key: rep map sub map entry, sanitize <src_id>, <dst_id>
+                                mapRep[dstID][2][key] = value
+                            elif dstID in mapRep:
+                                Log(f"Skipping repeated field \"{key}\" in {flight} flight, line {rowNum}", True)
+                            else:
+                                Log(f"Unknown ID \"{dstID}\" in {flight} flight, line {rowNum}", True)    
+                    else:
+                        Log(f"Skipping ';' field \"{key}\" in {flight} flight, line {rowNum}", True)
             else:
                 Log(f"Skipping field \"{field}\" with parse error in {flight} flight, line {rowNum}", True)
 
