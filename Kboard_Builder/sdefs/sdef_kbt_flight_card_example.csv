@@ -1,0 +1,81 @@
+Flight Card Kneeboard,,,,
+,,,,
+Use this file as a template for building description files for an Grid Card kneeboard. Columns for additional variations or flights should be added between Column C and D.,,,,
+,,,,
+Rows in italics are comments and may be deleted safely,,,,
+,,,,
+Description,Field,LOBO1,,Notes
+Template file name,KBB Template,KBT_Flight_Card.svg,,"Template file name, must be ""KBT_Flight_Card.svg"" for flight card kneeboards"
+Output file base name,KBB Output,KBT_Flight_Card_Example,,"Base name for output files, ""VARIANT"" (case-sensitive) is replaced with flight name from flight's column heading. If empty, default is the template name with ""_VARIANT"" appended."
+,,,,
+Card Title,Card Title,ORD.4: LOBO1 Flight Card,`,"Optional title for card header, can be blank"
+Card version,Card Version,"v1.1, 3-AUG-25",,"Optional version number for card footer, can be blank"
+Card uses night tint layer,Card Tinted,,,Apply night tint layer when value is anything other than blank
+,,,,
+Hack time,Hack,1000Z / 2000L,,
+Mission type,Mission Type,CAP,,
+Acceptable level of risk,ALR,MED,,
+JOKER fuel state,Fuel JOKER,3000,,
+BINGO fuel state,Fuel BINGO,2000,,
+EMER fuel state,Fuel EMER,1000,,
+Threat summary (2 lines),Threats,"A2A: PLANAF J-17, J-15/Su-33 operating from carriers",,"Threats may be up to two lines, line breaks match those in the value cell"
+Abbreviated flight name,FL,LO1,,"First + last letter of flight name followed by flight number (for example, ""PN2"" for ""PYTHON2"")"
+-1 Pilot callsign,Pilot 1,Raven,,
+-1 Pilot ID,T 1,67327,,Pilot identifier (5 characters) such as TNDL
+-1 Aircraft loadout,Loadout 1,3T / NP / 600+6060,,"Use SCL format, may include notes such as laser codes as required"
+-2 Pilot callsign,Pilot 2,Maje,,
+-2 Pilot TNDL,T 2,67555,,Pilot identifier (5 characters) such as TNDL
+-2 Aircraft loadout,Loadout 2,3T / NP / 600+6060,,"Use SCL format, may include notes such as laser codes as required"
+-3 Pilot callsign,Pilot 3,Centermass,,
+-3 Pilot TNDL,T 3,67037,,Pilot identifier (5 characters) such as TNDL
+-3 Aircraft loadout,Loadout 3,3T / NP / 600+6060,,"Use SCL format, may include notes such as laser codes as required"
+-4 Pilot callsign,Pilot 4,DuckLoaf,,
+-4 Pilot TNDL,T 4,67703,,Pilot identifier (5 characters) such as TNDL
+-4 Aircraft loadout,Loadout 4,3T / NP / 600+6060,,"Use SCL format, may include notes such as laser codes as required"
+,,,,
+Step time,Step Time,1000Z / 2000L,,
+Departure ATIS frequency,COMM ATIS,254.325 U1,,
+Departure tower frequency,COMM TWR,250.100 U3,,
+Start Time,Start Time,1004Z / 2004L,,
+Taxi Time,Taxi Time,1010Z / 2010L,,
+Take-off Time,TO Time,1015Z / 2015L,,
+Startup notes (2 lines),Startup,"Set CARA ALOW 4000, AUX Green (Fill 3), LOBO check-in V3 initially, push to
+element frequencies on ingress, COWBOY/LOBO first out",,"Startup notes may be up to two lines, line breaks match those in the value cell"
+COM1 label,C1L,PRI,,
+COM1 initial frequency,COMM C1,275.800 U2,,"Initial COM1 (PRI) frequency may be up to two lines, line breaks match those in the value cell"
+COM2 label,C2L,AUX (G/F3),,
+COM2 initial frequency,COMM C2,"-1/2: 138.750 V3
+-3/4: 138.000 V4",,"Initial COM2 (AUX) frequency may be up to two lines, line breaks match those in the value cell"
+TACAN flight setup,TACAN,"-1/2: 39Y / 102Y
+-3/4: 39X / 102X",,"TACAN setup may be up to two lines, line breaks match those in the value cell"
+Ground taxi instructions,Ground Taxi,"D3 Ramp RT, RT onto D, RT onto F, RWY 06L",,
+,,,,
+Takeoff instructions,Enroute Takeoff,"RWY 06L, 10s interval",,
+Rejoin instructions,Enroute Rejoin,"Wedge, Elems in Trail at 350KIAS",,
+Climb instructions,Enroute Climb,"95% RPM, 2.5° to FL260",,
+Routing to AO,Enroute Routing,"Dir SP1, Dir SP3, Dir CAP S SP",,
+Checks for enroute,Enroute Checks,Drop center bag when empty,,
+Check-in frequency for enroute,Enroute Check In,PRIMETIME 270.000 U4 (GOLD),,
+,,,,
+IFF Notes,Spins IFF,No Friendly Air Expected N of Saipan,,"General notes may be up to two lines, line breaks match those in the value cell"
+Rules of Engagement,Spins ROE,"WEAPON FREE: A2A Threat; JF-17 MAR 25nm, Su-33 MAR 20nm",,
+General notes (2 lines),Spins Notes,"PACE [TAC] – GOLD 270.000 U4, LIME 1 273.000 U11, BLACK 255.000 U6
+MAR – Remain outside 25nm MAR (JF-17) or 20nm MAR (Su-33)",,
+,,,,
+AAR flight #1 callsign,AAR 1 Flight,N/A,,
+AAR flight #1 frequency and TACAN,AAR 1 FRQ TACAN,N/A,,
+AAR flight #1 notes,AAR 1 Notes,N/A,,
+AAR flight #2 callsign,AAR 2 Flight,N/A,,
+AAR flight #2 frequency and TACAN,AAR 2 FRQ TACAN,N/A,,
+AAR flight #2 notes,AAR 2 Notes,N/A,,
+,,,,
+Primary airbase IACO,P I,PGUA,,
+Primary airbase runway,P R,06L,,
+Primary airbase ATIS frequency,P A,254.325 U1,,
+Primary airbase tower frequency,P T,250.100 U3,,
+Primay airbase NAVAIDs,P NAVAIDS,"54X, IAND 109.30 66°, SP8",,
+Alternate airbase IACO,1 I,PGRO,,
+Alternate airbase runway,1 R,09,,
+Alternate airbase ATIS frequency,1 A,N/A,,
+Alternate airbase tower frequency,1 T,250.000,,
+Alternate airbase NAVAIDs,1 NAVAIDS,"GRO 332.00 KHz, SP2",,
