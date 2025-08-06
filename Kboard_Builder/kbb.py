@@ -39,6 +39,10 @@ gTagRegex = re.compile(r"#([^#;]+)[;]*([^#]*)#")
 #
 gRepRegex = re.compile(r"^([^.]*)[\s]*:[\s]*([^.]+)")
 
+# replacement coordinate regex, first capture is row, second is column. operates on sanitized.
+#
+gRepCoordRegex = re.compile(r"^r_(n|[\d]+)_c_(n|[\d]+)$")
+
 # list of template search paths
 #
 gTmpltSearch = [ ".", "./templates" ]
@@ -513,6 +517,7 @@ def FinalizeCoordsInSVG(parent, elem):
 #
 def ParseGroup(group, flight, iColVariant, search):
     global gRepRegex
+    global gRepCoordRegex
 
     mapSub = { }
     mapRep = { }
@@ -520,6 +525,8 @@ def ParseGroup(group, flight, iColVariant, search):
     pathOutBase = None
     isNight = False
     lastReplaceID = None
+    lastRow = 0
+    lastCol = 0
         
     # build the sub and rep maps along with path names from the group for the current flight.
     for rowTuple in group:
@@ -549,9 +556,28 @@ def ParseGroup(group, flight, iColVariant, search):
                 else:
                     Log(f"Skipping repeated field \"{field}\" in {flight} flight, line {rowNum}", True)
             elif len(match.groups()) == 2:
-                # TODO: here want to map "r[r] c[c]" onto grid coords
                 dstID = SanitizeKey(match.group(1))
                 key = SanitizeKey(match.group(2))
+
+                # map "r [r] c [c]" onto grid coords for dst id
+                matchCoord = gRepCoordRegex.match(dstID)
+                Log(f"dest {dstID} {matchCoord}")
+                if matchCoord is not None:
+                    if matchCoord.group(1) == "n":
+                        lastRow = lastRow + 1
+                        row = lastRow
+                    else:
+                        row = matchCoord.group(1)
+                        lastRow = int(row)
+                    if matchCoord.group(2) == "n":
+                        lastCol = lastCol + 1
+                        col = lastCol
+                    else:
+                        col = matchCoord.group(2)
+                        lastCol = int(col)
+                    dstID = SanitizeKey(f"R {row} C {col}")
+                    Log(f"Remaps coordinate {match.group(1)} --> {dstID}")
+
                 if key == SanitizeKey("Replace") and len(dstID) > 0:
                     # has ":" and "Replace": rep map entry, sanitize <src_id>, <dst_id>
                     fieldParts = value.split(":")
@@ -590,7 +616,7 @@ def ParseGroup(group, flight, iColVariant, search):
                             else:
                                 Log(f"Unknown ID \"{dstID}\" in {flight} flight, line {rowNum}", True)    
                     else:
-                        Log(f"Skipping ';' field \"{key}\" in {flight} flight, line {rowNum}", True)
+                        Log(f"Skipping unbalanced ';' field \"{key}\" in {flight} flight, line {rowNum}", True)
             else:
                 Log(f"Skipping field \"{field}\" with parse error in {flight} flight, line {rowNum}", True)
 
