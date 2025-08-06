@@ -6,20 +6,22 @@ to replace content on a kneeboard using
 By convention, the file names for these templates start with `Elems_`. Elements templates enable customization beyond simply changing the content of a field in a form.
 
 To allow flexibility and interchangability, an element is a multiple of 50px high and has a
-width of *W*, *W*/2, or *W*/3 where *W* is the width of the kneeboard, 1440px. Typically, these elements are used with the
-[`KBT_Grid_Card.svg`](../templates/KBT_Grid_Card.svg)
-template. Elements also support substitution via `#tag;plist#` constructs (see the template builder
+width of either *W* or *W*/2 where *W* is the width of the kneeboard, 1440px. Elements also support substitution via `#tag;plist#` using `id:tag` | `text` substitutions (see the template
+builder
 [documentation](Tmplt_Builder_Guide.md)
-for additional details).
+for additional details). Typically, these elements are used with the
+[`KBT_Grid_Card.svg`](../templates/KBT_Grid_Card.svg)
+template.
 
 The remainder of this document covers the available elements and how they can be used to build
-out a kneeboard.
+out a kneeboard. The presentation is broken down by the `.svg` files that ultimately define the
+content and structure of the element.
 
 ## `Elems_Bases_*.svg`: Airbase Information Blocks
 
 An *Airbase Information Block* element provides key data on an airbase such as frequencies,
 NAVAIDs, and runways. The `.svg` element for a block uses the ICAO abbreviation as the element
-ID, is always *W* by 450px, and may be customized using `#tag;plist#` substitutions.
+ID, is always *W* by 450px, and may be customized using `id:tag` | `text` substitutions.
 
 For example, this is the information element for Nellis AFB from
 `Elems_Bases_NTTR.svg`,
@@ -38,6 +40,7 @@ blocks are grouped into per-theater files. Currently supported theaters and base
 |                           |          | KLSV | Nellis Air Force Base
 |                           |          | KTNX | Tonopah Test Range
 |`Elems_Bases_Marianas.svg` | Marianas | PGUA | Andersen Air Force Base
+|                           |          | PGRO | Rota International
 |`Elems_Bases_Syria.svg`    | Syria    | LLBG | Ben Gurion
 
 As mentioned earlier, the ICAO abbreviation is used to identify a specific
@@ -45,18 +48,27 @@ information block within the element template file.
 
 All information blocks have several fields that may be customized through edits to the element
 as
-[described here](TODO_LINK#specifying-edits).
-Generally, updating these fields uses the "`id`&nbsp;:&nbsp;`tag`" or ":&nbsp;`tag`" forms.
+[described here](../README.md#specifying-edits).
+Generally, updating these fields uses the `id : tag` or `:tag` forms of a substitution edit.
 
-|Field  |Description|
-|:-----:|-----------|
-| `T`   | Two-character airbase "type"; for example, "PR" for primary, "A1" for alternate #1
+|Field|Description|
+|:---:|-----------|
+| `T`   | Two-character airbase type; for example, "PR" for primary, "A1" for alternate #1
 | `AB1` | Optional preset button for ATIS frequency #1
 | `AB2` | Optional preset button for ATIS frequency #2
 | `TB1` | Optional preset button for tower frequency #1
 | `TB2` | Optional preset button for tower frequency #2
 
-TODO
+For example, the section of a description file that replaces element `AB Info` with the airport
+information for Nellis AFB might look like this,
+
+|Row|A|B|C|
+|:-:|:-|:-|:-|
+|N  | `Airbase` | `AB Info : Replace` | `KLAS : Elems_Bases_NTTR.svg` |
+|N+1|           | `: T ; AB1 ; TB2`   | `PR ; U1 ; U3`                |
+
+Here, the information uses "PR" for the title with "U1" and "U3" for the preset buttons for
+ATIS frequency 1 and tower frequency 2, respectively.
 
 ## `Elems_Grid.svg`: General Grid Elements
 
@@ -88,5 +100,9 @@ TODO
 |Cell Title W1 L4 | Full-width, 4-line cell with small title
 |Cell Title W1 L6 | Full-width, 6-line cell with small title
 |Cell Title W1 L8 | Full-width, 8-line cell with small title
+
+TODO
+
+### `.PNG` Images
 
 TODO

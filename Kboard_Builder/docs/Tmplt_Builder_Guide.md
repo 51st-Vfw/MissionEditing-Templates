@@ -1,4 +1,4 @@
-# KBB Template Builders Guide
+# KBB Template Builder's Guide
 
 TODO
 
@@ -61,19 +61,19 @@ KBB lay out the replacement text for a field.
 The following portion of the Flight Card kneeboard template shows a single-line, left-justified
 field,
 
-![](docs/images/Tag_Basic_Example.png)
+![TODO](docs/images/Tag_Basic_Example.png)
 
 Here, the `tag` is "FUEL_JOKER" and there is no `plist`. When doing a substitution, KBB
 replaces "#FUEL_JOKER#" with the value of the FUEL_JOKER field from the description. If the
 definition specified that "FUEL_JOKER" should be "3000", KBB would generate a kneeboard that
 looks like this,
 
-![](docs/images/Tag_Basic_Example_Fill.png)
+![TODO](docs/images/Tag_Basic_Example_Fill.png)
 
 The following portion of the Flight Card kneeboard template shows a center-justified
 field that requires a `;plist`,
 
-![](docs/images/Tag_Param_C_Example.png)
+![TODO](docs/images/Tag_Param_C_Example.png)
 
 Here, the `tag` is "AAR_2_FLIGHT" while `plist` is "c285" (like the `tag`, `plist` is also
 case-insensitive) and includes a single `term`, "c285". This example positions the substitution
@@ -83,17 +83,17 @@ location of 285 units.
 Finally, the following portion of the Flight Card kneeboard template shows a multi-line field
 that requires a `;plist`,
 
-![](docs/images/Tag_Param_L_Example.png)
+![TODO](docs/images/Tag_Param_L_Example.png)
 
 For multi-line fields, the template has tags for each line of the content as shown above. The
 `plist` for each line contains a `term` that specifies which line in the field should be used
 to source the content for the line. 
 
-![](docs/images/Tag_Param_L_Example_Defn.png)
+![TODO](docs/images/Tag_Param_L_Example_Defn.png)
 
 TODO
 
-![](docs/images/Tag_Param_L_Example_Fill.png)
+![TODO](docs/images/Tag_Param_L_Example_Fill.png)
 
 TODO
 
