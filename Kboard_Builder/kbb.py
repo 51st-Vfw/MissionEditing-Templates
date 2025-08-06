@@ -542,7 +542,7 @@ def ParseGroup(group, flight, iColVariant, search):
                 raise Exception(f"Unable to find template \"{value}\" in {flight} flight, line {rowNum}")
         elif SanitizeKey(rowCols[1]) == "kbb_output":
             pathOutBase = value
-        elif SanitizeKey(rowCols[1]) == "kbb_tinted":
+        elif SanitizeKey(rowCols[1]) == "card_tinted":
             isNight = True
 
         else:
@@ -561,7 +561,6 @@ def ParseGroup(group, flight, iColVariant, search):
 
                 # map "r [r] c [c]" onto grid coords for dst id
                 matchCoord = gRepCoordRegex.match(dstID)
-                Log(f"dest {dstID} {matchCoord}")
                 if matchCoord is not None:
                     if matchCoord.group(1) == "n":
                         lastRow = lastRow + 1
