@@ -542,7 +542,7 @@ def ParseGroup(group, flight, iColVariant, search):
                 raise Exception(f"Unable to find template \"{value}\" in {flight} flight, line {rowNum}")
         elif SanitizeKey(rowCols[1]) == "kbb_output":
             pathOutBase = value
-        elif SanitizeKey(rowCols[1]) == "card_tinted":
+        elif SanitizeKey(rowCols[1]) == "kbb_tinted":
             isNight = True
 
         else:
