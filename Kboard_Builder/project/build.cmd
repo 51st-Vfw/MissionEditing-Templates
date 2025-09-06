@@ -20,9 +20,15 @@ setlocal enableDelayedExpansion
 
 set ARG_DEFN=""
 set ARG_LOG=0
+set ARG_DAY=0
+set ARG_NIGHT=0
 for %%x in (%*) do (
     if "%%~x" == "--log" (
         set ARG_LOG=1
+    ) else if "%%~x" == "--day" (
+        set ARG_DAY=1
+    ) else if "%%~x" == "--night" (
+        set ARG_NIGHT=1
     ) else if !ARG_DEFN! == "" (
         set ARG_DEFN="%%~x"
     ) else (
@@ -40,6 +46,8 @@ if %ARG_DEFN% == "" (
 
 set KBB_ARGS= --search "%KBB_PATH%\templates"
 if %ARG_LOG% == 1  set KBB_ARGS=%KBB_ARGS% --log
+if %ARG_DAY% == 1  set KBB_ARGS=%KBB_ARGS% --day
+if %ARG_NIGHT% == 1  set KBB_ARGS=%KBB_ARGS% --night
 if exist "templates" set KBB_ARGS=%KBB_ARGS% --search templates
 if exist "source" set KBB_ARGS=%KBB_ARGS% --search source
 if exist "%KBB_SEARCH%" set KBB_ARGS=%KBB_ARGS% --search "%KBB_SEARCH%"
@@ -54,5 +62,5 @@ exit /be 0
 
 :Usage
 echo.
-echo Usage: build.cmd [--log] {definition.csv}
+echo Usage: build.cmd [--log] [--day] [--night] {definition.csv}
 exit /be -1

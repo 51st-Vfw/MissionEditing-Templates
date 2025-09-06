@@ -652,7 +652,7 @@ def BuildOutputFiles(pathTmpl, mapSub, mapRep, pathOutBase, isSVG, isPNG):
 # ------------------------------------
 # TODO
 #
-def BuildGroup(group, search, output, isSVG, isPNG, isLog, isDry):
+def BuildGroup(args, group):
     headerCols = group[0][1]
     for iColVariant in range(2, len(headerCols)):
         # first empty variant column indicates no more variants, break out of loop as we're done. consider
@@ -661,24 +661,24 @@ def BuildGroup(group, search, output, isSVG, isPNG, isLog, isDry):
         if len(flight) == 0:
             break
 
-        pathTmpl, pathOutBase, isNight, mapSub, mapRep = ParseGroup(group, flight, iColVariant, search)
+        pathTmpl, pathOutBase, isNight, mapSub, mapRep = ParseGroup(group, flight, iColVariant, args.search)
         
-        # add remove to pull the night tint layer if we're not night
-        if not isNight:
+        # add a "remove" replacement to pull the night tint layer if we're not night
+        if not ((isNight or args.night) and not args.day):
             Log(f"Selected daytime tint for output, removing tint layer")
             mapRep["night-tint"] = ( None, None, { } )
 
         # now iz ze time on sprockets vehn ve dhance...
         if pathOutBase is None:
             pathOutBase = os.path.splitext(pathTmpl)[0] + "_VARIANT"
-        pathOutBase = os.path.normpath(f"{output}/" + pathOutBase.replace("VARIANT", flight.replace(" ", "_")))
+        pathOutBase = os.path.normpath(f"{args.output}/" + pathOutBase.replace("VARIANT", flight.replace(" ", "_")))
 
-        if isLog:
+        if args.log:
             Log(f"Subs {mapSub}")
             Log(f"Reps {mapRep}")
-        if not isDry:
+        if not args.dry:
             Log(f'\nBuilding {flight} flight kneeboard from "{pathTmpl}", output "{pathOutBase}"', True)
-            BuildOutputFiles(pathTmpl, mapSub, mapRep, pathOutBase, isSVG, isPNG)
+            BuildOutputFiles(pathTmpl, mapSub, mapRep, pathOutBase, args.svg, not args.nopng)
 
 # ------------------------------------
 # main, just like it says...
@@ -691,6 +691,8 @@ def main():
     parser.add_argument("--log", action="store_true", help="Generate logging information on template edits to kbb_log.txt")
     parser.add_argument("--dry", action="store_true", help="Dry run, do not produce any output files")
     parser.add_argument("--svg", action="store_true", help="Preserve .svg intermediate files when creating .png files")
+    parser.add_argument("--day", action="store_true", help="Force day tint, regardless of definition file (mutually exclusive with --night)")
+    parser.add_argument("--night", action="store_true", help="Force night tint, regardless of definition file (mutually exclusive with --day)")
     parser.add_argument("--nopng", action="store_true", help="Do not create .png files (implies --svg)")
     parser.add_argument("--edits", action="store_true", help="Definition argument is a KBB edits file file to process (requires --template)")
     parser.add_argument("--search", default=[], action="append", help="Additional search path for template files (optional, can be repeated)")
@@ -705,8 +707,12 @@ def main():
         print("Must specify a --template argument with --edits.")
         parser.print_help()
         exit(-1)
-    if not os.path.exists(args.output):
+    elif not os.path.exists(args.output):
         print(f"Output path {args.output} does not exist.")
+        parser.print_help()
+        exit(-1)
+    elif args.night and args.day:
+        print(f"Specify only one of --day or --night")
         parser.print_help()
         exit(-1)
     if args.nopng:
@@ -731,7 +737,7 @@ def main():
                 print(f"Definition file {args.definition} is empty, nothing to do")
             else:
                 for group in CrackGroupsFromCSV(csv):
-                    BuildGroup(group, args.search, args.output, args.svg, not args.nopng, args.log, args.dry)
+                    BuildGroup(args, group)
         except Exception as ex:
             print(ex)
             exit(-1)
