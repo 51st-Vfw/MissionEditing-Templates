@@ -1,6 +1,6 @@
 # Kneeboard Builder
 
-*Version 0.2 of 6 July 2025*
+*Version 0.3 of 24 August 2025*
 
 *Kneeboard Builder* (KBB) is a `python` program that can generate customized kneeboards
 from a collection of `.svg` templates. The templates describe the structure of the kneeboard
@@ -37,9 +37,9 @@ function.
   [*Inkscape*](https://inkscape.org/)
   to convert `.svg` files into `.png` files suitable for use in DCS. Also, *Inkscape* is a
   vector graphics program that can also be used to build and edit your own templates.
-- *Helvetica Neue Font Family* &ndash; Because *Arial* is ass, the standard KBB templates use
-  *Helvetica Neue* (in Regular, Medium, Medium Italic, Bold, and Bold Italic weights), which,
-  because Microsoft is cheap, is not part of a Windows release.
+- *Helvetica Neue Font Family* &ndash; Because *Arial* is **ass**, the standard KBB templates
+  use *Helvetica Neue* (in Regular, Medium, Medium Italic, Bold, and Bold Italic weights),
+  which, because Microsoft is cheap, is not part of a Windows release.
 
 `python` and *Inkscape* are open source software and are free (as in beer), while there are
 several "free for personal use" versions of *Helvetica Neue* available on the web. You can
@@ -168,9 +168,9 @@ All definition files typically provide rows to set the four common fields listed
 |:---:|------------|
 |KBB&nbsp;Template | Template file name or path (relative to current directory) to apply the edits in the current group to. When searching for template, KBB will first search the current directory, followed by the `./templates` directory, followed by directories specified in any `--search` KBB [command line arguments](#kbbpy-script).
 |KBB&nbsp;Output   | File name or path (relative to current directory) for output files (excluding extension). By convention, "VARIANT" (case-sensitive) in the value is replaced by the variant column header. When unspecified, this field defaults to "*T*_VARIANT" where "*T*" is the value of the *KBB Template* field with any extension removed. Files are saved relative to the current directory or the directory specified by an `--output` KBB [command line argument](#kbbpy-script).
+|KBB Tinted   | Optional field to indicate the kneeboard is generated with a "night" tinting applied. The tint is applied when this field is present and its value is not empty.
 |Card Title        | Optional title for the header of the kneeboard.
 |Card Version      | Optional version number for the footer of the kneeboard.
-|Card Tinted   | Optional field to indicate the kneeboard is generated with a "night" tinting applied. The tint is applied when this field is present and its value is not empty.
 
 These are typically the first four edits a group specifies. The field values appear in Column
 B of the row.
@@ -332,7 +332,7 @@ This tells `python` to run KBB (`kbb.py`) with the argument `-h`. In response, K
 help information that describes how to use the program and looks like this,
 
 ```
-usage: kbb.py [-h] [--log] [--dry] [--svg] [--nopng] [--edits] [--search SEARCH] [--output OUTPUT] [--template TEMPLATE] definition
+usage: kbb.py [-h] [--log] [--dry] [--svg] [--day] [--night] [--nopng] [--edits] [--search SEARCH] [--output OUTPUT] [--template TEMPLATE] definition
 
 Build kneeboard from descriptions and templates
 
@@ -344,6 +344,8 @@ options:
   --log                Generate logging information on template edits to kbb_log.txt
   --dry                Dry run, do not produce any output files
   --svg                Preserve .svg intermediate files when creating .png files
+  --day                Force day tint, regardless of definition file (mutually exclusive with --night)
+  --night              Force night tint, regardless of definition file (mutually exclusive with --day)
   --nopng              Do not create .png files (implies --svg)
   --edits              Definition argument is a KBB edits file file to process (requires --template)
   --search SEARCH      Additional search path for template files (optional, can be repeated)

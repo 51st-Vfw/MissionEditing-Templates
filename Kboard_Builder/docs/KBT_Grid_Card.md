@@ -94,12 +94,13 @@ For example, given a list of replacement `id`,
 For example, consider the following rows from a definition file that uses `KBT_Grid_Card.svg`
 as a template,
 
-|Row|A|B|C|Notes
-|:-:|:-|:-|:-|:-|
-|N  |<code>Edits</code>|<code> R 0 C 0 : Replace </code>|<code> Elem A : Elems.svg </code>|Replaces (0, 0)
+|Row|A|B|C|
+|:-:|:-|:-|:-|
+|N  |<code>Edits</code>|<code> R 0 C 0 : Replace </code>|<code> Elem A : Elems.svg </code>|
 |N+1|                  |<code>  : FA             </code>|<code> Value 1            </code>|
 |N+2|                  |<code> R N C 1 : Replace </code>|<code> Elem B : Elems.svg </code>|
 |N+3|                  |<code>  : FB             </code>|<code> Value 2            </code>|
 |N+4|                  |<code> R 3 C 0 : Replace </code>|<code> Elem C : Elems.svg </code>|
 |N+5|                  |<code>  : FC             </code>|<code> Value 2            </code>|
 
+TODO

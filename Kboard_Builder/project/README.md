@@ -195,13 +195,16 @@ the
 > Like the `KBB_PATH` variable, `KBB_SEARCH` should not contain quotations if it specifies
 > a path.
 
-The `build.cmd` command takes an optional `--log` argument that saves log information to a
-`kbb.log` file at the root of the project directory. This file can be helpful in debugging
-build issues with a description. For example, to generate the log in our earlier example
-in Step 4,
+The `build.cmd` command takes optional `--log`, `--day`, and `--night` arguments. The `--log`
+argument saves log information to a `kbb.log` file at the root of the project directory. This
+file can be helpful in debugging build issues with a description. For example, to generate
+the log in our earlier example in Step 4,
 
 ```
 build.cmd --log source\oc_kb.csv
 ```
 
 This will overwrite any previous `kbb.log` file.
+
+The `--day` and `--night` arguments force KBB to generate day- or night-tinted kneeboards
+regardless of the per-kneeboard settings present in the description file.
