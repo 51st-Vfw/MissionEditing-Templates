@@ -8,7 +8,8 @@
 --
 -- ************************************************************************************************************
 
-env.info("*** Loading Mission Script: globals_mission.lua")
+---@diagnostic disable-next-line: undefined-global
+env.info("*** Loading Mission Script: globals_mission.lua, variant '" .. VFW51_BUILD_VARIANT .. "'")
 
 -- BASE:TraceOnOff(true)
 -- BASE:TraceAll(true)

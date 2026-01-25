@@ -1,2 +1,10 @@
 mapResource = {
+    ["ResKey_Action_20101"] = "globals_frameworks.lua",
+    ["ResKey_Action_20102"] = "Moose_.lua",
+    ["ResKey_Action_20103"] = "mist_4_5_107.lua",
+    ["ResKey_Action_20104"] = "skynet-iads-compiled.lua",
+    ["ResKey_Action_20105"] = "51stMapSOP.lua",
+    ["ResKey_Action_20106"] = "vfw51_mission_util.lua",
+    ["ResKey_Action_20201"] = "globals_mission.lua",
+    ["ResKey_ImageBriefing_16001"] = "51st_VFW_Logo.png",
 } -- end of mapResource

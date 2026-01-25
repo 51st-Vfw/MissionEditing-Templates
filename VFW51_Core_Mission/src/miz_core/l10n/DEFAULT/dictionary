@@ -1,4 +1,9 @@
 dictionary = {
+    ["DictKey_ActionText_20008"] = "return VFW51_DYN_PATH ~= nil",
+    ["DictKey_ActionText_20009"] = "return VFW51_DYN_PATH == nil",
+    ["DictKey_ActionText_20011"] = "return VFW51_DYN_PATH ~= nil",
+    ["DictKey_ActionText_20013"] = "return VFW51_DYN_PATH == nil",
+    ["DictKey_ActionText_20026"] = "return false",
     ["DictKey_descriptionBlueTask_3"] = "",
     ["DictKey_descriptionNeutralsTask_4"] = "",
     ["DictKey_descriptionRedTask_2"] = "",

@@ -14,7 +14,7 @@
 -- builds out the default triggers for a vfw51 workflow mission. in these missions, the default trigger
 -- setup is as follows,
 --
---     [1] setup static/dynamic script loading via VFW51_DYN_PATH variable
+--     [1] setup static/dynamic script loading and variant via VFW51_DYN_PATH, VFW51_BUILD_VARIANT variables
 --     [2] load frameworks (dynamic)
 --     [3] load frameworks (static)
 --     [4] load mission scripts (dynamic)
@@ -89,7 +89,7 @@ local mizTrigFuncStartup = {
 -- each action ends with N "tmpl" elements based on the number of scripts/files/etc.
 --
 local mizTrigActions = {
-    [1] = "a_do_script(\"env.info(\\\"*** VFW51: Setting Static/Dynamic\\\")\");",
+    [1] = "a_do_script(\"env.info(\\\"*** VFW51: Setting Static/Dynamic, Variant\\\")\");",
     [2] = "a_do_script(\"env.info(\\\"*** VFW51: Loading Frameworks -- VFW51_DYN_PATH = \\\" .. VFW51_DYN_PATH)\");",
     [3] = "a_do_script(\"env.info(\\\"*** VFW51: Loading Frameworks -- Static\\\")\");",
     [4] = "a_do_script(\"env.info(\\\"*** VFW51: Loading Mission Scripts -- VFW51_DYN_PATH = \\\" .. VFW51_DYN_PATH)\");",
@@ -124,15 +124,19 @@ local mizTrigTrigRules = {
         ["actions"] = {
             [1] = {
                 ["predicate"] = "a_do_script",
-                ["text"] = "env.info(\"*** VFW51: Setting Static/Dynamic\")",
+                ["text"] = "env.info(\"*** VFW51: Setting Static/Dynamic, Variant\")",
             }, -- end of [1]
             [2] = {
                 ["predicate"] = "a_do_script",
                 ["text"] = "VFW51_DYN_PATH=\"$DYNAMIC_PATH\"",                      -- EDITED
             }, -- end of [2]
+            [3] = {
+                ["predicate"] = "a_do_script",
+                ["text"] = "VFW51_BUILD_VARIANT=\"<default>\"",
+            }, -- end of [3]
         }, -- end of ["actions"]
         ["colorItem"] = "0x8080ffff",
-        ["comment"] = "VFW51 AUTOGEN: Select Static/Dynamic",
+        ["comment"] = "VFW51 AUTOGEN: Select Static/Dynamic, Variant",
         ["eventlist"] = "",
         ["predicate"] = "triggerStart",
         ["rules"] = {
@@ -391,15 +395,21 @@ function VFW51MissionTriginator.processMission(mission_t, self)
     end
 
     -- check if the mission already has the workflow triggers in place.
-    self.isUpdate = true
+    self.isCurrent = true
     for i = 1,6,1 do
         local action = mission_t["trig"]["actions"][i]
         if not action or not string.find(action, "%*%*%* VFW51: ") then
-            self.isUpdate = false
+            self.isCurrent = false
         end
     end
 
-    if not self.isUpdate then
+    if self.isCurrent and #mission_t["trigrules"][1]["actions"] == 2 then
+        self:logInfo("Adding VFW51 variant variable")
+        self.logDebug("add trigRule <-- VFW51_BUILD_VARIANT")
+        mission_t["trig"]["actions"][1] = self:deepCopy(mizTrigActions[1])
+        mission_t["trigrules"][1] = self:deepCopy(mizTrigTrigRules[1])
+
+    elseif not self.isCurrent then
         self:logInfo("Adding VFW51 triggers")
 
         -- we are updating a .miz that's not yet "in the workflow". insert the standard set of 6

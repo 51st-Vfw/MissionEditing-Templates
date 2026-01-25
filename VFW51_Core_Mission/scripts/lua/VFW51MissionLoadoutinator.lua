@@ -50,6 +50,35 @@ function VFW51MissionLoadoutinator:processSmokePods(coalition, loadout)
     return loadout
 end
 
+-- return the loadout (payload table) for the first unit in the given group, nil if not found.
+function VFW51MissionLoadoutinator:getLoadout(mission_t, srcGroupName, unitIdx)
+    local coalitions = { "blue", "red", "neutrals" }
+
+    for _, coa in pairs(coalitions) do
+        for _, country in pairs(mission_t["coalition"][coa]["country"]) do
+            if country["plane"] then
+                for groupIdx, group in ipairs(country["plane"]["group"]) do
+                    local gsubPattern = self:sanitizePattern(srcGroupName)
+                    if string.match(group["name"], gsubPattern) then
+                        self:logInfo(string.format("Pulling loadout from plane group '%s'", srcGroupName))
+                        return self:deepCopy(country["plane"]["group"][groupIdx]["units"][unitIdx]["payload"])
+                    end
+                end
+            end
+            if country["helicopter"] then
+                for groupIdx, group in ipairs(country["helicopter"]["group"]) do
+                    local gsubPattern = self:sanitizePattern(srcGroupName)
+                    if string.match(group["name"], gsubPattern) then
+                        self:logInfo(string.format("Pulling loadout from plane group '%s'", srcGroupName))
+                        return self:deepCopy(country["helicopter"]["group"][groupIdx]["units"][unitIdx]["payload"])
+                    end
+                end
+            end
+        end
+    end
+    return nil
+end
+
 -- edit function for veafMissionEditor.editMission, since that is not OO, we define this with . and
 -- pass self explicitly as the arg
 function VFW51MissionLoadoutinator.processMission(mission_t, self)
@@ -68,21 +97,32 @@ function VFW51MissionLoadoutinator.processMission(mission_t, self)
                                 InjectGroupNum = info.group_num or 1
                                 InjectUnitNum = 1
                                 local perUnit = info.per_unit or false
-                                local loadPath = "initial"
+                                local loadPath = nil
 
-                                LoadoutData = nil
+                                LoadoutData = self:getLoadout(mission_t, info.file, 1)
                                 PropertyData = nil
                                 if not perUnit then
-                                    loadPath = self:loadLuaFile(self.srcPath, "loadouts", info.file)
+                                    if LoadoutData == nil then
+                                        loadPath = self:loadLuaFile(self.srcPath, "loadouts", info.file)
+                                    else
+                                        loadPath = "<group>"
+                                    end
                                 end
                                 for unitIdx, table in pairs(group["units"]) do
                                     if perUnit then
                                         InjectUnitNum = unitIdx
-                                        loadPath = self:loadLuaFile(self.srcPath, "loadouts", info.file)
+                                        LoadoutData = self:getLoadout(mission_t, info.file, unitIdx)
+                                        if LoadoutData == nil then
+                                            loadPath = self:loadLuaFile(self.srcPath, "loadouts", info.file)
+                                        else
+                                            loadPath = "<group>"
+                                        end
                                     end
                                     if loadPath == nil then
-                                        self:logInfo("Loadout file '" .. info.file .. "' not found, skipping")
+                                        self:logInfo("Loadout file/group '" .. info.file .. "' not found, skipping")
                                         break
+                                    else
+                                        self:logInfo(string.format("Sourcing [%d] from %s", unitIdx, info.file))
                                     end
                                     if LoadoutData then
 ---@diagnostic disable-next-line: undefined-global
@@ -114,24 +154,33 @@ function VFW51MissionLoadoutinator.processMission(mission_t, self)
                             for _, info in pairs(groupInfo) do
                                 InjectGroupNum = info.group_num or 1
                                 InjectUnitNum = 1
-                                local injectGroupNum = info.group_num or 1
                                 local perUnit = info.per_unit or false
-                                local isErr = false
+                                local loadPath = "initial"
 
-                                LoadoutData = nil
+                                LoadoutData = self:getLoadout(mission_t, info.file)
                                 PropertyData = nil
                                 if not perUnit then
-                                    isErr = self:loadLuaFile(self.srcPath, "loadouts", info.file)
+                                    if LoadoutData == nil then
+                                        loadPath = self:loadLuaFile(self.srcPath, "loadouts", info.file)
+                                    else
+                                        loadPath = "<group>"
+                                    end
                                 end
                                 for unitIdx, table in pairs(group["units"]) do
                                     if perUnit then
                                         InjectUnitNum = unitIdx
-                                        local injectUnitNum = unitIdx
-                                        isErr = self:loadLuaFile(self.srcPath, "loadouts", info.file)
+                                        LoadoutData = self:getLoadout(mission_t, info.file, unitIdx)
+                                        if LoadoutData == nil then
+                                            loadPath = self:loadLuaFile(self.srcPath, "loadouts", info.file)
+                                        else
+                                            loadPath = "<group>"
+                                        end
                                     end
-                                    if isErr then
-                                        self:logInfo("Loadout file '" .. info.file .. "' not found, skipping")
+                                    if loadPath == nil then
+                                        self:logInfo("Loadout file/group '" .. info.file .. "' not found, skipping")
                                         break
+                                    else
+                                        self:logInfo(string.format("Sourcing [%d] from %s", unitIdx, info.file))
                                     end
                                     if LoadoutData then
 ---@diagnostic disable-next-line: undefined-global

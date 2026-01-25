@@ -9,7 +9,9 @@
 --
 --   group_num      value of variable InjectGroupNum when evaluating loadout file (optional, default 1)
 --   per_unit       true => evaluate loadout file per unit, false => per group (optional, default false)
---   filename       name of loadout file to evaluate, relative to src/loadouts in the mission directory
+--   file           name of loadout file to evaluate, relative to src/loadouts in the mission directory,
+--                  before attempting to read the file, file is checked to see if it matches a group, if
+--                  so, that group provides the loadout. 
 --
 -- prior to evaluating the Lua file given by filename, the following variables will be set up:
 --

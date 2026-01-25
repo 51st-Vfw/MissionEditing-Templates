@@ -125,7 +125,17 @@ end
 -- pass self explicitly as the arg
 function VFW51MissionVariantinator.processMission(mission_t, args)
     local self = args["self"]
+    local targName = args["targName"]
     local targInfo = args["targInfo"]
+
+    -- replace VFW51_BUILD_VARIANT with target variant name
+    local nRules = #mission_t["trigrules"]
+    if (nRules > 1) and (#mission_t["trigrules"][1]["actions"] >= 3) then
+        local pattern = "VFW51_BUILD_VARIANT"
+        if string.find(mission_t["trigrules"][1]["actions"][3]["text"], pattern) then
+            mission_t["trigrules"][1]["actions"][3]["text"] = pattern .. "=\"" .. targName .. "\""
+        end
+    end
 
     -- set the mission time
     local moment = targInfo["moment"]
@@ -343,6 +353,7 @@ function VFW51MissionVariantinator:process()
     for targName, targ in pairs(VariantSettings["variants"]) do
         self:logInfo(string.format("Building content for %s variant", targName))
         local editArgs = { ["self"] = self,
+                           ["targName"] = targName,
                            ["targInfo"] = VariantSettings["variants"][targName]
         }
         editFn = VFW51MissionVariantinator.processMission

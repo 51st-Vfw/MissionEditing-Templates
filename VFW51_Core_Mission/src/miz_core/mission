@@ -252,13 +252,13 @@ mission = {
                                 ["y"] = -18027.361328125,
                             }, -- end of [1]
                             [2] = {
-                                ["communication"] = true,
-                                ["frequency"] = 251,
+                                ["communication"] = false,
+                                ["frequency"] = 270.0,
                                 ["groupId"] = 2,
                                 ["hidden"] = false,
                                 ["modulation"] = 0,
                                 ["name"] = "Aerial-2",
-                                ["radioSet"] = false,
+                                ["radioSet"] = true,
                                 ["route"] = {
                                     ["points"] = {
                                         [1] = {
@@ -455,6 +455,9 @@ mission = {
                                 ["units"] = {
                                     [1] = {
                                         ["AddPropAircraft"] = {
+                                            ["SADL_TN"] = "0102",
+                                            ["VoiceCallsignLabel"] = "SD",
+                                            ["VoiceCallsignNumber"] = "11",
                                         }, -- end of ["AddPropAircraft"]
                                         ["alt"] = 563,
                                         ["alt_type"] = "BARO",
@@ -464,6 +467,24 @@ mission = {
                                             [3] = 1,
                                             ["name"] = "Springfield11",
                                         }, -- end of ["callsign"]
+                                        ["datalinks"] = {
+                                            ["SADL"] = {
+                                                ["network"] = {
+                                                    ["donors"] = {
+                                                    }, -- end of ["donors"]
+                                                    ["teamMembers"] = {
+                                                        [1] = {
+                                                            ["missionUnitId"] = 2,
+                                                        }, -- end of [1]
+                                                    }, -- end of ["teamMembers"]
+                                                }, -- end of ["network"]
+                                                ["settings"] = {
+                                                    ["AirKey"] = 10,
+                                                    ["flightLead"] = true,
+                                                    ["GatewayKey"] = 8,
+                                                }, -- end of ["settings"]
+                                            }, -- end of ["SADL"]
+                                        }, -- end of ["datalinks"]
                                         ["heading"] = 0,
                                         ["livery_id"] = "25th FS Osan AB, Korea (OS)",
                                         ["name"] = "Aerial-2-1",
@@ -480,6 +501,128 @@ mission = {
                                             }, -- end of ["pylons"]
                                         }, -- end of ["payload"]
                                         ["psi"] = 0,
+                                        ["Radio"] = {
+                                            [1] = {
+                                                ["channels"] = {
+                                                    [1] = 270.0,
+                                                    [2] = 0.0,
+                                                    [3] = 0.0,
+                                                    [4] = 0.0,
+                                                    [5] = 240.0,
+                                                    [6] = 251.0,
+                                                    [7] = 252.0,
+                                                    [8] = 238.0,
+                                                    [9] = 238.1,
+                                                    [10] = 230.0,
+                                                    [11] = 230.0,
+                                                    [12] = 230.0,
+                                                    [13] = 230.0,
+                                                    [14] = 230.0,
+                                                    [15] = 230.0,
+                                                    [16] = 230.0,
+                                                    [17] = 230.0,
+                                                    [18] = 230.0,
+                                                    [19] = 230.0,
+                                                    [20] = 243.0,
+                                                    [21] = 54,
+                                                    [22] = 32.5,
+                                                    [23] = 42,
+                                                    [24] = 37.5,
+                                                    [25] = 54,
+                                                }, -- end of ["channels"]
+                                                ["channelsNames"] = {
+                                                    [1] = "Tac Common",
+                                                    [2] = "Strike Common",
+                                                    [3] = "Dept ATIS",
+                                                    [4] = "Dept Tower",
+                                                    [5] = "AI AWACS",
+                                                    [6] = "Texaco 1-1",
+                                                    [7] = "Texaco 2-1",
+                                                    [8] = "AI JTAC",
+                                                    [9] = "HUMAN JTAC",
+                                                    [20] = "Guard (UHF)",
+                                                }, -- end of ["channelsNames"]
+                                                ["modulations"] = {
+                                                    [1] = 0,
+                                                    [2] = 0,
+                                                    [3] = 0,
+                                                    [4] = 0,
+                                                    [5] = 0,
+                                                    [6] = 0,
+                                                    [7] = 0,
+                                                    [8] = 0,
+                                                    [9] = 0,
+                                                    [10] = 0,
+                                                    [11] = 0,
+                                                    [12] = 0,
+                                                    [13] = 0,
+                                                    [14] = 0,
+                                                    [15] = 0,
+                                                    [16] = 0,
+                                                    [17] = 0,
+                                                    [18] = 0,
+                                                    [19] = 0,
+                                                    [20] = 0,
+                                                    [21] = 1,
+                                                    [22] = 1,
+                                                    [23] = 1,
+                                                    [24] = 1,
+                                                    [25] = 1,
+                                                }, -- end of ["modulations"]
+                                            }, -- end of [1]
+                                            [2] = {
+                                                ["channels"] = {
+                                                    [1] = 241.25,
+                                                    [2] = 130.0,
+                                                    [3] = 0.0,
+                                                    [4] = 0.0,
+                                                    [5] = 130.0,
+                                                    [6] = 130.0,
+                                                    [7] = 130.0,
+                                                    [8] = 238.0,
+                                                    [9] = 238.1,
+                                                    [10] = 130.0,
+                                                    [11] = 130.0,
+                                                    [12] = 130.0,
+                                                    [13] = 130.0,
+                                                    [14] = 130.0,
+                                                    [15] = 130.0,
+                                                    [16] = 130.0,
+                                                    [17] = 130.0,
+                                                    [18] = 130.0,
+                                                    [19] = 130.0,
+                                                    [20] = 243.0,
+                                                }, -- end of ["channels"]
+                                                ["modulations"] = {
+                                                }, -- end of ["modulations"]
+                                            }, -- end of [2]
+                                            [3] = {
+                                                ["channels"] = {
+                                                    [1] = 30.0,
+                                                    [2] = 31.0,
+                                                    [3] = 32.0,
+                                                    [4] = 33.0,
+                                                    [5] = 34.0,
+                                                    [6] = 35.0,
+                                                    [7] = 36.0,
+                                                    [8] = 37.0,
+                                                    [9] = 38.0,
+                                                    [10] = 39.0,
+                                                    [11] = 40.0,
+                                                    [12] = 41.0,
+                                                    [13] = 42.0,
+                                                    [14] = 43.0,
+                                                    [15] = 44.0,
+                                                    [16] = 45.0,
+                                                    [17] = 46.0,
+                                                    [18] = 47.0,
+                                                    [19] = 48.0,
+                                                    [20] = 49.0,
+                                                }, -- end of ["channels"]
+                                                ["modulations"] = {
+                                                }, -- end of ["modulations"]
+                                            }, -- end of [3]
+                                        }, -- end of ["Radio"]
                                         ["skill"] = "Client",
                                         ["speed"] = 138.88888888889,
                                         ["type"] = "A-10C_2",
@@ -492,13 +635,13 @@ mission = {
                                 ["y"] = -18561.48828125,
                             }, -- end of [2]
                             [3] = {
-                                ["communication"] = true,
-                                ["frequency"] = 305,
+                                ["communication"] = false,
+                                ["frequency"] = 270.0,
                                 ["groupId"] = 3,
                                 ["hidden"] = false,
                                 ["modulation"] = 0,
                                 ["name"] = "Aerial-3",
-                                ["radioSet"] = false,
+                                ["radioSet"] = true,
                                 ["route"] = {
                                     ["points"] = {
                                         [1] = {
@@ -659,6 +802,9 @@ mission = {
                                             ["LaserCode10"] = 8,
                                             ["LaserCode100"] = 6,
                                             ["LAU3ROF"] = 0,
+                                            ["STN_L16"] = "00203",
+                                            ["VoiceCallsignLabel"] = "UI",
+                                            ["VoiceCallsignNumber"] = "11",
                                         }, -- end of ["AddPropAircraft"]
                                         ["alt"] = 566,
                                         ["alt_type"] = "BARO",
@@ -668,6 +814,27 @@ mission = {
                                             [3] = 1,
                                             ["name"] = "Uzi11",
                                         }, -- end of ["callsign"]
+                                        ["datalinks"] = {
+                                            ["Link16"] = {
+                                                ["network"] = {
+                                                    ["donors"] = {
+                                                    }, -- end of ["donors"]
+                                                    ["teamMembers"] = {
+                                                        [1] = {
+                                                            ["missionUnitId"] = 3,
+                                                            ["TDOA"] = true,
+                                                        }, -- end of [1]
+                                                    }, -- end of ["teamMembers"]
+                                                }, -- end of ["network"]
+                                                ["settings"] = {
+                                                    ["fighterChannel"] = 1,
+                                                    ["flightLead"] = true,
+                                                    ["missionChannel"] = 1,
+                                                    ["specialChannel"] = 1,
+                                                    ["transmitPower"] = 3,
+                                                }, -- end of ["settings"]
+                                            }, -- end of ["Link16"]
+                                        }, -- end of ["datalinks"]
                                         ["heading"] = 0,
                                         ["livery_id"] = "default",
                                         ["name"] = "Aerial-3-1",
@@ -687,26 +854,26 @@ mission = {
                                         ["Radio"] = {
                                             [1] = {
                                                 ["channels"] = {
-                                                    [1] = 305,
-                                                    [2] = 264,
-                                                    [3] = 265,
-                                                    [4] = 256,
-                                                    [5] = 254,
-                                                    [6] = 250,
-                                                    [7] = 270,
-                                                    [8] = 257,
-                                                    [9] = 255,
-                                                    [10] = 262,
-                                                    [11] = 259,
-                                                    [12] = 268,
-                                                    [13] = 269,
-                                                    [14] = 260,
-                                                    [15] = 263,
-                                                    [16] = 261,
-                                                    [17] = 267,
-                                                    [18] = 251,
-                                                    [19] = 253,
-                                                    [20] = 266,
+                                                    [1] = 270.0,
+                                                    [2] = 275.0,
+                                                    [3] = 0.0,
+                                                    [4] = 0.0,
+                                                    [5] = 240.0,
+                                                    [6] = 251.0,
+                                                    [7] = 252.0,
+                                                    [8] = 238.0,
+                                                    [9] = 238.1,
+                                                    [10] = 230.0,
+                                                    [11] = 230.0,
+                                                    [12] = 230.0,
+                                                    [13] = 230.0,
+                                                    [14] = 230.0,
+                                                    [15] = 230.0,
+                                                    [16] = 230.0,
+                                                    [17] = 230.0,
+                                                    [18] = 230.0,
+                                                    [19] = 230.0,
+                                                    [20] = 243.0,
                                                 }, -- end of ["channels"]
                                                 ["modulations"] = {
                                                     [1] = 0,
@@ -733,26 +900,26 @@ mission = {
                                             }, -- end of [1]
                                             [2] = {
                                                 ["channels"] = {
-                                                    [1] = 127,
-                                                    [2] = 135,
-                                                    [3] = 136,
-                                                    [4] = 127,
-                                                    [5] = 125,
-                                                    [6] = 121,
-                                                    [7] = 141,
-                                                    [8] = 128,
-                                                    [9] = 126,
-                                                    [10] = 133,
-                                                    [11] = 130,
-                                                    [12] = 139,
-                                                    [13] = 140,
-                                                    [14] = 131,
-                                                    [15] = 134,
-                                                    [16] = 132,
-                                                    [17] = 138,
-                                                    [18] = 122,
-                                                    [19] = 124,
-                                                    [20] = 137,
+                                                    [1] = 0.0,
+                                                    [2] = 130.0,
+                                                    [3] = 0.0,
+                                                    [4] = 0.0,
+                                                    [5] = 130.0,
+                                                    [6] = 130.0,
+                                                    [7] = 130.0,
+                                                    [8] = 138.0,
+                                                    [9] = 138.1,
+                                                    [10] = 130.0,
+                                                    [11] = 130.0,
+                                                    [12] = 130.0,
+                                                    [13] = 130.0,
+                                                    [14] = 130.0,
+                                                    [15] = 130.0,
+                                                    [16] = 130.0,
+                                                    [17] = 130.0,
+                                                    [18] = 130.0,
+                                                    [19] = 130.0,
+                                                    [20] = 121.5,
                                                 }, -- end of ["channels"]
                                                 ["modulations"] = {
                                                     [1] = 0,
@@ -820,13 +987,13 @@ mission = {
                     ["plane"] = {
                         ["group"] = {
                             [1] = {
-                                ["communication"] = true,
-                                ["frequency"] = 305,
+                                ["communication"] = false,
+                                ["frequency"] = 270.0,
                                 ["groupId"] = 4,
                                 ["hidden"] = false,
                                 ["modulation"] = 0,
                                 ["name"] = "Aerial-4",
-                                ["radioSet"] = false,
+                                ["radioSet"] = true,
                                 ["route"] = {
                                     ["points"] = {
                                         [1] = {
@@ -1006,10 +1173,34 @@ mission = {
                                             ["LaserCode10"] = 8,
                                             ["LaserCode100"] = 6,
                                             ["LAU3ROF"] = 0,
+                                            ["STN_L16"] = "00204",
+                                            ["VoiceCallsignLabel"] = "FT",
+                                            ["VoiceCallsignNumber"] = "10",
                                         }, -- end of ["AddPropAircraft"]
                                         ["alt"] = 4572,
                                         ["alt_type"] = "BARO",
                                         ["callsign"] = 100,
+                                        ["datalinks"] = {
+                                            ["Link16"] = {
+                                                ["network"] = {
+                                                    ["donors"] = {
+                                                    }, -- end of ["donors"]
+                                                    ["teamMembers"] = {
+                                                        [1] = {
+                                                            ["missionUnitId"] = 4,
+                                                            ["TDOA"] = true,
+                                                        }, -- end of [1]
+                                                    }, -- end of ["teamMembers"]
+                                                }, -- end of ["network"]
+                                                ["settings"] = {
+                                                    ["fighterChannel"] = 1,
+                                                    ["flightLead"] = true,
+                                                    ["missionChannel"] = 1,
+                                                    ["specialChannel"] = 1,
+                                                    ["transmitPower"] = 3,
+                                                }, -- end of ["settings"]
+                                            }, -- end of ["Link16"]
+                                        }, -- end of ["datalinks"]
                                         ["heading"] = -2.6224465393432,
                                         ["livery_id"] = "64th Aggressor 'Ghost'",
                                         ["name"] = "Aerial-4-1",
@@ -1027,26 +1218,26 @@ mission = {
                                         ["Radio"] = {
                                             [1] = {
                                                 ["channels"] = {
-                                                    [1] = 305,
-                                                    [2] = 264,
-                                                    [3] = 265,
-                                                    [4] = 256,
-                                                    [5] = 254,
-                                                    [6] = 250,
-                                                    [7] = 270,
-                                                    [8] = 257,
-                                                    [9] = 255,
-                                                    [10] = 262,
-                                                    [11] = 259,
-                                                    [12] = 268,
-                                                    [13] = 269,
-                                                    [14] = 260,
-                                                    [15] = 263,
-                                                    [16] = 261,
-                                                    [17] = 267,
-                                                    [18] = 251,
-                                                    [19] = 253,
-                                                    [20] = 266,
+                                                    [1] = 270.0,
+                                                    [2] = 230.0,
+                                                    [3] = 230.0,
+                                                    [4] = 230.0,
+                                                    [5] = 230.0,
+                                                    [6] = 230.0,
+                                                    [7] = 230.0,
+                                                    [8] = 230.0,
+                                                    [9] = 230.0,
+                                                    [10] = 230.0,
+                                                    [11] = 230.0,
+                                                    [12] = 230.0,
+                                                    [13] = 230.0,
+                                                    [14] = 230.0,
+                                                    [15] = 230.0,
+                                                    [16] = 230.0,
+                                                    [17] = 230.0,
+                                                    [18] = 230.0,
+                                                    [19] = 230.0,
+                                                    [20] = 230.0,
                                                 }, -- end of ["channels"]
                                                 ["modulations"] = {
                                                     [1] = 0,
@@ -1073,26 +1264,26 @@ mission = {
                                             }, -- end of [1]
                                             [2] = {
                                                 ["channels"] = {
-                                                    [1] = 127,
-                                                    [2] = 135,
-                                                    [3] = 136,
-                                                    [4] = 127,
-                                                    [5] = 125,
-                                                    [6] = 121,
-                                                    [7] = 141,
-                                                    [8] = 128,
-                                                    [9] = 126,
-                                                    [10] = 133,
-                                                    [11] = 130,
-                                                    [12] = 139,
-                                                    [13] = 140,
-                                                    [14] = 131,
-                                                    [15] = 134,
-                                                    [16] = 132,
-                                                    [17] = 138,
-                                                    [18] = 122,
-                                                    [19] = 124,
-                                                    [20] = 137,
+                                                    [1] = 138.0,
+                                                    [2] = 130.0,
+                                                    [3] = 130.0,
+                                                    [4] = 130.0,
+                                                    [5] = 130.0,
+                                                    [6] = 130.0,
+                                                    [7] = 130.0,
+                                                    [8] = 130.0,
+                                                    [9] = 130.0,
+                                                    [10] = 130.0,
+                                                    [11] = 130.0,
+                                                    [12] = 130.0,
+                                                    [13] = 130.0,
+                                                    [14] = 130.0,
+                                                    [15] = 130.0,
+                                                    [16] = 130.0,
+                                                    [17] = 130.0,
+                                                    [18] = 130.0,
+                                                    [19] = 130.0,
+                                                    [20] = 130.0,
                                                 }, -- end of ["channels"]
                                                 ["modulations"] = {
                                                     [1] = 0,
@@ -1220,6 +1411,9 @@ mission = {
             [54] = 49,
             [55] = 48,
             [56] = 67,
+            [57] = 90,
+            [58] = 91,
+            [59] = 92,
         }, -- end of ["neutrals"]
         ["red"] = {
             [1] = 18,
@@ -1235,7 +1429,7 @@ mission = {
             [11] = 47,
         }, -- end of ["red"]
     }, -- end of ["coalitions"]
-    ["currentKey"] = 834,
+    ["currentKey"] = 904,
     ["date"] = {
         ["Day"] = 21,
         ["Month"] = 6,
@@ -1293,11 +1487,14 @@ mission = {
     }, -- end of ["map"]
     ["maxDictId"] = 26,
     ["pictureFileNameB"] = {
+        [1] = "ResKey_ImageBriefing_16001",
     }, -- end of ["pictureFileNameB"]
     ["pictureFileNameN"] = {
     }, -- end of ["pictureFileNameN"]
     ["pictureFileNameR"] = {
     }, -- end of ["pictureFileNameR"]
+    ["pictureFileNameServer"] = {
+    }, -- end of ["pictureFileNameServer"]
     ["requiredModules"] = {
     }, -- end of ["requiredModules"]
     ["result"] = {
@@ -1332,8 +1529,20 @@ mission = {
     ["theatre"] = "Nevada",
     ["trig"] = {
         ["actions"] = {
+            [1] = "a_do_script(\"env.info(\\\"*** VFW51: Setting Static/Dynamic, Variant\\\")\");a_do_script(\\\"VFW51_DYN_PATH=nil\\\");",
+            [2] = "a_do_script(\"env.info(\\\"*** VFW51: Loading Frameworks -- VFW51_DYN_PATH = \\\" .. VFW51_DYN_PATH)\");a_do_script(\"assert(loadfile(VFW51_DYN_PATH .. \\\"globals_frameworks.lua\\\"))()\");a_do_script(\"assert(loadfile(VFW51_DYN_PATH .. \\\"Moose_.lua\\\"))()\");a_do_script(\"assert(loadfile(VFW51_DYN_PATH .. \\\"mist_4_5_107.lua\\\"))()\");a_do_script(\"assert(loadfile(VFW51_DYN_PATH .. \\\"skynet-iads-compiled.lua\\\"))()\");a_do_script(\"assert(loadfile(VFW51_DYN_PATH .. \\\"51stMapSOP.lua\\\"))()\");a_do_script(\"assert(loadfile(VFW51_DYN_PATH .. \\\"vfw51_mission_util.lua\\\"))()\");",
+            [3] = "a_do_script(\"env.info(\\\"*** VFW51: Loading Frameworks -- Static\\\")\");a_do_script_file(getValueResourceByKey(\"ResKey_Action_20101\"));a_do_script_file(getValueResourceByKey(\"ResKey_Action_20102\"));a_do_script_file(getValueResourceByKey(\"ResKey_Action_20103\"));a_do_script_file(getValueResourceByKey(\"ResKey_Action_20104\"));a_do_script_file(getValueResourceByKey(\"ResKey_Action_20105\"));a_do_script_file(getValueResourceByKey(\"ResKey_Action_20106\"));",
+            [4] = "a_do_script(\"env.info(\\\"*** VFW51: Loading Mission Scripts -- VFW51_DYN_PATH = \\\" .. VFW51_DYN_PATH)\");a_do_script(\"assert(loadfile(VFW51_DYN_PATH .. \\\"globals_mission.lua\\\"))()\");",
+            [5] = "a_do_script(\"env.info(\\\"*** VFW51: Loading Mission Scripts -- Static\\\")\");a_do_script_file(getValueResourceByKey(\"ResKey_Action_20201\"));",
+            [6] = "a_do_script(\"env.info(\\\"*** VFW51: Reference audio\\\")\");",
         }, -- end of ["actions"]
         ["conditions"] = {
+            [1] = "return(true)",
+            [2] = "return(c_predicate(getValueDictByKey(\"DictKey_ActionText_20008\")) )",
+            [3] = "return(c_predicate(getValueDictByKey(\"DictKey_ActionText_20009\")) )",
+            [4] = "return(c_predicate(getValueDictByKey(\"DictKey_ActionText_20011\")) )",
+            [5] = "return(c_predicate(getValueDictByKey(\"DictKey_ActionText_20013\")) )",
+            [6] = "return(c_predicate(getValueDictByKey(\"DictKey_ActionText_20026\")) )",
         }, -- end of ["conditions"]
         ["custom"] = {
         }, -- end of ["custom"]
@@ -1342,10 +1551,22 @@ mission = {
         ["events"] = {
         }, -- end of ["events"]
         ["flag"] = {
+            [1] = true,
+            [2] = true,
+            [3] = true,
+            [4] = true,
+            [5] = true,
+            [6] = true,
         }, -- end of ["flag"]
         ["func"] = {
         }, -- end of ["func"]
         ["funcStartup"] = {
+            [1] = "if mission.trig.conditions[1]() then mission.trig.actions[1]() end",
+            [2] = "if mission.trig.conditions[2]() then mission.trig.actions[2]() end",
+            [3] = "if mission.trig.conditions[3]() then mission.trig.actions[3]() end",
+            [4] = "if mission.trig.conditions[4]() then mission.trig.actions[4]() end",
+            [5] = "if mission.trig.conditions[5]() then mission.trig.actions[5]() end",
+            [6] = "if mission.trig.conditions[6]() then mission.trig.actions[6]() end",
         }, -- end of ["funcStartup"]
     }, -- end of ["trig"]
     ["triggers"] = {
@@ -1353,8 +1574,200 @@ mission = {
         }, -- end of ["zones"]
     }, -- end of ["triggers"]
     ["trigrules"] = {
+        [1] = {
+            ["actions"] = {
+                [1] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "env.info(\"*** VFW51: Setting Static/Dynamic, Variant\")",
+                }, -- end of [1]
+                [2] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "VFW51_DYN_PATH=nil",
+                }, -- end of [2]
+                [3] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "VFW51_BUILD_VARIANT=\"<default>\"",
+                }, -- end of [3]
+            }, -- end of ["actions"]
+            ["colorItem"] = "0x8080ffff",
+            ["comment"] = "VFW51 AUTOGEN: Select Static/Dynamic, Variant",
+            ["eventlist"] = "",
+            ["predicate"] = "triggerStart",
+            ["rules"] = {
+            }, -- end of ["rules"]
+        }, -- end of [1]
+        [2] = {
+            ["actions"] = {
+                [1] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "env.info(\"*** VFW51: Loading Frameworks -- VFW51_DYN_PATH = \" .. VFW51_DYN_PATH)",
+                }, -- end of [1]
+                [2] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "trigger.action.outText(\"VFW51 Workflow: Dynamic .miz build\", 10)",
+                }, -- end of [2]
+                [3] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "assert(loadfile(VFW51_DYN_PATH .. \"globals_frameworks.lua\"))()",
+                }, -- end of [3]
+                [4] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "assert(loadfile(VFW51_DYN_PATH .. \"Moose_.lua\"))()",
+                }, -- end of [4]
+                [5] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "assert(loadfile(VFW51_DYN_PATH .. \"mist_4_5_107.lua\"))()",
+                }, -- end of [5]
+                [6] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "assert(loadfile(VFW51_DYN_PATH .. \"skynet-iads-compiled.lua\"))()",
+                }, -- end of [6]
+                [7] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "assert(loadfile(VFW51_DYN_PATH .. \"51stMapSOP.lua\"))()",
+                }, -- end of [7]
+                [8] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "assert(loadfile(VFW51_DYN_PATH .. \"vfw51_mission_util.lua\"))()",
+                }, -- end of [8]
+            }, -- end of ["actions"]
+            ["colorItem"] = "0x8080ffff",
+            ["comment"] = "VFW51 AUTOGEN: Load Frameworks -- Dynamic",
+            ["eventlist"] = "",
+            ["predicate"] = "triggerStart",
+            ["rules"] = {
+                [1] = {
+                    ["coalitionlist"] = "red",
+                    ["KeyDict_text"] = "DictKey_ActionText_20008",
+                    ["predicate"] = "c_predicate",
+                    ["text"] = "DictKey_ActionText_20008",
+                    ["unitType"] = "ALL",
+                    ["zone"] = "",
+                }, -- end of [1]
+            }, -- end of ["rules"]
+        }, -- end of [2]
+        [3] = {
+            ["actions"] = {
+                [1] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "env.info(\"*** VFW51: Loading Frameworks -- Static\")",
+                }, -- end of [1]
+                [2] = {
+                    ["file"] = "ResKey_Action_20101",
+                    ["predicate"] = "a_do_script_file",
+                }, -- end of [2]
+                [3] = {
+                    ["file"] = "ResKey_Action_20102",
+                    ["predicate"] = "a_do_script_file",
+                }, -- end of [3]
+                [4] = {
+                    ["file"] = "ResKey_Action_20103",
+                    ["predicate"] = "a_do_script_file",
+                }, -- end of [4]
+                [5] = {
+                    ["file"] = "ResKey_Action_20104",
+                    ["predicate"] = "a_do_script_file",
+                }, -- end of [5]
+                [6] = {
+                    ["file"] = "ResKey_Action_20105",
+                    ["predicate"] = "a_do_script_file",
+                }, -- end of [6]
+                [7] = {
+                    ["file"] = "ResKey_Action_20106",
+                    ["predicate"] = "a_do_script_file",
+                }, -- end of [7]
+            }, -- end of ["actions"]
+            ["colorItem"] = "0x8080ffff",
+            ["comment"] = "VFW51 AUTOGEN: Load Frameworks -- Static",
+            ["eventlist"] = "",
+            ["predicate"] = "triggerStart",
+            ["rules"] = {
+                [1] = {
+                    ["coalitionlist"] = "red",
+                    ["KeyDict_text"] = "DictKey_ActionText_20009",
+                    ["predicate"] = "c_predicate",
+                    ["text"] = "DictKey_ActionText_20009",
+                    ["unitType"] = "ALL",
+                    ["zone"] = "",
+                }, -- end of [1]
+            }, -- end of ["rules"]
+        }, -- end of [3]
+        [4] = {
+            ["actions"] = {
+                [1] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "env.info(\"*** VFW51: Loading Mission Scripts -- VFW51_DYN_PATH = \" .. VFW51_DYN_PATH)",
+                }, -- end of [1]
+                [2] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "assert(loadfile(VFW51_DYN_PATH .. \"globals_mission.lua\"))()",
+                }, -- end of [2]
+            }, -- end of ["actions"]
+            ["colorItem"] = "0x8080ffff",
+            ["comment"] = "VFW51 AUTOGEN: Load Mission Scripts -- Dynamic",
+            ["eventlist"] = "",
+            ["predicate"] = "triggerStart",
+            ["rules"] = {
+                [1] = {
+                    ["coalitionlist"] = "red",
+                    ["KeyDict_text"] = "DictKey_ActionText_20011",
+                    ["predicate"] = "c_predicate",
+                    ["text"] = "DictKey_ActionText_20011",
+                    ["unitType"] = "ALL",
+                    ["zone"] = "",
+                }, -- end of [1]
+            }, -- end of ["rules"]
+        }, -- end of [4]
+        [5] = {
+            ["actions"] = {
+                [1] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "env.info(\"*** VFW51: Loading Mission Scripts -- Static\")",
+                }, -- end of [1]
+                [2] = {
+                    ["file"] = "ResKey_Action_20201",
+                    ["predicate"] = "a_do_script_file",
+                }, -- end of [2]
+            }, -- end of ["actions"]
+            ["colorItem"] = "0x8080ffff",
+            ["comment"] = "VFW51 AUTOGEN: Load Mission Scripts -- Static",
+            ["eventlist"] = "",
+            ["predicate"] = "triggerStart",
+            ["rules"] = {
+                [1] = {
+                    ["coalitionlist"] = "red",
+                    ["KeyDict_text"] = "DictKey_ActionText_20013",
+                    ["predicate"] = "c_predicate",
+                    ["text"] = "DictKey_ActionText_20013",
+                    ["unitType"] = "ALL",
+                    ["zone"] = "",
+                }, -- end of [1]
+            }, -- end of ["rules"]
+        }, -- end of [5]
+        [6] = {
+            ["actions"] = {
+                [1] = {
+                    ["predicate"] = "a_do_script",
+                    ["text"] = "env.info(\"*** VFW51: Reference audio\")",
+                }, -- end of [1]
+            }, -- end of ["actions"]
+            ["colorItem"] = "0x8080ffff",
+            ["comment"] = "VFW51 AUTOGEN: Reference Audio",
+            ["eventlist"] = "",
+            ["predicate"] = "triggerStart",
+            ["rules"] = {
+                [1] = {
+                    ["coalitionlist"] = "red",
+                    ["KeyDict_text"] = "DictKey_ActionText_20026",
+                    ["predicate"] = "c_predicate",
+                    ["text"] = "DictKey_ActionText_20026",
+                    ["unitType"] = "ALL",
+                    ["zone"] = "",
+                }, -- end of [1]
+            }, -- end of ["rules"]
+        }, -- end of [6]
     }, -- end of ["trigrules"]
-    ["version"] = 22,
+    ["version"] = 23,
     ["weather"] = {
         ["atmosphere_type"] = 0,
         ["clouds"] = {
@@ -1374,6 +1787,9 @@ mission = {
             ["visibility"] = 0,
         }, -- end of ["fog"]
         ["groundTurbulence"] = 0,
+        ["halo"] = {
+            ["preset"] = "off",
+        }, -- end of ["halo"]
         ["modifiedTime"] = false,
         ["name"] = "Winter, clean sky",
         ["qnh"] = 760,

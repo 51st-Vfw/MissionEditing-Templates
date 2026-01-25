@@ -18,6 +18,10 @@ frameworks at mission start.
 Workflow versions are identified with three numbers "`<frameworks>`-`<scripts>`-`<settings>`"
 where each corresponds to the version of the corresponding component.
 
+- **v20250609**, Workflow 12-19-9
+    - Updates to scripting to support setting loadout from group in mission.
+- **v20250609**, Workflow 12-18-9
+    - Updates to scripting to support VFW51_BUILD_VARIANT global for scripting.
 - **v20250607**, Workflow 12-17-9
     - Updates to VFW51 utilities
     - Updated to MOOSE 278f1db9
