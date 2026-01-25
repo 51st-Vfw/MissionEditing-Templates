@@ -316,7 +316,7 @@
             <g id="Row-4-Fixed" transform="translate(0.000000, 248.000000)">
                 <rect id="Border--1" stroke="#707070" stroke-width="2" x="0" y="0" width="1440" height="50"></rect>
                 <text id="Label-Loadout" font-family="HelveticaNeue-Bold, Helvetica Neue" font-size="28" font-weight="bold" fill="#707070">
-                    <tspan x="529.54" y="35">Loadout</tspan>
+                    <tspan x="593.54" y="35">Loadout</tspan>
                 </text>
                 <text id="Label--1" font-family="HelveticaNeue-Bold, Helvetica Neue" font-size="28" font-weight="bold" fill="#707070">
                     <tspan x="133.036" y="35">-1</tspan>
@@ -362,37 +362,37 @@
             </text>
         </g>
         <text id="FIELD:-MD-Loadout--4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#181818">
-            <tspan x="704" y="613">#LOADOUT_4#</tspan>
+            <tspan x="768" y="613">#LOADOUT_4#</tspan>
         </text>
-        <text id="FIELD:-MD-TNDL--4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="28" font-weight="400" fill="#181818">
-            <tspan x="450.692" y="611">#T_4#</tspan>
+        <text id="FIELD:-MD-TNDL--4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="26" font-weight="400" fill="#181818">
+            <tspan x="450" y="611">#T_4#</tspan>
         </text>
         <text id="FIELD:-MD-Pilot--4" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#181818">
             <tspan x="224" y="613">#PILOT_4#</tspan>
         </text>
         <text id="FIELD:-MD-Loadout--3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#181818">
-            <tspan x="704" y="563">#LOADOUT_3#</tspan>
+            <tspan x="768" y="563">#LOADOUT_3#</tspan>
         </text>
-        <text id="FIELD:-MD-TNDL--3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="28" font-weight="400" fill="#181818">
-            <tspan x="450.692" y="561">#T_3#</tspan>
+        <text id="FIELD:-MD-TNDL--3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="26" font-weight="400" fill="#181818">
+            <tspan x="450" y="561">#T_3#</tspan>
         </text>
         <text id="FIELD:-MD-Pilot--3" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#181818">
             <tspan x="224" y="563">#PILOT_3#</tspan>
         </text>
         <text id="FIELD:-MD-Loadout--2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#181818">
-            <tspan x="704" y="513">#LOADOUT_2#</tspan>
+            <tspan x="768" y="513">#LOADOUT_2#</tspan>
         </text>
-        <text id="FIELD:-MD-TNDL--2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="28" font-weight="400" fill="#181818">
-            <tspan x="450.692" y="511">#T_2#</tspan>
+        <text id="FIELD:-MD-TNDL--2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="26" font-weight="400" fill="#181818">
+            <tspan x="450" y="511">#T_2#</tspan>
         </text>
         <text id="FIELD:-MD-Pilot--2" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#181818">
             <tspan x="224" y="513">#PILOT_2#</tspan>
         </text>
         <text id="FIELD:-MD-Loadout--1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#181818">
-            <tspan x="704" y="463">#LOADOUT_1#</tspan>
+            <tspan x="768" y="463">#LOADOUT_1#</tspan>
         </text>
-        <text id="FIELD:-MD-TNDL--1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="28" font-weight="400" fill="#181818">
-            <tspan x="450.692" y="461">#T_1#</tspan>
+        <text id="FIELD:-MD-TNDL--1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="26" font-weight="400" fill="#181818">
+            <tspan x="450" y="461">#T_1#</tspan>
         </text>
         <text id="FIELD:-MD-Pilot--1" font-family="HelveticaNeue-Medium, Helvetica Neue" font-size="34" font-weight="400" fill="#181818">
             <tspan x="224" y="463">#PILOT_1#</tspan>
